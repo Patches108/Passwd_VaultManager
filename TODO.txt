@@ -1,0 +1,5 @@
+﻿1. Fill buttons on left panel. (New/Edit/Delete/...)
+2. Button markups (side panels) (Ordinary) --> make them better later
+3. make scrollbar style.
+4. Add a border to the panel section.
+5. 

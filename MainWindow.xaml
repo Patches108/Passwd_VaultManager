@@ -1,0 +1,210 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Menu="clr-namespace:Passwd_VaultManager.Utils"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager"
+    xmlns:m="clr-namespace:Passwd_VaultManager.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="clr-namespace:Passwd_VaultManager.Views"
+    Title="Password Vault Manager"
+    Width="550"
+    Height="700"
+    Background="Transparent"
+    Closing="MainWindow_Closing"
+    Loaded="frmMainWindow_Loaded"
+    ResizeMode="NoResize"
+    Style="{StaticResource WinStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Border CornerRadius="8" Style="{StaticResource FormStyle}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <!--  Menu slot  -->
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="80" />
+            </Grid.RowDefinitions>
+
+            <Menu
+                x:Name="MainMenu"
+                Grid.Row="0"
+                Grid.Column="0">
+                <MenuItem Header="Operations">
+                    <MenuItem Click="NewVaultRecord_Click" Header="New" />
+                    <MenuItem Click="EditVaultRecord_Click" Header="Edit" />
+                    <Separator />
+                    <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
+                    <Separator />
+                    <MenuItem Click="ExitApp_Click" Header="Exit" />
+                </MenuItem>
+            </Menu>
+
+            <!--  Left Panel Space  -->
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="2,10,2,10">
+
+                <Menu:MenuCmd
+                    Width="90"
+                    Height="50"
+                    IsChecked="True"
+                    Style="{StaticResource SideCmdStyle}">
+                    <!--  NEW BUTTON  -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="img_NewRecord"
+                            Width="25"
+                            Height="25">
+                            <Image.Source>
+                                <BitmapImage UriSource="Images/New.png" />
+                            </Image.Source>
+                        </Image>
+                        <Button
+                            x:Name="cmd_NewRecord"
+                            Margin="5"
+                            Content="New"
+                            Style="{StaticResource SideButton}" />
+                    </Grid>
+                </Menu:MenuCmd>
+
+                <!--  EDIT BUTTON  -->
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        x:Name="img_EditRecord"
+                        Grid.Column="0"
+                        Width="25"
+                        Height="25">
+                        <Image.Source>
+                            <BitmapImage UriSource="Images/Edit.png" />
+                        </Image.Source>
+                    </Image>
+                    <Button
+                        x:Name="cmd_EditRecord"
+                        Grid.Column="1"
+                        Margin="5"
+                        Content="Edit"
+                        Style="{StaticResource SideButton}" />
+                </Grid>
+
+
+                <!--  DELETE BUTTON  -->
+                <Grid Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        x:Name="img_DeleteRecord"
+                        Grid.Column="0"
+                        Width="25"
+                        Height="25">
+                        <Image.Source>
+                            <BitmapImage UriSource="Images/Delete.png" />
+                        </Image.Source>
+                    </Image>
+                    <Button
+                        x:Name="cmd_DeleteRecord"
+                        Grid.Column="1"
+                        Margin="5"
+                        Content="Delete"
+                        Style="{StaticResource SideButton}" />
+                </Grid>
+            </StackPanel>
+
+            <!--  Main Panel Space  -->
+            <ScrollViewer Grid.Row="2" Grid.Column="1">
+
+                <ItemsControl x:Name="itms_PasswdPanelList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <v:PasswordPanel />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+                <!--<ContentControl
+                    x:Name="conCtrlPasswdPanel"
+                    VerticalAlignment="Top"
+                    HorizontalContentAlignment="Stretch" />-->
+
+
+
+                <!--<StackPanel Margin="5">
+                    <v:PasswordPanel
+                        x:Name="testPanel1"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel2"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel3"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel4"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel5"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel6"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel7"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel8"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                    <v:PasswordPanel
+                        x:Name="testPanel9"
+                        Margin="1"
+                        VerticalAlignment="Center" />
+                </StackPanel>-->
+            </ScrollViewer>
+
+            <!--  Footer Controls  -->
+            <Grid Grid.Row="3" Grid.Column="1">
+                <TextBlock
+                    x:Name="lblStat"
+                    Margin="50,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource StatusText}"
+                    Text="Status" />
+
+                <Button
+                    x:Name="cmd_Close"
+                    Margin="0,0,10,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Click="cmdClose_Click"
+                    Content="Close"
+                    Style="{StaticResource ControlButton}" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,26 @@
+﻿<Application
+    x:Class="Passwd_VaultManager.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Passwd_VaultManager"
+    xmlns:models="clr-namespace:Passwd_VaultManager.Models"
+    StartupUri="MainWindow.xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/FormStyle.xaml" />
+                <ResourceDictionary Source="Styles/TextBlocks.xaml" />
+                <ResourceDictionary Source="Styles/PanelStyle.xaml" />
+                <ResourceDictionary Source="Styles/Button.xaml" />
+                <ResourceDictionary Source="Styles/WinStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <models:BoolToTextConverter x:Key="BoolToTextConverter" />
+
+            <models:BoolToImageConverter x:Key="BoolToImageConverter" />
+
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>
