@@ -54,77 +54,103 @@
 
                 <Menu:MenuCmd
                     Width="90"
-                    Height="50"
-                    IsChecked="True"
+                    Height="35"
+                    Margin="0,5,0,5"
+                    IsChecked="False"
                     Style="{StaticResource SideCmdStyle}">
                     <!--  NEW BUTTON  -->
-                    <Grid Margin="0,0,0,10">
+                    <Grid Margin="-10,0,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Image
                             x:Name="img_NewRecord"
+                            Grid.Column="0"
                             Width="25"
                             Height="25">
                             <Image.Source>
                                 <BitmapImage UriSource="Images/New.png" />
                             </Image.Source>
                         </Image>
-                        <Button
+                        <TextBlock
                             x:Name="cmd_NewRecord"
-                            Margin="5"
-                            Content="New"
-                            Style="{StaticResource SideButton}" />
+                            Grid.Column="1"
+                            Width="40"
+                            Height="17"
+                            Margin="5,7,0,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource TextStyle}"
+                            Text="New" />
                     </Grid>
                 </Menu:MenuCmd>
 
                 <!--  EDIT BUTTON  -->
-                <Grid Margin="0,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image
-                        x:Name="img_EditRecord"
-                        Grid.Column="0"
-                        Width="25"
-                        Height="25">
-                        <Image.Source>
-                            <BitmapImage UriSource="Images/Edit.png" />
-                        </Image.Source>
-                    </Image>
-                    <Button
-                        x:Name="cmd_EditRecord"
-                        Grid.Column="1"
-                        Margin="5"
-                        Content="Edit"
-                        Style="{StaticResource SideButton}" />
-                </Grid>
+                <Menu:MenuCmd
+                    Width="90"
+                    Height="35"
+                    Margin="0,5,0,5"
+                    IsChecked="False"
+                    Style="{StaticResource SideCmdStyle}">
+                    <Grid Margin="-10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="img_EditRecord"
+                            Grid.Column="0"
+                            Width="25"
+                            Height="25">
+                            <Image.Source>
+                                <BitmapImage UriSource="Images/Edit.png" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock
+                            x:Name="cmd_EditRecord"
+                            Grid.Column="1"
+                            Width="40"
+                            Height="17"
+                            Margin="5,7,0,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource TextStyle}"
+                            Text="Edit" />
+                    </Grid>
+                </Menu:MenuCmd>
 
 
                 <!--  DELETE BUTTON  -->
-                <Grid Margin="0,20,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image
-                        x:Name="img_DeleteRecord"
-                        Grid.Column="0"
-                        Width="25"
-                        Height="25">
-                        <Image.Source>
-                            <BitmapImage UriSource="Images/Delete.png" />
-                        </Image.Source>
-                    </Image>
-                    <Button
-                        x:Name="cmd_DeleteRecord"
-                        Grid.Column="1"
-                        Margin="5"
-                        Content="Delete"
-                        Style="{StaticResource SideButton}" />
-                </Grid>
+                <Menu:MenuCmd
+                    Width="90"
+                    Height="35"
+                    Margin="0,5,0,5"
+                    IsChecked="False"
+                    Style="{StaticResource SideCmdStyle}">
+                    <Grid Margin="-10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="img_DeleteRecord"
+                            Grid.Column="0"
+                            Width="25"
+                            Height="25">
+                            <Image.Source>
+                                <BitmapImage UriSource="Images/Delete.png" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock
+                            x:Name="cmd_DeleteRecord"
+                            Grid.Column="1"
+                            Width="45"
+                            Height="17"
+                            Margin="5,7,0,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource TextStyle}"
+                            Text="Delete" />
+                    </Grid>
+                </Menu:MenuCmd>
             </StackPanel>
 
             <!--  Main Panel Space  -->
