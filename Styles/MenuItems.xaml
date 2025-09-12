@@ -1,12 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--  Menu Header Style  -->
+    <!--  Menu Header Style (yours, unchanged except minor tidy)  -->
     <Style x:Key="MenuHeaderStyle" TargetType="Menu">
         <Setter Property="Background" Value="#272B2F" />
         <Setter Property="BorderBrush" Value="#FFEBE9E8" />
         <Setter Property="BorderThickness" Value="0.3" />
         <Setter Property="Foreground" Value="White" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Menu">
@@ -54,12 +53,133 @@
     </Style>
 
 
-
-    <!--  Menu Item Style  -->
+    <!--  Menu Item Style (named; apply via Menu.ItemContainerStyle)  -->
     <Style x:Key="MenuItem" TargetType="MenuItem">
-        <Setter Property="Background" Value="#3E434A" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="#2F343B" />
+        <Setter Property="BorderBrush" Value="#5A5F66" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border
+                        x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  Icon (optional)  -->
+                            <ContentPresenter
+                                x:Name="IconHost"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                ContentSource="Icon" />
+
+                            <!--  Header  -->
+                            <ContentPresenter
+                                x:Name="HeaderHost"
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                ContentSource="Header"
+                                RecognizesAccessKey="True" />
+
+                            <!--  Arrow for submenu headers  -->
+                            <Path
+                                x:Name="Arrow"
+                                Grid.Column="2"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Data="M 0 0 L 4 4 L 0 8"
+                                Stroke="{TemplateBinding Foreground}"
+                                StrokeThickness="2"
+                                Visibility="Collapsed" />
+
+                            <!--  Submenu popup (dark background to remove white gaps)  -->
+                            <Popup
+                                x:Name="PART_Popup"
+                                AllowsTransparency="True"
+                                Focusable="False"
+                                IsOpen="{TemplateBinding IsSubmenuOpen}"
+                                Placement="Bottom"
+                                PopupAnimation="Fade">
+                                <Border
+                                    Padding="4"
+                                    Background="#272B2F"
+                                    BorderBrush="#5A5F66"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    SnapsToDevicePixels="True">
+                                    <ScrollViewer
+                                        CanContentScroll="True"
+                                        HorizontalScrollBarVisibility="Disabled"
+                                        VerticalScrollBarVisibility="Auto">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <!--  Role-specific  -->
+                        <Trigger Property="Role" Value="TopLevelHeader">
+                            <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
+                        </Trigger>
+                        <Trigger Property="Role" Value="TopLevelItem">
+                            <Setter TargetName="PART_Popup" Property="IsOpen" Value="False" />
+                        </Trigger>
+                        <Trigger Property="Role" Value="SubmenuHeader">
+                            <Setter TargetName="PART_Popup" Property="Placement" Value="Right" />
+                            <Setter TargetName="Arrow" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="Role" Value="SubmenuItem">
+                            <Setter TargetName="PART_Popup" Property="IsOpen" Value="False" />
+                        </Trigger>
+
+                        <!--  Visual states  -->
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#3E434A" />
+                        </Trigger>
+
+                        <Trigger Property="IsSubmenuOpen" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#3E434A" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#27D644" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#88FFFFFF" />
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
+    <!--  Optional: a simple separator style you can opt into  -->
+    <Style x:Key="MenuSeparator" TargetType="Separator">
+        <Setter Property="Margin" Value="8,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Grid SnapsToDevicePixels="True">
+                        <Rectangle
+                            Height="1"
+                            VerticalAlignment="Center"
+                            Fill="#5A5F66" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

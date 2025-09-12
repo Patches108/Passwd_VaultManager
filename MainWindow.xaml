@@ -36,26 +36,23 @@
                 x:Name="MainMenu"
                 Grid.Row="0"
                 Grid.Column="0"
-                Style="{StaticResource MenuHeaderStyle}">
+                Style="{StaticResource MenuHeaderStyle}"
+                ItemContainerStyle="{StaticResource MenuItem}">
                 <MenuItem Header="Operations">
                     <MenuItem
                         Click="NewVaultRecord_Click"
-                        Header="New" 
-                        Style="{StaticResource MenuItem}"/>
+                        Header="New" />
                     <MenuItem
                         Click="EditVaultRecord_Click"
-                        Header="Edit"
-                        Style="{StaticResource MenuItem}"/>
-                    <Separator  />
+                        Header="Edit"/>
+                    <Separator Style="{StaticResource MenuSeparator}"/>
                     <MenuItem
                         Click="DeleteVaultRecord_Click"
-                        Header="Delete"
-                        Style="{StaticResource MenuItem}"/>
-                    <Separator />
+                        Header="Delete"/>
+                    <Separator Style="{StaticResource MenuSeparator}"/>
                     <MenuItem
                         Click="ExitApp_Click"
-                        Header="Exit"
-                        Style="{StaticResource MenuItem}"/>
+                        Header="Exit"/>
                 </MenuItem>
             </Menu>
 
