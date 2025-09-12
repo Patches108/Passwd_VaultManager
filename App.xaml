@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="Styles/PanelStyle.xaml" />
                 <ResourceDictionary Source="Styles/Button.xaml" />
                 <ResourceDictionary Source="Styles/WinStyle.xaml" />
+                <ResourceDictionary Source="/Styles/MenuItems.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <models:BoolToTextConverter x:Key="BoolToTextConverter" />
