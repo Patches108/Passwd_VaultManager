@@ -1,6 +1,7 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Passwd_VaultManager.Models;
+using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.ViewModels;
-using Passwd_VaultManager.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -33,7 +34,22 @@ namespace Passwd_VaultManager
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {
-            // TODO
+            var mainWindow = Application.Current.MainWindow;
+            mainWindow?.Hide();
+
+            if (!Settings.Default.TrayTipShown &&
+                TryFindResource("TrayIcon") is Hardcodet.Wpf.TaskbarNotification.TaskbarIcon trayIcon) {
+                trayIcon.ShowBalloonTip(
+                    "Minimized to Tray",
+                    "Daily Reminder is still running in the background.",
+                    BalloonIcon.Info
+                );
+
+                Settings.Default.TrayTipShown = true;
+                Settings.Default.Save();
+                System.Diagnostics.Debug.WriteLine("TrayTipShown: " + Settings.Default.TrayTipShown);
+
+            }
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {

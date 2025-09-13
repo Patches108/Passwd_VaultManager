@@ -151,7 +151,7 @@
 
                         <Trigger Property="IsSubmenuOpen" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="#3E434A" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="#27D644" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#FF24A8E7" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
