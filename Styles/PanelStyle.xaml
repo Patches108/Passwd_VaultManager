@@ -7,6 +7,15 @@
         <Setter Property="Margin" Value="0,5,0,5" />
 
         <Style.Triggers>
+
+            <!--  TESTING THIS  -->
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ItemsPresenter}}" Value="True">
+                <Setter Property="Background" Value="#3E434A" />
+                <Setter Property="BorderBrush" Value="#27D644" />
+                <Setter Property="BorderThickness" Value="2" />
+            </DataTrigger>
+
+
             <Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>
                     <BeginStoryboard>

@@ -36,23 +36,15 @@
                 x:Name="MainMenu"
                 Grid.Row="0"
                 Grid.Column="0"
-                Style="{StaticResource MenuHeaderStyle}"
-                ItemContainerStyle="{StaticResource MenuItem}">
+                ItemContainerStyle="{StaticResource MenuItem}"
+                Style="{StaticResource MenuHeaderStyle}">
                 <MenuItem Header="Operations">
-                    <MenuItem
-                        Click="NewVaultRecord_Click"
-                        Header="New" />
-                    <MenuItem
-                        Click="EditVaultRecord_Click"
-                        Header="Edit"/>
-                    <Separator Style="{StaticResource MenuSeparator}"/>
-                    <MenuItem
-                        Click="DeleteVaultRecord_Click"
-                        Header="Delete"/>
-                    <Separator Style="{StaticResource MenuSeparator}"/>
-                    <MenuItem
-                        Click="ExitApp_Click"
-                        Header="Exit"/>
+                    <MenuItem Click="NewVaultRecord_Click" Header="New" />
+                    <MenuItem Click="EditVaultRecord_Click" Header="Edit" />
+                    <Separator Style="{StaticResource MenuSeparator}" />
+                    <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
+                    <Separator Style="{StaticResource MenuSeparator}" />
+                    <MenuItem Click="ExitApp_Click" Header="Exit" />
                 </MenuItem>
             </Menu>
 
@@ -169,57 +161,11 @@
                 <ItemsControl x:Name="itms_PasswdPanelList">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <v:PasswordPanel />
+                            <v:PasswordPanel/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
 
                 </ItemsControl>
-
-                <!--<ContentControl
-                    x:Name="conCtrlPasswdPanel"
-                    VerticalAlignment="Top"
-                    HorizontalContentAlignment="Stretch" />-->
-
-
-
-                <!--<StackPanel Margin="5">
-                    <v:PasswordPanel
-                        x:Name="testPanel1"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel2"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel3"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel4"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel5"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel6"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel7"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel8"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                    <v:PasswordPanel
-                        x:Name="testPanel9"
-                        Margin="1"
-                        VerticalAlignment="Center" />
-                </StackPanel>-->
             </ScrollViewer>
 
             <!--  Footer Controls  -->

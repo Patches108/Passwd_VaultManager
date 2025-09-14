@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 
 namespace Passwd_VaultManager.Models
 {
@@ -12,30 +13,25 @@ namespace Passwd_VaultManager.Models
         private bool _passwdSet;
         private bool _statusOkay;
 
+        private Guid AppVaultGUID;  // To store class instance identifier.
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PasswdPanelVM"/> class with default values.
-        /// </summary>
-        /// <remarks>The constructor sets the <see cref="_appName"/>, <see cref="_password"/>, and <see
-        /// cref="_userName"/> properties to empty strings. Additionally, the <see cref="_userNameSet"/> and <see
-        /// cref="_passwdSet"/> flags are initialized to <see langword="false"/>.</remarks>
+        
         public AppVault() {
-            //_appName = String.Empty;
-            //_password = String.Empty;
-            //_userName = String.Empty;
-
-            //_userNameSet = false;
-            //_passwdSet = false;
+            AppVaultGUID = Guid.NewGuid();
         }
 
         /// <summary>
         /// Getters and setters
         /// </summary>
+        /// 
+        public Guid getAppVaultInstanceGuid { get { return AppVaultGUID; } }
+
         public string AppName {
             get => _appName;
             set { _appName = ValidateString(value, nameof(value)); OnPropertyChanged(); }
