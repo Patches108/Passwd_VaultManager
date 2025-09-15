@@ -19,17 +19,13 @@ namespace Passwd_VaultManager
         {
             InitializeComponent();
             DataContext = _vm;
-
-            //_vm.testLoad();
-
-            //ObservableCollection<AppVault> testList = _vm.GetAppVaults();
-
-            //foreach (var v in testList) {
-            //    itms_PasswdPanelList.Items.Add(v);
-            //}
         }
 
         private void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
+
+            // 
+            AppPaths.EnsureAppDataFolder();
+
             // 1. Get vault records from DB
 
             //1. DB sim.

@@ -22,17 +22,18 @@ namespace Passwd_VaultManager.Views
     /// </summary>
     public partial class PasswordPanel : UserControl
     {
+        PasswdPanelVM vm = new PasswdPanelVM();
+
         public PasswordPanel()
         {
             InitializeComponent();
-            PasswdPanelVM vm = new PasswdPanelVM();
             //vm.testLoad();
         }
 
         private void PasswdPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (DataContext is AppVault vault) {
                 Guid id = vault.getAppVaultInstanceGuid;
-                temporarilyStoreGuid(id);
+                vm.temporarilyStoreGuid(id);
                 //MessageBox.Show($"Clicked panel for {vault.AppName} with ID {id}");
                 // We use this GUID to find and edit the coorresponding panel in the edit form.
             }

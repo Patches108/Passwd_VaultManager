@@ -1,5 +1,6 @@
 ﻿using Passwd_VaultManager.Models;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.ViewModels
@@ -13,10 +14,18 @@ namespace Passwd_VaultManager.ViewModels
         // ICommands
         public ICommand EditSelectedCommand { get; }
         public ICommand DeleteSelectedCommand { get; }
+        public ICommand SelectCommand {  get; }
+
 
         public PasswdPanelVM() {
             EditSelectedCommand = new RelayCommand(_ => EditSelected(), _ => SelectedAppVault != null);
             DeleteSelectedCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedAppVault != null);
+            SelectCommand = new RelayCommand(param => OnSelect(param as AppVault), param => param is AppVault);
+        }
+
+        private void OnSelect(AppVault appVault) {
+            Guid id = appVault.getAppVaultInstanceGuid;
+            SelectedAppVault = appVault;
         }
 
         private void EditSelected() {
@@ -24,7 +33,11 @@ namespace Passwd_VaultManager.ViewModels
         }
 
         private void DeleteSelected() {
-            if (SelectedAppVault is null) return;
+            if (SelectedAppVault is null) {
+                // APPROPIATE ERROR MESSAGE and ERROR HANDLING.
+                return;
+            }
+
             AppVaults.Remove(SelectedAppVault);
             SelectedAppVault = AppVaults.FirstOrDefault();
         }
@@ -51,13 +64,5 @@ namespace Passwd_VaultManager.ViewModels
         }
 
         public string AppName => SelectedAppVault?.AppName ?? string.Empty;
-
-        public void testLoad() {
-            //AppVaults.Add(new AppVault { AppName = "Gmail", UserName = "TestUsername1", Password = "1234", IsPasswdSet = true, IsUserNameSet = true, IsStatusGood=true });
-            //AppVaults.Add(new AppVault { AppName = "someMail", UserName = "TestUsername2", Password = "1234", IsPasswdSet = true, IsUserNameSet = false, IsStatusGood = false });
-            //AppVaults.Add(new AppVault { AppName = "WorkMail", UserName = "TestUsername3", Password = "1234", IsPasswdSet = false, IsUserNameSet = true, IsStatusGood = true });
-
-            //SelectedAppVault = AppVaults[0];
-        }
     }
 }

@@ -18,7 +18,7 @@ namespace Passwd_VaultManager.Models
             }
         }
 
-        // Base app data directory: %APPDATA%\DreamRecorder
+        // Base app data directory: %APPDATA%\PasswordVaultManager
         public static string AppDataFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "PasswordVaultManager");
