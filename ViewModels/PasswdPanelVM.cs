@@ -1,13 +1,12 @@
 ﻿using Passwd_VaultManager.Models;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.ViewModels
 {
-    internal class PasswdPanelVM : ViewModelBase
+    public class PasswdPanelVM : ViewModelBase
     {
-        public ObservableCollection<AppVault> AppVaults { get; } = new();
+        public static ObservableCollection<AppVault> AppVaults { get; } = new();
 
         private Guid _tempGuid;
 
@@ -55,7 +54,7 @@ namespace Passwd_VaultManager.ViewModels
             }
         }
 
-        public ObservableCollection<AppVault> GetAppVaults() {
+        public static ObservableCollection<AppVault> GetAppVaults() {
             return AppVaults;
         }
 

@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Passwd_VaultManager.Models;
+using Passwd_VaultManager.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Passwd_VaultManager.Views
 {
@@ -19,9 +9,16 @@ namespace Passwd_VaultManager.Views
     /// </summary>
     public partial class EditWindow : Window
     {
-        public EditWindow()
+        private readonly EditWindowVM _vm = new();
+
+        public EditWindow(AppVault g)
         {
             InitializeComponent();
+            DataContext = _vm;
+
+            //_vm.AppName = g.AppName;
         }
+
+
     }
 }

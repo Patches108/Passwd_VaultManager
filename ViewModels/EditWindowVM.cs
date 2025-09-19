@@ -1,20 +1,49 @@
 ﻿using Passwd_VaultManager.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Passwd_VaultManager.Views;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.ViewModels
 {
     internal class EditWindowVM : ViewModelBase {
 
-        //public ICommand cmd1; // DO THESE UP PROPER LATER.
+        private string _appName = String.Empty;
+        private string _userName = String.Empty;
+        private string _appPasswd = String.Empty;
 
-        // FIGURE THIS OUT LATER...
+        private bool _isUserNameSet = false;
+        private bool _isPasswdSet = false;
+
+        private bool _editWin_ChangesMade = false;
+
         public EditWindowVM() {
-            //cmd1 = new RelayCommand(_ => ExecuteCMD1());
+            
         }
+
+        // GETTERS AND SETTERS
+        public string AppName {
+            get { return _appName; }
+            set { _appName = value; }
+        }
+
+        public string Username {
+            get { return _appName; }
+            set { _appName = value; }
+        }
+
+        public string Password {
+            get { return _appName; }
+            set { _appName = value; }
+        }
+
+        public bool UserNameSet {
+            get { return _isUserNameSet; }
+            set { _isUserNameSet = value; }
+        }
+
+        public bool PasswdSet {
+            get { return _isPasswdSet; }
+            set { _isPasswdSet = value; }
+        }
+
     }
 }
