@@ -3,6 +3,7 @@ using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.ViewModels;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Passwd_VaultManager
@@ -12,19 +13,15 @@ namespace Passwd_VaultManager
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        //private readonly PasswdPanelVM _vm = new();
         private readonly MainWindowVM _vm = new();
 
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = _vm;
-
             DataContext = _vm;
         }
 
-        private void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
+        private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
 
             // Startups...
             AppPaths.EnsureAppDataFolder();     // Make sure AppData folder exists
@@ -33,7 +30,8 @@ namespace Passwd_VaultManager
             // 1. Get vault records from DB
 
             //1. DB sim.
-            //ObservableCollection<AppVault> testList = _vm.GetAppVaults();
+            ObservableCollection<AppVault> vaults = await DatabaseHandler.GetVaults();
+
 
             //testList.Add(new AppVault { AppName = "Gmail", UserName = "TestUsername1", Password = "1234", IsPasswdSet = true, IsUserNameSet = true, IsStatusGood = true });
             //testList.Add(new AppVault { AppName = "someMail", UserName = "TestUsername2", Password = "1234", IsPasswdSet = true, IsUserNameSet = false, IsStatusGood = false });
@@ -44,9 +42,9 @@ namespace Passwd_VaultManager
 
 
             // 2. load them into the panel.
-            //foreach (var v in testList) {
-            //    itms_PasswdPanelList.Items.Add(v);
-            //}
+            foreach (var v in vaults) {
+                itms_PasswdPanelList.Items.Add(v);
+            }
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {

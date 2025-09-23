@@ -1,7 +1,9 @@
 ﻿using Passwd_VaultManager.Models;
 using System.Data.SQLite;
 using System.IO;
-using System.Windows;
+using System.Collections.ObjectModel;
+using System.Security.Cryptography;
+using System.Data.Common;
 
 namespace Passwd_VaultManager.Funcs {
     public static class DatabaseHandler {
@@ -37,6 +39,42 @@ namespace Passwd_VaultManager.Funcs {
 
                 //MessageBox.Show("DB created!");
             }
+        }
+
+        public static void WriteRecordToDatabase() {
+
+        }
+
+        public static void ReadRecordFromDatabase() {
+
+        }
+
+        public static void SearchDBByID(int id) {
+
+        }
+
+        public static async Task<ObservableCollection<AppVault>> GetVaults() {
+            ObservableCollection<AppVault> vaults = new ObservableCollection<AppVault>();   // List of vault to return
+
+            await using SQLiteConnection conn = new SQLiteConnection(_connectionString);
+            await conn.OpenAsync();
+
+            using var comm = conn.CreateCommand();
+            comm.CommandText = "SELECT DateCreated, AppName, UserName, Passwd, IsUserNameSet, IsPasswdSet FROM Vault";
+
+            await using DbDataReader reader = await comm.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync()) {
+                vaults.Add(new AppVault() {
+                    AppName = reader.GetString(0),
+                    UserName = reader.GetString(1),
+                    Password = reader.GetString(2),
+                    IsUserNameSet = reader.GetBoolean(3),       // Will it convert text to bool?
+                    IsPasswdSet = reader.GetBoolean(4)          // Will it convert text to bool?
+                });
+            }
+
+            return vaults;
         }
     }
 }
