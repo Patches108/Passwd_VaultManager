@@ -31,11 +31,11 @@
                     Height="26"
                     Content="Application/Website Name"
                     Style="{StaticResource LabelHeader}" />
-                <TextBlock
+                <TextBox
                     x:Name="txtAppName"
                     Width="300"
                     Height="25"
-                    Style="{StaticResource TextStyle}"
+                    Style="{StaticResource WhiteTextField}"
                     Text="{Binding AppName}" />
             </StackPanel>
 
@@ -47,30 +47,54 @@
                     Height="26"
                     Content="User Name"
                     Style="{StaticResource LabelHeader}" />
-                <TextBlock
+                <TextBox
                     x:Name="txtUserName"
                     Width="300"
                     Height="25"
-                    Style="{StaticResource TextStyle}"
+                    Style="{StaticResource WhiteTextField}"
                     Text="User Name" />
             </StackPanel>
 
             <!--  Password Controls  -->
             <StackPanel Grid.Row="2" Orientation="Vertical">
+
                 <Label
                     x:Name="lblPasswd"
                     Width="300"
                     Height="26"
                     Content="Passwd"
                     Style="{StaticResource LabelHeader}" />
-                <TextBlock
-                    x:Name="txtPasswd"
-                    Width="300"
-                    Height="25"
-                    Style="{StaticResource TextStyle}"
-                    Text="Passwd" />
 
+                <!--  Password and Copy to Clip button  -->
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        x:Name="txtPasswd"
+                        Grid.Column="0"
+                        Width="300"
+                        Height="25"
+                        Margin="40,0,0,0"
+                        Style="{StaticResource WhiteTextField}"
+                        Text="Passwd" />
+                    <Button
+                        x:Name="cmdCopyToClipboard"
+                        Grid.Column="1"
+                        Width="20"
+                        Height="20"
+                        Content="Copy"
+                        FontSize="10"
+                        Style="{StaticResource ControlButton}" />
+
+                    <!--  Add controls here for customising password (chars + bitrate)  -->
+
+                </Grid>
+
+
+                <Grid Margin="0,15,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
@@ -81,6 +105,7 @@
                         Grid.Column="0"
                         Width="150"
                         Height="25"
+                        Click="cmdGenPasswd_Click"
                         Content="Generate Password"
                         FontSize="13"
                         Style="{StaticResource ControlButton}" />
@@ -89,6 +114,7 @@
                         Grid.Column="1"
                         Width="150"
                         Height="25"
+                        Click="cmdManuallyEnterPasswd_Click"
                         Content="Manual Password"
                         FontSize="13"
                         Style="{StaticResource ControlButton}" />
@@ -105,19 +131,20 @@
                 </Grid.ColumnDefinitions>
 
                 <Button
-                    x:Name="cmdUpdateVault"
+                    x:Name="cmdCreateVault"
                     Grid.Column="0"
                     Width="120"
                     Height="35"
-                    Content="Update"
+                    Content="Create"
                     Style="{StaticResource ControlButton}" />
 
                 <Button
-                    x:Name="cmdClose"
+                    x:Name="cmdCancel"
                     Grid.Column="1"
                     Width="120"
                     Height="35"
-                    Content="Close"
+                    Click="cmdCancel_Click"
+                    Content="Cancel"
                     Style="{StaticResource ControlButton}" />
             </Grid>
         </Grid>

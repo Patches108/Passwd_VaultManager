@@ -19,5 +19,34 @@
         <Setter Property="FontSize" Value="12.5" />
     </Style>
 
+    <Style x:Key="WhiteTextField" TargetType="TextBox">
+        <Setter Property="Background" Value="WhiteSmoke" />
+        <Setter Property="FontFamily" Value="Courier New" />
+        <Setter Property="Foreground" Value="SlateGray" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <!--<ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Opacity" Value="0.6" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#FF27D644" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>-->
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--  MAKE STYLE FOR PASSWORD GEN TEXTBLOCKS  -->
 </ResourceDictionary>
