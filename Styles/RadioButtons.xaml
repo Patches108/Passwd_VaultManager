@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Name="DarkRadioButton" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="FontSize" Value="14" />
+        <!--  Hover + Click animations.  -->
+    </Style>
+
+</ResourceDictionary>

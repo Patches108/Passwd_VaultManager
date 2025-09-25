@@ -16,10 +16,10 @@
     <Border CornerRadius="8" Style="{StaticResource FormStyle}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="108*" />
+                <RowDefinition Height="108*" />
+                <RowDefinition Height="125*" />
+                <RowDefinition Height="91*" />
             </Grid.RowDefinitions>
 
 
@@ -35,12 +35,17 @@
                     x:Name="txtAppName"
                     Width="300"
                     Height="25"
+                    GotFocus="txtAppName_GotFocus"
+                    LostFocus="txtAppName_LostFocus"
                     Style="{StaticResource WhiteTextField}"
-                    Text="{Binding AppName}" />
+                    Text="Website/Application Name" />
             </StackPanel>
 
             <!--  User Name  -->
-            <StackPanel Grid.Row="1" Orientation="Vertical">
+            <StackPanel
+                Grid.RowSpan="2"
+                Margin="0,108,0,0"
+                Orientation="Vertical">
                 <Label
                     x:Name="lblUserName"
                     Width="300"
@@ -51,12 +56,18 @@
                     x:Name="txtUserName"
                     Width="300"
                     Height="25"
+                    GotFocus="txtUserName_GotFocus"
+                    LostFocus="txtUserName_LostFocus"
                     Style="{StaticResource WhiteTextField}"
                     Text="User Name" />
             </StackPanel>
 
             <!--  Password Controls  -->
-            <StackPanel Grid.Row="2" Orientation="Vertical">
+            <StackPanel
+                Grid.Row="1"
+                Grid.RowSpan="2"
+                Margin="0,108,0,0"
+                Orientation="Vertical">
 
                 <Label
                     x:Name="lblPasswd"
@@ -67,6 +78,10 @@
 
                 <!--  Password and Copy to Clip button  -->
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="30" />
@@ -74,20 +89,44 @@
 
                     <TextBox
                         x:Name="txtPasswd"
+                        Grid.Row="0"
                         Grid.Column="0"
                         Width="300"
                         Height="25"
                         Margin="40,0,0,0"
+                        GotFocus="txtPasswd_GotFocus"
+                        LostFocus="txtPasswd_LostFocus"
                         Style="{StaticResource WhiteTextField}"
                         Text="Passwd" />
                     <Button
                         x:Name="cmdCopyToClipboard"
+                        Grid.Row="0"
                         Grid.Column="1"
                         Width="20"
                         Height="20"
                         Content="Copy"
                         FontSize="10"
                         Style="{StaticResource ControlButton}" />
+
+                    <StackPanel
+                        Grid.Row="1"
+                        Margin="43,5,0,0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal">
+                        <RadioButton
+                            Margin="0,0,10,0"
+                            Click="rad_128_Click"
+                            Content="128"
+                            GroupName="BitRate"
+                            IsChecked="True" />
+                        <RadioButton
+                            Click="rad_256_Click"
+                            Content="256"
+                            GroupName="BitRate" />
+
+                        <!--  Controls for string length?  -->
+
+                    </StackPanel>
 
                     <!--  Add controls here for customising password (chars + bitrate)  -->
 
@@ -124,7 +163,10 @@
             </StackPanel>
 
             <!--  Footer Buttons  -->
-            <Grid Grid.Row="3">
+            <Grid
+                Grid.Row="2"
+                Grid.RowSpan="2"
+                Margin="0,125,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -135,6 +177,7 @@
                     Grid.Column="0"
                     Width="120"
                     Height="35"
+                    Click="cmdCreateVault_Click"
                     Content="Create"
                     Style="{StaticResource ControlButton}" />
 
