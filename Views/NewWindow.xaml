@@ -29,7 +29,7 @@
                     x:Name="lblAppName"
                     Width="300"
                     Height="26"
-                    Content="Application/Website Name"
+                    Content="Application/Website Name:"
                     Style="{StaticResource LabelHeader}" />
                 <TextBox
                     x:Name="txtAppName"
@@ -50,7 +50,7 @@
                     x:Name="lblUserName"
                     Width="300"
                     Height="26"
-                    Content="User Name"
+                    Content="User Name:"
                     Style="{StaticResource LabelHeader}" />
                 <TextBox
                     x:Name="txtUserName"
@@ -69,12 +69,30 @@
                 Margin="0,108,0,0"
                 Orientation="Vertical">
 
-                <Label
-                    x:Name="lblPasswd"
-                    Width="300"
-                    Height="26"
-                    Content="Passwd"
-                    Style="{StaticResource LabelHeader}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+                        x:Name="lblPasswd"
+                        Grid.Column="0"
+                        Width="300"
+                        Height="26"
+                        Margin="40,0,0,0"
+                        Content="Passwd:"
+                        Style="{StaticResource LabelHeader}" />
+                    <Label
+                        x:Name="lblPasswdStatus"
+                        Grid.Column="1"
+                        Width="300"
+                        Height="26"
+                        Content="{Binding PasswdStatus}"
+                        Style="{StaticResource LabelHeader}" />
+
+                </Grid>
+
 
                 <!--  Password and Copy to Clip button  -->
                 <Grid>
@@ -113,16 +131,27 @@
                         Margin="43,5,0,0"
                         HorizontalAlignment="Left"
                         Orientation="Horizontal">
-                        <RadioButton
+                        <TextBlock
+                            x:Name="lblBitRateLabel"
                             Margin="0,0,10,0"
+                            Style="{StaticResource TextStyle}"
+                            Text="Bit Rate:" />
+                        <RadioButton
+                            Margin="0,2,10,0"
                             Click="rad_128_Click"
                             Content="128"
-                            GroupName="BitRate"
-                            IsChecked="True" />
+                            GroupName="BitRate" />
                         <RadioButton
+                            Margin="0,2,10,0"
+                            Click="rad_192_Click"
+                            Content="192"
+                            GroupName="BitRate" />
+                        <RadioButton
+                            Margin="0,2,10,0"
                             Click="rad_256_Click"
                             Content="256"
-                            GroupName="BitRate" />
+                            GroupName="BitRate"
+                            IsChecked="True" />
 
                         <!--  Controls for string length?  -->
 

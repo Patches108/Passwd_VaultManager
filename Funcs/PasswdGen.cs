@@ -2,35 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Passwd_VaultManager.Funcs {
     internal class PasswdGen {
-        // Ambiguity-reduced sets (omit 0/O and 1/l/I to help users)
+        // Ambiguity-reduced sets
         private static readonly char[] Upper = "ABCDEFGHJKLMNPQRSTUVWXYZ".ToCharArray();
-        private static readonly char[] Lower = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+        private static readonly char[] Lower = "abcdefghijklmnopqrstuvwxyz".ToCharArray(); // includes 'l' – keep or remove as you prefer
         private static readonly char[] Digits = "23456789".ToCharArray();                  // no 0/1
         private static readonly char[] Symbols = "!@#$%^&*()-_=+[]{};:,.?/|~".ToCharArray();
 
         private static readonly char[] All = Upper.Concat(Lower).Concat(Digits).Concat(Symbols).ToArray();
 
-        public PasswdGen() { }
-
         /// <summary>
-        /// Generate a cryptographically-strong password. The final length will be the
-        /// greater of 'len' and the minimum needed to satisfy 'bitRate' bits of entropy
-        /// given the chosen alphabet.
+        /// Generate a cryptographically-strong password that meets (at least) the requested entropy in bits.
         /// </summary>
-        /// <param name="bitRate">Target entropy in bits (e.g., 80, 128, 192, 256).</param>
-        /// <param name="len">Preferred minimum length.</param>
-        public string GenPassword(int bitRate, int len) {
-            if (bitRate <= 0) throw new ArgumentOutOfRangeException(nameof(bitRate));
-            if (len <= 0) throw new ArgumentOutOfRangeException(nameof(len));
+        /// <param name="bitRate">Target entropy in bits (e.g. 128, 192, 256). If null, defaults to 128.</param>
+        public string GenPassword(int? bitRate = null) {
+            int targetBits = bitRate ?? 128;
+            if (targetBits <= 0) throw new ArgumentOutOfRangeException(nameof(bitRate));
 
-            int alphabetSize = All.Length;                             // ~ (24+23+8+…)
-            double bitsPerChar = Math.Log(alphabetSize, 2.0);
-            int minLenForBits = (int)Math.Ceiling(bitRate / bitsPerChar);
-            int finalLen = Math.Max(len, minLenForBits);
+            // Calculate required length from alphabet size
+            int alphabetSize = All.Length;                  // with sets above this is 78
+            double bitsPerChar = Math.Log(alphabetSize, 2); // ~6.27 for 78
+            int requiredLen = (int)Math.Ceiling(targetBits / bitsPerChar);
+
+            // Keep at least 4 so we can place one of each category nicely
+            int finalLen = Math.Max(4, requiredLen);
 
             var pwd = new char[finalLen];
             int i = 0;
@@ -43,18 +40,18 @@ namespace Passwd_VaultManager.Funcs {
                 pwd[i++] = Pick(Symbols);
             }
 
-            // Fill the rest from the full set
+            // Fill the rest uniformly from the full set
             for (; i < finalLen; i++)
                 pwd[i] = Pick(All);
 
-            // Shuffle to remove category position bias
+            // Remove placement bias
             Shuffle(pwd);
 
             return new string(pwd);
         }
 
         private static char Pick(IReadOnlyList<char> set) {
-            int idx = RandomNumberGenerator.GetInt32(set.Count); // uniform, cryptographic
+            int idx = RandomNumberGenerator.GetInt32(set.Count);
             return set[idx];
         }
 

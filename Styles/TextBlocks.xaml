@@ -23,6 +23,8 @@
         <Setter Property="Background" Value="WhiteSmoke" />
         <Setter Property="FontFamily" Value="Courier New" />
         <Setter Property="Foreground" Value="SlateGray" />
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
