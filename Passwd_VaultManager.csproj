@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="Images\Bad.png" />
     <None Remove="Images\Check.png" />
+    <None Remove="Images\CopyToClipboard.png" />
     <None Remove="Images\Delete.png" />
     <None Remove="Images\Edit.png" />
     <None Remove="Images\New.png" />
@@ -30,6 +31,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Check.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\CopyToClipboard.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Delete.png">

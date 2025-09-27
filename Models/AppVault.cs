@@ -5,6 +5,7 @@ using System.Security.Policy;
 namespace Passwd_VaultManager.Models
 {
     public class AppVault : INotifyPropertyChanged {
+        
         private string _appName;
         private string _password;
         private string _userName;
@@ -13,7 +14,7 @@ namespace Passwd_VaultManager.Models
         private bool _passwdSet;
         private bool _statusOkay;
 
-        private Guid AppVaultGUID;  // To store class instance identifier.
+        private readonly Guid AppVaultGUID;  // To store class instance identifier.
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -34,32 +35,57 @@ namespace Passwd_VaultManager.Models
 
         public string AppName {
             get => _appName;
-            set { _appName = ValidateString(value, nameof(value)); OnPropertyChanged(); }
+            set {
+                if (_appName == value) return;
+                // Add try catches with help window later...
+                _appName = ValidateString(value, nameof(value)); 
+                OnPropertyChanged(); 
+            }
         }
 
         public string Password {
             get => _password;
-            set { _password = ValidateString(value, nameof(value)); OnPropertyChanged(); }
+            set {
+                if (_password == value) return;
+                _password = ValidateString(value, nameof(value)); 
+                OnPropertyChanged(); 
+            }
         }
 
         public string UserName {
             get => _userName;
-            set { _userName = ValidateString(value, nameof(value)); OnPropertyChanged(); }
+            set {
+                if (_userName == value) return;
+                _userName = ValidateString(value, nameof(value)); 
+                OnPropertyChanged(); 
+            }
         }
 
         public bool IsUserNameSet {
             get => _userNameSet;
-            set { _userNameSet = value; OnPropertyChanged(); }
+            set {
+                if (_userNameSet != value) return;
+                _userNameSet = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public bool IsPasswdSet {
             get => _passwdSet;
-            set { _passwdSet = value; OnPropertyChanged(); }
+            set {
+                if (_passwdSet == value) return;
+                _passwdSet = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public bool IsStatusGood {
             get => _statusOkay;
-            set { _statusOkay = value; OnPropertyChanged(); }
+            set {
+                if (_statusOkay == value) return;
+                _statusOkay = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>

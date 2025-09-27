@@ -14,6 +14,15 @@ namespace Passwd_VaultManager.ViewModels {
 
         private int _bitRate = 128;  // secure default
         private int _length = 21;   // reasonable default
+        private string _sliderValue = String.Empty;
+
+        public string SliderValue { get => _sliderValue;
+            set {
+                if (value == _sliderValue) return;
+                _sliderValue = value;
+                OnPropertyChanged();
+            }
+        }
 
         public int BitRate {
             get => _bitRate;
