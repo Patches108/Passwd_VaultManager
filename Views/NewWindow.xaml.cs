@@ -1,7 +1,10 @@
-﻿using Passwd_VaultManager.ViewModels;
-using System.Diagnostics;
+﻿using Passwd_VaultManager.Models;
+using Passwd_VaultManager.ViewModels;
+using System.Text;
 using System.Windows;
-using static Passwd_VaultManager.Funcs.PasswdGen;
+using System.Windows.Controls;
+using Passwd_VaultManager.Funcs;
+//using static Passwd_VaultManager.Funcs.PasswdGen;
 
 namespace Passwd_VaultManager.Views {
     /// <summary>
@@ -13,8 +16,14 @@ namespace Passwd_VaultManager.Views {
         
         private int _bitRate = 256;
         private int _len = 41;
+        private int _targetLength = 0;        // current slider length (0 = no limit)
 
-        private string _passwdWhole = String.Empty;
+        private bool _updating;
+        
+        private string _passwdWhole = String.Empty;     // the generated full password
+        private string _excludedChars = String.Empty;   // current exclusions from textbox
+        
+
 
         public NewWindow() {
             InitializeComponent();
@@ -28,15 +37,21 @@ namespace Passwd_VaultManager.Views {
 
         private void cmdManuallyEnterPasswd_Click(object sender, RoutedEventArgs e) {
             sldPasswdLength.IsEnabled = false;
+
             lblPasswdStatus.Visibility = Visibility.Hidden;
+            
             txtPasswd.Text = String.Empty;
             txtPasswd.Focus();
         }
 
         private void cmdGenPasswd_Click(object sender, RoutedEventArgs e) {
+            
+            txtCharactersToExclude.IsEnabled = true;
             sldPasswdLength.IsEnabled = true;
+            
             var gen = new Passwd_VaultManager.Funcs.PasswdGen();
             string pw = gen.GenPassword(bitRate: _bitRate); // returns at least 21 chars here
+            
             txtPasswd.Text = pw;
 
             _vm.BitRate = _bitRate;
@@ -44,12 +59,18 @@ namespace Passwd_VaultManager.Views {
             switch(_bitRate) {
                 case 128:
                     _len = 21;
+                    sldPasswdLength.Value = (double)21;
+                    sldPasswdLength.IsEnabled = false;
                     break;
                 case 192:
                     _len = 31;
+                    sldPasswdLength.IsEnabled = true;
+                    sldPasswdLength.Value = (double)31;
                     break;
                 case 256:
                     _len = 41;
+                    sldPasswdLength.IsEnabled = true;
+                    sldPasswdLength.Value = (double)41;
                     break;
             }
 
@@ -60,7 +81,7 @@ namespace Passwd_VaultManager.Views {
             lblPasswdStatus.Visibility = Visibility.Visible;
         }
 
-        private void cmdCreateVault_Click(object sender, RoutedEventArgs e) {
+        private async Task cmdCreateVault_ClickAsync(object sender, RoutedEventArgs e) {
             // 1. Checks for and disallows empty controls.
             if(String.IsNullOrWhiteSpace(txtAppName.Text) || String.IsNullOrWhiteSpace(txtPasswd.Text) || String.IsNullOrWhiteSpace(txtUserName.Text)) {
                 // Display error screen
@@ -68,7 +89,18 @@ namespace Passwd_VaultManager.Views {
             }
 
             // 2. Creates vault.
+            AppVault vault = new AppVault();
+            vault.AppName = txtAppName.Text;
+            vault.UserName = txtUserName.Text;
+            vault.Password = txtPasswd.Text;
+            
+            vault.IsPasswdSet = true;
+            vault.IsUserNameSet = true;
+            vault.IsStatusGood = true;
+
             // 3. Saves it to DB.
+            await DatabaseHandler.WriteRecordToDatabaseAsync(vault);
+
         }
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
@@ -141,16 +173,52 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            if (_updating) return;
 
-            if (String.IsNullOrWhiteSpace(txtPasswd.Text)) return;
+            _targetLength = (int)Math.Round(e.NewValue);
+            _vm.SliderValue = _targetLength.ToString();
 
-            int roundedValue = (int)sldPasswdLength.Value;
-            _vm.SliderValue = roundedValue.ToString();
-
-            //txtPasswd.Text = _passwdWhole[..roundedValue];
-            if(_passwdWhole.Length > 0 && roundedValue <= _passwdWhole.Length)
-                txtPasswd.Text = _passwdWhole[..roundedValue];
+            UpdateDisplayedPassword();
         }
+
+        private void UpdateDisplayedPassword() {
+            _updating = true;
+            try {
+                // 1) Start from the full generated password
+                string s = _passwdWhole ?? string.Empty;
+
+                // 2) Apply exclusions
+                if (!string.IsNullOrEmpty(_excludedChars)) {
+                    var exclude = new HashSet<char>(_excludedChars);
+                    var filtered = new StringBuilder(s.Length);
+                    foreach (char c in s)
+                        if (!exclude.Contains(c))
+                            filtered.Append(c);
+                    s = filtered.ToString();
+                }
+
+                // 3) Apply length limit
+                if (_targetLength > 0 && s.Length > _targetLength)
+                    s = s.Substring(0, _targetLength);
+
+                // 4) Ignore placeholder “Passwd”
+                if (!string.Equals(txtPasswd.Text, "Passwd", StringComparison.Ordinal))
+                    txtPasswd.Text = s;
+            } finally {
+                _updating = false;
+            }
+        }
+        //private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+
+        //    if (String.IsNullOrWhiteSpace(txtPasswd.Text)) return;
+
+        //    int roundedValue = (int)sldPasswdLength.Value;
+        //    _vm.SliderValue = roundedValue.ToString();
+
+        //    //txtPasswd.Text = _passwdWhole[..roundedValue];
+        //    if(_passwdWhole.Length > 0 && roundedValue <= _passwdWhole.Length)
+        //        txtPasswd.Text = _passwdWhole[..roundedValue];
+        //}
 
         private void txtCharactersToExclude_GotFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtCharactersToExclude.Text) || txtCharactersToExclude.Text.Equals("Chars to Exclude"))
@@ -160,6 +228,66 @@ namespace Passwd_VaultManager.Views {
         private void txtCharactersToExclude_LostFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtCharactersToExclude.Text))
                 txtCharactersToExclude.Text = "Chars to Exclude";
+        }
+
+        private void txtCharactersToExclude_TextChanged(object sender, TextChangedEventArgs e) {
+            if (_updating) return;
+
+            _excludedChars = txtCharactersToExclude.Text ?? string.Empty;
+
+            // Ignore placeholder text
+            if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
+                _excludedChars = string.Empty;
+
+            UpdateDisplayedPassword();
+        }
+
+        //private void txtCharactersToExclude_TextChanged(object sender, TextChangedEventArgs e) {
+        //    if (_updating) return;
+
+        //    if (!string.IsNullOrWhiteSpace(txtPasswd.Text) &&
+        //        txtCharactersToExclude.Text.Trim() != "Chars to Exclude") {
+        //        _updating = true;
+        //        try {
+        //            if (!string.IsNullOrWhiteSpace(txtPasswd.Text) && !txtPasswd.Text.Trim().Equals("Passwd", StringComparison.Ordinal)) {
+        //                var excluded = txtCharactersToExclude.Text;
+        //                var s = _passwdWhole;
+        //                txtPasswd.Text = new string(s.Where(c => !excluded.Contains(c)).ToArray());
+        //            }
+        //        } finally {
+        //            _updating = false;
+        //        }
+        //    }
+        //}
+
+        private void txtPasswd_TextChanged(object sender, TextChangedEventArgs e) {
+
+            if (txtPasswd.Text.Trim().Length > 0)
+                txtCharactersToExclude?.IsEnabled = true;
+
+            if (txtPasswd.Text.Trim().Length >= 16)
+                sldPasswdLength?.IsEnabled = true;
+        }
+
+        private async void cmdCreateVault_Click(object sender, RoutedEventArgs e) {
+            if(!String.IsNullOrWhiteSpace(txtAppName.Text.Trim()) &&
+                !String.IsNullOrWhiteSpace(txtPasswd.Text.Trim()) &&
+                !String.IsNullOrWhiteSpace(txtUserName.Text.Trim())) {
+
+                AppVault v = new AppVault();
+                v.AppName = txtAppName.Text.Trim();
+                v.UserName = txtUserName.Text.Trim();
+                v.Password = txtPasswd.Text.Trim();
+
+                try {
+                    long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
+                    MessageBox.Show("Vault entry created successfully.");
+                } catch (Exception ex) {
+                    MessageBox.Show($"Failed to create vault entry: {ex.Message}");
+                }
+
+
+            }
         }
     }
 }

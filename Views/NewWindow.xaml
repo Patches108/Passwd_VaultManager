@@ -120,7 +120,8 @@
                         GotFocus="txtPasswd_GotFocus"
                         LostFocus="txtPasswd_LostFocus"
                         Style="{StaticResource WhiteTextField}"
-                        Text="Passwd" />
+                        Text="Passwd" 
+                        TextChanged="txtPasswd_TextChanged"/>
                     <Button
                         x:Name="cmdCopyToClipboard"
                         Grid.Row="0"
@@ -176,12 +177,14 @@
                         <TextBox
                             x:Name="txtCharactersToExclude"
                             Grid.Column="0"
+                            IsEnabled="False"
                             Width="125"
                             Height="23"
                             Margin="5,0,0,0"
+                            Style="{StaticResource WhiteTextField}"
                             GotFocus="txtCharactersToExclude_GotFocus"
                             LostFocus="txtCharactersToExclude_LostFocus"
-                            Text="Chars to Exclude" />
+                            Text="Chars to Exclude" TextChanged="txtCharactersToExclude_TextChanged" />
 
                         <!--  Controls for string length  -->
                         <StackPanel
@@ -190,6 +193,7 @@
                             Orientation="Horizontal">
                             <Slider
                                 x:Name="sldPasswdLength"
+                                IsEnabled="False"
                                 Width="105"
                                 Margin="0,0,0,0"
                                 LargeChange="6"
@@ -224,7 +228,7 @@
                         Click="cmdGenPasswd_Click"
                         Content="Generate Password"
                         FontSize="13"
-                        Style="{StaticResource ControlButton}" />
+                        Style="{StaticResource ControlButton}" Margin="20,0,19,0" VerticalAlignment="Top" />
                     <Button
                         x:Name="cmdManuallyEnterPasswd"
                         Grid.Column="1"

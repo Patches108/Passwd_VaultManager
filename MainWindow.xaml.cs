@@ -23,10 +23,6 @@ namespace Passwd_VaultManager
 
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
 
-            // Startups...
-            AppPaths.EnsureAppDataFolder();     // Make sure AppData folder exists
-            DatabaseHandler.initDatabase();     // Ensure Database exists, if not, create it.
-
             // 1. Get vault records from DB
 
             //1. DB sim.

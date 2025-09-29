@@ -1,4 +1,1 @@
-﻿1. Fill buttons on left panel. (New/Edit/Delete/...MORE)
-2. Make side panels buttons bigger font, make space by shortening passwd panel a little.
-3. Button markups (side panels) (Ordinary) --> make them better later
-4. make scrollbar style.
+﻿1. if Exclude chars, then readjust length slider, it adjusts wrong value.
