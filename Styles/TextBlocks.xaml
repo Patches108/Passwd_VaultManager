@@ -51,24 +51,24 @@
     </Style>
 
     <Style x:Key="OperationTextBox" TargetType="TextBox">
-        <Setter Property="Background" Value="#66a4b0"/>
-        <Setter Property="FontFamily" Value="Arial"/>
-        <Setter Property="Foreground" Value="WhiteSmoke"/>
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="BorderBrush" Value="Gray"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="#66a4b0" />
+        <Setter Property="FontFamily" Value="Arial" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
                     <Border
-                    x:Name="border"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="6"
-                    SnapsToDevicePixels="True">
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

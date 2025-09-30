@@ -224,11 +224,10 @@
                         x:Name="cmdGenPasswd"
                         Grid.Column="0"
                         Width="150"
-                        Height="25"
                         Click="cmdGenPasswd_Click"
                         Content="Generate Password"
                         FontSize="13"
-                        Style="{StaticResource ControlButton}" Margin="20,0,19,0" VerticalAlignment="Top" />
+                        Style="{StaticResource ControlButton}" Margin="20,0,19,0" />
                     <Button
                         x:Name="cmdManuallyEnterPasswd"
                         Grid.Column="1"
