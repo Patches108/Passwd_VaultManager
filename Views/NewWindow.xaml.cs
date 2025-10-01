@@ -22,12 +22,15 @@ namespace Passwd_VaultManager.Views {
         
         private string _passwdWhole = String.Empty;     // the generated full password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
-        
 
+        private Func<Task> _refreshAction;
 
-        public NewWindow() {
+        public NewWindow(Func<Task> _refreshAction) {
             InitializeComponent();
             DataContext = _vm;
+
+            this._refreshAction = _refreshAction;
+
             lblPasswdStatus.Visibility = Visibility.Hidden;
         }
 
@@ -80,27 +83,29 @@ namespace Passwd_VaultManager.Views {
         }
 
 
-        private async Task cmdCreateVault_ClickAsync(object sender, RoutedEventArgs e) {
-            // 1. Checks for and disallows empty controls.
-            if(String.IsNullOrWhiteSpace(txtAppName.Text) || String.IsNullOrWhiteSpace(txtPasswd.Text) || String.IsNullOrWhiteSpace(txtUserName.Text)) {
-                // Display error screen
-                return;
-            }
+        //private async Task cmdCreateVault_ClickAsync(object sender, RoutedEventArgs e) {
+        //    // 1. Checks for and disallows empty controls.
+        //    if(String.IsNullOrWhiteSpace(txtAppName.Text) || String.IsNullOrWhiteSpace(txtPasswd.Text) || String.IsNullOrWhiteSpace(txtUserName.Text)) {
+        //        // Display error screen
+        //        return;
+        //    }
 
-            // 2. Creates vault.
-            AppVault vault = new AppVault();
-            vault.AppName = txtAppName.Text;
-            vault.UserName = txtUserName.Text;
-            vault.Password = txtPasswd.Text;
+        //    // 2. Creates vault.
+        //    AppVault vault = new AppVault();
+        //    vault.AppName = txtAppName.Text;
+        //    vault.UserName = txtUserName.Text;
+        //    vault.Password = txtPasswd.Text;
             
-            vault.IsPasswdSet = true;
-            vault.IsUserNameSet = true;
-            vault.IsStatusGood = true;
+        //    vault.IsPasswdSet = true;
+        //    vault.IsUserNameSet = true;
+        //    vault.IsStatusGood = true;
 
-            // 3. Saves it to DB.
-            await DatabaseHandler.WriteRecordToDatabaseAsync(vault);
+        //    // 3. Saves it to DB.
+        //    await DatabaseHandler.WriteRecordToDatabaseAsync(vault);
 
-        }
+        //    _refreshAction();
+
+        //}
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
             _bitRate = 128;
@@ -254,7 +259,10 @@ namespace Passwd_VaultManager.Views {
 
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
+                    //_vm.TriggerMainWinLoadVaults();
                     MessageBox.Show("Vault entry created successfully.");
+
+                    _refreshAction();
                 } catch (Exception ex) {
                     MessageBox.Show($"Failed to create vault entry: {ex.Message}");
                 }

@@ -5,11 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace Passwd_VaultManager.ViewModels {
     internal sealed class NewWindowVM : ViewModelBase, INotifyDataErrorInfo {
-        
+
         private const int MinLength = 21;
         private const int MaxLength = 41;
 
-        // if you keep your PasswdGen alphabet near ~78 chars:
         private const double BitsPerChar = 6.27; // log2(78) ≈ 6.27 (recompute if alphabet changes)
 
         private int _bitRate = 128;  // secure default

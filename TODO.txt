@@ -1,1 +1,2 @@
-﻿1. if Exclude chars, then readjust length slider, it adjusts wrong value.
+﻿1. click on selected vault from MainWindow highlights it.
+2. Delete function.

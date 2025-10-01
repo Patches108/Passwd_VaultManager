@@ -15,7 +15,6 @@ namespace Passwd_VaultManager.ViewModels
         public ICommand DeleteSelectedCommand { get; }
         public ICommand SelectCommand {  get; }
 
-
         public PasswdPanelVM() {
             EditSelectedCommand = new RelayCommand(_ => EditSelected(), _ => SelectedAppVault != null);
             DeleteSelectedCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedAppVault != null);
@@ -25,7 +24,12 @@ namespace Passwd_VaultManager.ViewModels
         private void OnSelect(AppVault appVault) {
             Guid id = appVault.getAppVaultInstanceGuid;
             SelectedAppVault = appVault;
+
+            // Highlight control
+            HightLightPane = true;
         }
+
+        public bool HightLightPane { get; set; }
 
         private void EditSelected() {
             // open an editor dialog, or toggle an edit mode, etc.

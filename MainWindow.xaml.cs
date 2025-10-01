@@ -3,6 +3,7 @@ using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.ViewModels;
+using Passwd_VaultManager.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -14,33 +15,15 @@ namespace Passwd_VaultManager
     public partial class MainWindow : Window
     {
         private readonly MainWindowVM _vm = new();
-
+                
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = _vm;
-        }
+            DataContext = _vm;            
+        }        
 
-        private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
+        private void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
 
-            // 1. Get vault records from DB
-
-            //1. DB sim.
-            ObservableCollection<AppVault> vaults = await DatabaseHandler.GetVaults();
-
-
-            //testList.Add(new AppVault { AppName = "Gmail", UserName = "TestUsername1", Password = "1234", IsPasswdSet = true, IsUserNameSet = true, IsStatusGood = true });
-            //testList.Add(new AppVault { AppName = "someMail", UserName = "TestUsername2", Password = "1234", IsPasswdSet = true, IsUserNameSet = false, IsStatusGood = false });
-            //testList.Add(new AppVault { AppName = "WorkMail", UserName = "TestUsername3", Password = "1234", IsPasswdSet = false, IsUserNameSet = true, IsStatusGood = true });
-
-            //_vm.SelectedAppVault = testList[0];
-
-
-
-            // 2. load them into the panel.
-            foreach (var v in vaults) {
-                itms_PasswdPanelList.Items.Add(v);
-            }
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {
@@ -97,6 +80,14 @@ namespace Passwd_VaultManager
                 System.Diagnostics.Debug.WriteLine("TrayTipShown: " + Settings.Default.TrayTipShown);
 
             }
+        }
+
+        private void cmd_OpenNewVaultWindow_Click(object sender, RoutedEventArgs e) {
+
+            // pass in _refreshAction
+            //var shared = (NewWindowVM)Resources["NewWindowVM"];
+            //var win = new NewWindow { DataContext = shared }; // use SAME instance
+            //win.Show();
         }
     }
 }
