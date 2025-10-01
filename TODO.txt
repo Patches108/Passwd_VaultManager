@@ -1,2 +1,4 @@
 ﻿1. click on selected vault from MainWindow highlights it.
 2. Delete function.
+3. Load vaults on startup
+4. Why border not setting for panel?

@@ -16,18 +16,18 @@
             </DataTrigger>
 
 
-            <Trigger Property="IsMouseOver" Value="True">
+            <!--<Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
 
-                            <!--  Background Panel Animation  -->
+                            --><!--  Background Panel Animation  --><!--
                             <ColorAnimation
                                 Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                 To="#FF3b3a3a"
                                 Duration="0:0:0.25" />
 
-                            <!--  Border Animation  -->
+                            --><!--  Border Animation  --><!--
                             <ColorAnimation
                                 Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
                                 To="#FF27d644"
@@ -40,13 +40,13 @@
                     <BeginStoryboard>
                         <Storyboard>
 
-                            <!--  Background Panel Animation  -->
+                            --><!--  Background Panel Animation  --><!--
                             <ColorAnimation
                                 Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                 To="#FF2B2B2B"
                                 Duration="0:0:0.25" />
 
-                            <!--  Border Animation  -->
+                            --><!--  Border Animation  --><!--
                             <ColorAnimation
                                 Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
                                 To="#FF1A832B"
@@ -55,7 +55,7 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
-            </Trigger>
+            </Trigger>-->
         </Style.Triggers>
     </Style>
 

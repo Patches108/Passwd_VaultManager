@@ -22,15 +22,14 @@ namespace Passwd_VaultManager
             DataContext = _vm;            
         }        
 
-        private void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
-
+        private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
+            await _vm.RefreshVaultsAsync();
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {
             CloseWindowHandler();   // Call handler to minimise to system tray.
         }
-
-        
+                
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 

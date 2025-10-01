@@ -27,7 +27,9 @@ namespace Passwd_VaultManager.Views
         public PasswordPanel()
         {
             InitializeComponent();
-            //vm.testLoad();
+
+            vm.PanelBorderBrush = new BrushConverter().ConvertFrom("#27D644") as Brush;
+            vm.PanelBorderThickness = new Thickness(3);
         }
 
         private void PasswdPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

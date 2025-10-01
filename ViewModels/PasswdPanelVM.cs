@@ -1,6 +1,8 @@
 ﻿using Passwd_VaultManager.Models;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Passwd_VaultManager.ViewModels
 {
@@ -8,6 +10,9 @@ namespace Passwd_VaultManager.ViewModels
     {
         public static ObservableCollection<AppVault> AppVaults { get; } = new();
 
+        private Brush _borderBrush = Brushes.Transparent;
+        private Thickness _borderThickness = new Thickness(0);
+        
         private Guid _tempGuid;
 
         // ICommands
@@ -19,6 +24,16 @@ namespace Passwd_VaultManager.ViewModels
             EditSelectedCommand = new RelayCommand(_ => EditSelected(), _ => SelectedAppVault != null);
             DeleteSelectedCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedAppVault != null);
             SelectCommand = new RelayCommand(param => OnSelect(param as AppVault), param => param is AppVault);
+        }
+
+        public Brush PanelBorderBrush {
+            get => _borderBrush;
+            set { _borderBrush = value; OnPropertyChanged(); }
+        }
+
+        public Thickness PanelBorderThickness {
+            get => _borderThickness;
+            set { _borderThickness = value; OnPropertyChanged(); }
         }
 
         private void OnSelect(AppVault appVault) {
