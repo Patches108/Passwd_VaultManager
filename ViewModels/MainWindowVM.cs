@@ -4,18 +4,15 @@ using Passwd_VaultManager.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using static Passwd_VaultManager.MainWindow;
+//using static Passwd_VaultManager.MainWindow;
 
 namespace Passwd_VaultManager.ViewModels
 {
-
-    //public interface IMainRefreshVaults {
-    //    void RefreshVaults();
-    //}
-
-    internal class MainWindowVM : ViewModelBase {
+    internal sealed class MainWindowVM : ViewModelBase {
 
         private readonly Func<Task> _refreshAction;
+
+        private AppVault? _selectedAppVault;
 
         public ICommand EditVaultEntryCommand { get; }
         public ICommand NewVaultEntryCommand { get; }
@@ -29,12 +26,33 @@ namespace Passwd_VaultManager.ViewModels
 
             EditVaultEntryCommand = new RelayCommand(param => OpenEditWindow((AppVault)param));
             NewVaultEntryCommand = new RelayCommand(_ => OpenNewVaultEntry(_refreshAction));
+
+            DeleteVaultEntryCommand = new RelayCommand(
+                p => DeleteVaultEntry(p as AppVault),
+                p => p is AppVault);
         }
+
+        public AppVault? SelectedAppVault {
+            get => _selectedAppVault;
+            set {
+                if (_selectedAppVault == value)
+                    return;
+
+                _selectedAppVault = value;
+                OnPropertyChanged();
+
+                // Notify delete button
+                (DeleteVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public PasswdPanelVM PasswdPanelVM { get; set; }
 
         public async Task RefreshVaultsAsync() {
             Vaults.Clear();
             var list = await DatabaseHandler.GetVaults();
             foreach (var v in list) Vaults.Add(v);
+
         }
 
         private void OpenEditWindow(AppVault vault) {
@@ -49,8 +67,19 @@ namespace Passwd_VaultManager.ViewModels
             win.Show();
         }
 
-        public void TriggerLoadVaults() {
-            //Load vaults on main form.
+        //public void TriggerLoadVaults() {
+        //    //Load vaults on main form.
+        //}
+
+        private async void DeleteVaultEntry(AppVault vault) {
+            if(vault is null) {
+                // ERROR MESSAGE
+            } else {
+                // DB DELETE
+                Vaults.Remove(vault);
+                await DatabaseHandler.DeleteVaultAsync(vault);
+                await RefreshVaultsAsync();
+            }
         }
 
     }

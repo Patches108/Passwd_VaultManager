@@ -6,6 +6,7 @@ using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Passwd_VaultManager
 {
@@ -19,7 +20,11 @@ namespace Passwd_VaultManager
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = _vm;            
+            DataContext = _vm;
+
+            var sharedPasswdPanelVM = (PasswdPanelVM)Resources["PasswdPanelVM"];
+            _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store it inside your MainWindowVM
+            DataContext = _vm;
         }        
 
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {

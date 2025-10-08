@@ -11,6 +11,7 @@ namespace Passwd_VaultManager.Models {
             _canExecute = canExecute;
         }
 
+        public void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
         public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
 
         public void Execute(object? parameter) => _execute(parameter);

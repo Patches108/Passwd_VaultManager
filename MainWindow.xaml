@@ -21,9 +21,13 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <!--  shared instance of PasswdPanelVM for the whole window  -->
+        <!--  Shared VM  -->
         <vm:PasswdPanelVM x:Key="PasswdPanelVM" />
     </Window.Resources>
+
+    <Window.DataContext>
+        <StaticResource ResourceKey="PasswdPanelVM" />
+    </Window.DataContext>
 
     <Border CornerRadius="8" Style="{StaticResource FormStyle}">
         <Grid>
@@ -137,6 +141,8 @@
                     Width="90"
                     Height="35"
                     Margin="0,5,0,5"
+                    Command="{Binding DeleteVaultEntryCommand}"
+                    CommandParameter="{Binding SelectedAppVault}"
                     IsChecked="False"
                     Style="{StaticResource SideCmdStyle}">
                     <Grid Margin="-10,0,0,0">
@@ -166,18 +172,45 @@
                 </Menu:MenuCmd>
             </StackPanel>
 
-            <!--  Main Panel Space  -->
             <ScrollViewer Grid.Row="2" Grid.Column="1">
+                <ListBox
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{Binding Vaults}"
+                    SelectedItem="{Binding SelectedAppVault}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="#FF27D644" />
+                                    <Setter Property="BorderThickness" Value="3" />
+                                    <Setter Property="Background" Value="#1A27D644" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
 
-                <ItemsControl x:Name="itms_PasswdPanelList" ItemsSource="{Binding Vaults}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type m:AppVault}">
+                            <v:PasswordPanel />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+
+            <!--<ScrollViewer Grid.Row="2" Grid.Column="1">
+                <ItemsControl ItemsSource="{Binding Vaults}">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="{x:Type m:AppVault}">
                             <v:PasswordPanel />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-
                 </ItemsControl>
-            </ScrollViewer>
+            </ScrollViewer>-->
+
 
             <!--  Footer Controls  -->
             <Grid Grid.Row="3" Grid.Column="1">

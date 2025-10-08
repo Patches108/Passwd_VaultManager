@@ -203,5 +203,88 @@ namespace Passwd_VaultManager.Funcs {
 
             return false;
         }
+
+        public static async Task<int> DeleteVaultAsync(
+    string appName,
+    string userName,
+    string password,
+    CancellationToken ct = default) 
+            {
+
+            // Normalize inputs for exact, case-sensitive match. Adjust if you want OrdinalIgnoreCase.
+            appName = appName?.Trim() ?? string.Empty;
+            userName = userName?.Trim() ?? string.Empty;
+            password = password?.Trim() ?? string.Empty;
+
+            var idsToDelete = new List<long>();
+
+            await using (var conn = new SqliteConnection(_connectionString)) {
+                await conn.OpenAsync(ct);
+
+                // 1) Read candidate rows (just what we need)
+                using (var select = conn.CreateCommand()) {
+                    select.CommandText = @"SELECT id, AppName, UserName, Passwd FROM Vault;";
+                    await using var reader = await select.ExecuteReaderAsync(ct);
+
+                    int ordId = reader.GetOrdinal("id");
+                    int ordApp = reader.GetOrdinal("AppName");
+                    int ordUser = reader.GetOrdinal("UserName");
+                    int ordPwd = reader.GetOrdinal("Passwd");
+
+                    while (await reader.ReadAsync(ct)) {
+                        // Decrypt each blob and compare to plaintext criteria
+                        string dbApp = DecryptBlobSafe(reader, ordApp);
+                        string dbUser = DecryptBlobSafe(reader, ordUser);
+                        string dbPwd = DecryptBlobSafe(reader, ordPwd);
+
+                        if (string.Equals(dbApp, appName, StringComparison.Ordinal) &&
+                            string.Equals(dbUser, userName, StringComparison.Ordinal) &&
+                            string.Equals(dbPwd, password, StringComparison.Ordinal)) {
+                            // Capture this row's id to delete later
+                            long id = reader.GetInt64(ordId);
+                            idsToDelete.Add(id);
+                        }
+                    }
+                }
+
+                if (idsToDelete.Count == 0) return 0;
+
+                // 2) Delete matches inside a transaction
+                await using var tx = await conn.BeginTransactionAsync(ct);
+                int total = 0;
+
+                using (var del = conn.CreateCommand()) {
+                    del.CommandText = "DELETE FROM Vault WHERE id = $id;";
+                    var p = del.CreateParameter();
+                    p.ParameterName = "$id";
+                    del.Parameters.Add(p);
+
+                    foreach (long id in idsToDelete) {
+                        p.Value = id;
+                        total += await del.ExecuteNonQueryAsync(ct);
+                    }
+                }
+
+                await tx.CommitAsync(ct);
+                return total;
+            }
+        }
+
+        // Convenience overload: delete using an AppVault instance (SelectedAppVault, etc.)
+        public static Task<int> DeleteVaultAsync(AppVault v, CancellationToken ct = default)
+            => DeleteVaultAsync(v?.AppName ?? "", v?.UserName ?? "", v?.Password ?? "", ct);
+
+        // If you ever have the row id, this is simpler & faster:
+        public static async Task<int> DeleteVaultByIdAsync(long id, CancellationToken ct = default) {
+            await using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync(ct);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM Vault WHERE id = $id;";
+            cmd.Parameters.AddWithValue("$id", id);
+
+            return await cmd.ExecuteNonQueryAsync(ct);
+        }
+
     }
 }
