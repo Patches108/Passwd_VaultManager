@@ -58,8 +58,9 @@ namespace Passwd_VaultManager.ViewModels
         private void OpenEditWindow(AppVault vault) {
             if (vault is null) return;
 
-            EditWindow editWin = new EditWindow(vault);
-            editWin.Show();
+            var vm = new EditWindowVM(vault);
+            var win = new EditWindow { DataContext = vm };
+            win.ShowDialog();
         }
 
         private void OpenNewVaultEntry(Func<Task> refresh) {

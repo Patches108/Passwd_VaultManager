@@ -208,9 +208,6 @@
                                 Text="{Binding SliderValue}" />
                         </StackPanel>
                     </Grid>
-
-                    <!--  Add controls here for customising password (chars + bitrate)  -->
-
                 </Grid>
 
 

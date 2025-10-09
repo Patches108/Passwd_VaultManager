@@ -82,31 +82,6 @@ namespace Passwd_VaultManager.Views {
             lblPasswdStatus.Visibility = Visibility.Visible;
         }
 
-
-        //private async Task cmdCreateVault_ClickAsync(object sender, RoutedEventArgs e) {
-        //    // 1. Checks for and disallows empty controls.
-        //    if(String.IsNullOrWhiteSpace(txtAppName.Text) || String.IsNullOrWhiteSpace(txtPasswd.Text) || String.IsNullOrWhiteSpace(txtUserName.Text)) {
-        //        // Display error screen
-        //        return;
-        //    }
-
-        //    // 2. Creates vault.
-        //    AppVault vault = new AppVault();
-        //    vault.AppName = txtAppName.Text;
-        //    vault.UserName = txtUserName.Text;
-        //    vault.Password = txtPasswd.Text;
-            
-        //    vault.IsPasswdSet = true;
-        //    vault.IsUserNameSet = true;
-        //    vault.IsStatusGood = true;
-
-        //    // 3. Saves it to DB.
-        //    await DatabaseHandler.WriteRecordToDatabaseAsync(vault);
-
-        //    _refreshAction();
-
-        //}
-
         private void rad_128_Click(object sender, RoutedEventArgs e) {
             _bitRate = 128;
             sldPasswdLength.Value = (double)21;
@@ -267,6 +242,7 @@ namespace Passwd_VaultManager.Views {
                     MessageBox.Show($"Failed to create vault entry: {ex.Message}");
                 }
 
+                this.Close();       // Close window after creating vault record.
 
             } else {
                 // MESSAGES

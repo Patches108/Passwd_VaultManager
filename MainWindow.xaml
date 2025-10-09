@@ -178,6 +178,19 @@
                     BorderThickness="0"
                     ItemsSource="{Binding Vaults}"
                     SelectedItem="{Binding SelectedAppVault}">
+
+                    <!--  Bind double-click & Enter at the ListBox level  -->
+                    <ListBox.InputBindings>
+                        <MouseBinding
+                            Command="{Binding DataContext.EditVaultEntryCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                            CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                            MouseAction="LeftDoubleClick" />
+                        <KeyBinding
+                            Key="Enter"
+                            Command="{Binding DataContext.EditVaultEntryCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                            CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                    </ListBox.InputBindings>
+
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Padding" Value="0" />
@@ -190,6 +203,7 @@
                                     <Setter Property="Background" Value="#1A27D644" />
                                 </Trigger>
                             </Style.Triggers>
+
                         </Style>
                     </ListBox.ItemContainerStyle>
 
