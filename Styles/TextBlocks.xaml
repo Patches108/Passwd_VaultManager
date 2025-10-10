@@ -2,7 +2,38 @@
     <Style x:Key="TextStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="WhiteSmoke" />
         <Setter Property="FontSize" Value="14.5" />
+
+        <!--  Gray colour when disabled  -->
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="Gray" />
+                <Setter Property="Opacity" Value="0.6" />
+            </Trigger>
+        </Style.Triggers>
+
     </Style>
+
+    
+    <!-- For MessageWIndow -->
+    <Style x:Key="MessageWindowStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="FontSize" Value="14.5" />
+    </Style>
+
+    <!-- Reusable bordered container for text -->
+    <Style x:Key="BorderedTextContainer" TargetType="Border">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BorderBrush" Value="#444"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.6"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 
     <Style x:Key="SmallTextStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="WhiteSmoke" />
@@ -37,14 +68,15 @@
                         SnapsToDevicePixels="True">
                         <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
                     </Border>
-                    <!--<ControlTemplate.Triggers>
+                    <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Opacity" Value="0.6" />
+                            <Setter TargetName="border" Property="Background" Value="Gray" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="#FF27D644" />
                         </Trigger>
-                    </ControlTemplate.Triggers>-->
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

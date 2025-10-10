@@ -74,7 +74,7 @@ namespace Passwd_VaultManager.ViewModels
 
         private async void DeleteVaultEntry(AppVault vault) {
             if(vault is null) {
-                // ERROR MESSAGE
+                new MessageWindow("ERROR: No Vault unit detected").ShowDialog();
             } else {
                 // DB DELETE
                 Vaults.Remove(vault);

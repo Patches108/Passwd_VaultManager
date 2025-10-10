@@ -134,8 +134,8 @@ namespace Passwd_VaultManager.Views {
             // Copy password text field data to clipboard
             if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim()))
                 Clipboard.SetText(txtPasswd.Text);
-            else { 
-                // ERROR MESSAGE in message window.
+            else {
+                new MessageWindow("ERROR: Password field is empty. Generate or manually").ShowDialog();
             }
         }
 

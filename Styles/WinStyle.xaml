@@ -39,7 +39,7 @@
     </ControlTemplate>-->
 
     <Style x:Key="WinStyle" TargetType="{x:Type Window}">
-        <Setter Property="Background" Value="#FF3333" />
+        <Setter Property="Background" Value="#FF2B2B2B" />
         <Setter Property="BorderBrush" Value="#333333" />
         <Setter Property="Foreground" Value="#FFF0F0" />
 

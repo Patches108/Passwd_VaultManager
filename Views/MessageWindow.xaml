@@ -1,0 +1,46 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.MessageWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Message Window"
+    Width="550"
+    Height="400"
+    Loaded="MessageWindow_Loaded"
+    Style="{StaticResource WinStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Border CornerRadius="8" Style="{StaticResource FormStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
+            </Grid.RowDefinitions>
+
+            <!--  Message text  -->
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                <Border Style="{StaticResource BorderedTextContainer}">
+                    <TextBlock
+                        x:Name="msg"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Style="{StaticResource TextStyle}"
+                        Text="" />
+                </Border>
+            </ScrollViewer>
+
+            <!--  Okay button  -->
+            <Button
+                x:Name="cmdOkayClose"
+                Grid.Row="1"
+                Width="150"
+                Height="40"
+                Content="Okay"
+                Click="cmdOkayClose_Click"
+                Style="{StaticResource ControlButton}" />
+        </Grid>
+    </Border>
+</Window>

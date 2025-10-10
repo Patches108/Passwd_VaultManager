@@ -152,9 +152,10 @@
                         </Trigger>
 
                         <!--  Disabled state  -->
-                        <!--<Trigger Property="IsEnabled" Value="False">
+                        <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.5" />
-                        </Trigger>-->
+                            <Setter TargetName="ButtonSurface" Property="Background" Value="Gray" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

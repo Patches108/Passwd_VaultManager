@@ -10,6 +10,8 @@
     Width="380"
     Height="500"
     Background="Transparent"
+    Closing="RunCleanup"
+    Loaded="NewWindow_Loaded"
     ResizeMode="NoResize"
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
@@ -40,10 +42,9 @@
                     x:Name="txtAppName"
                     Width="300"
                     Height="25"
-                    GotFocus="txtAppName_GotFocus"
-                    LostFocus="txtAppName_LostFocus"
                     Style="{StaticResource WhiteTextField}"
-                    Text="{Binding AppName}" />
+                    Text="{Binding AppName}"
+                    TextChanged="txtAppName_TextChanged" />
             </StackPanel>
 
             <!--  User Name  -->
@@ -55,16 +56,15 @@
                     x:Name="lblUserName"
                     Width="300"
                     Height="26"
-                    Content="User Name:"
+                    Content="User Name / Email / Login Text:"
                     Style="{StaticResource LabelHeader}" />
                 <TextBox
                     x:Name="txtUserName"
                     Width="300"
                     Height="25"
-                    GotFocus="txtUserName_GotFocus"
-                    LostFocus="txtUserName_LostFocus"
                     Style="{StaticResource WhiteTextField}"
-                    Text="{Binding Username}" />
+                    Text="{Binding Username}"
+                    TextChanged="txtUserName_TextChanged" />
             </StackPanel>
 
             <!--  Password Controls  -->
@@ -86,6 +86,7 @@
                         Height="26"
                         Margin="40,0,0,0"
                         Content="Password:"
+                        IsEnabled="False"
                         Style="{StaticResource LabelHeader}" />
                     <Label
                         x:Name="lblPasswdStatus"
@@ -117,10 +118,9 @@
                         Width="300"
                         Height="25"
                         Margin="40,0,0,0"
-                        GotFocus="txtPasswd_GotFocus"
-                        LostFocus="txtPasswd_LostFocus"
+                        IsReadOnly="True"
                         Style="{StaticResource WhiteTextField}"
-                        Text="{Binding Password}"
+                        Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                         TextChanged="txtPasswd_TextChanged" />
                     <Button
                         x:Name="cmdCopyToClipboard"
@@ -147,24 +147,28 @@
                         <TextBlock
                             x:Name="lblBitRateLabel"
                             Margin="0,0,10,0"
+                            IsEnabled="False"
                             Style="{StaticResource TextStyle}"
                             Text="Bit Rate:" />
                         <RadioButton
                             Margin="0,2,10,0"
                             Click="rad_128_Click"
                             Content="128"
-                            GroupName="BitRate" />
+                            GroupName="BitRate"
+                            IsEnabled="False" />
                         <RadioButton
                             Margin="0,2,10,0"
                             Click="rad_192_Click"
                             Content="192"
-                            GroupName="BitRate" />
+                            GroupName="BitRate"
+                            IsEnabled="False" />
                         <RadioButton
                             Margin="0,2,10,0"
                             Click="rad_256_Click"
                             Content="256"
                             GroupName="BitRate"
-                            IsChecked="True" />
+                            IsChecked="True"
+                            IsEnabled="False" />
                     </StackPanel>
 
                     <Grid Grid.Row="2" Margin="40,5,0,0">
@@ -226,6 +230,7 @@
                         Click="cmdGenPasswd_Click"
                         Content="Generate Password"
                         FontSize="13"
+                        IsEnabled="False"
                         Style="{StaticResource ControlButton}" />
                     <Button
                         x:Name="cmdManuallyEnterPasswd"
@@ -235,6 +240,7 @@
                         Click="cmdManuallyEnterPasswd_Click"
                         Content="Manual Password"
                         FontSize="13"
+                        IsEnabled="False"
                         Style="{StaticResource ControlButton}" />
 
                 </Grid>
@@ -253,6 +259,7 @@
                     Grid.Column="0"
                     Width="120"
                     Height="35"
+                    Click="EditWin_cmdUpdateVault_Click"
                     Content="Update"
                     Style="{StaticResource ControlButton}" />
 
@@ -261,6 +268,7 @@
                     Grid.Column="1"
                     Width="120"
                     Height="35"
+                    Click="EditWin_cmdClose_Click"
                     Content="Close"
                     Style="{StaticResource ControlButton}" />
             </Grid>
