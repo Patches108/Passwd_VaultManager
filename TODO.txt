@@ -1,4 +1,5 @@
-﻿1. click on selected vault from MainWindow highlights it.
-2. Delete function.
-3. Load vaults on startup
-4. Why border not setting for panel?
+﻿1. Password mask converting password to * ???
+2. Add mask icon?
+3. app Icon?
+4. Test Edit window has same changes as new window.
+5. Is reveal toggle button enabling exlcude chars??

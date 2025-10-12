@@ -1,0 +1,93 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Theme brushes  -->
+    <SolidColorBrush x:Key="Chk_Fg" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="Chk_Fg_Disabled" Color="#99FFFFFF" />
+
+    <SolidColorBrush x:Key="Chk_BoxBg" Color="#2F343B" />
+    <SolidColorBrush x:Key="Chk_BoxBg_Hover" Color="#3E434A" />
+    <SolidColorBrush x:Key="Chk_BoxBg_Press" Color="#212529" />
+    <SolidColorBrush x:Key="Chk_BoxBg_Dis" Color="#1E2227" />
+
+    <SolidColorBrush x:Key="Chk_Border" Color="#5A5F66" />
+    <SolidColorBrush x:Key="Chk_Border_Hover" Color="#7B818A" />
+    <SolidColorBrush x:Key="Chk_Border_Focus" Color="#27D644" />
+    <SolidColorBrush x:Key="Chk_Border_Dis" Color="#3C4046" />
+
+    <SolidColorBrush x:Key="Chk_Tick" Color="#27D644" />
+    <SolidColorBrush x:Key="Chk_Tick_Dis" Color="#6627D644" />
+
+    <Style
+        x:Key="CheckControl"
+        x:Shared="False"
+        TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource Chk_Fg}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Background" Value="{StaticResource Chk_BoxBg}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Chk_Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border
+                        x:Name="Root"
+                        Background="Transparent"
+                        SnapsToDevicePixels="True">
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  Box  -->
+                            <Border
+                                x:Name="Box"
+                                Width="18"
+                                Height="18"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="BoxScale" ScaleX="1" ScaleY="1" />
+                                </Border.RenderTransform>
+                            </Border>
+
+                            <!--  Content  -->
+                            <ContentPresenter
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!--  Pressed  -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Chk_BoxBg_Press}" />
+                        </Trigger>
+
+                        <!--  Focus  -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Chk_Border_Focus}" />
+                        </Trigger>
+
+                        <!--  Disabled  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource Chk_Fg_Disabled}" />
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Chk_BoxBg_Dis}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Chk_Border_Dis}" />
+                            <Setter TargetName="Root" Property="Opacity" Value="0.85" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

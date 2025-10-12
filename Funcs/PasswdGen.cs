@@ -7,11 +7,13 @@ namespace Passwd_VaultManager.Funcs {
     internal class PasswdGen {
         // Ambiguity-reduced sets
         private static readonly char[] Upper = "ABCDEFGHJKLMNPQRSTUVWXYZ".ToCharArray();
-        private static readonly char[] Lower = "abcdefghijklmnopqrstuvwxyz".ToCharArray(); // includes 'l' – keep or remove as you prefer
+        private static readonly char[] Lower = "abcdefghijklmnopqrstuvwxyz".ToCharArray(); 
         private static readonly char[] Digits = "23456789".ToCharArray();                  // no 0/1
         private static readonly char[] Symbols = "!@#$%^&*()-_=+[]{};:,.?/|~".ToCharArray();
 
         private static readonly char[] All = Upper.Concat(Lower).Concat(Digits).Concat(Symbols).ToArray();
+
+        //public static int TotalNumSymbols => All.Length;     
 
         /// <summary>
         /// Generate a cryptographically-strong password that meets (at least) the requested entropy in bits.

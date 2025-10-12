@@ -19,7 +19,8 @@ namespace Passwd_VaultManager.Views {
         private int _targetLength = 0;        // current slider length (0 = no limit)
 
         private bool _updating;
-        
+        private bool _showPlain;   // false = masked, true = reveal
+
         private string _passwdWhole = String.Empty;     // the generated full password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
 
@@ -41,6 +42,8 @@ namespace Passwd_VaultManager.Views {
         private void cmdManuallyEnterPasswd_Click(object sender, RoutedEventArgs e) {
             sldPasswdLength.IsEnabled = false;
 
+            txtPasswd.IsReadOnly = false;   
+
             lblPasswdStatus.Visibility = Visibility.Hidden;
             
             txtPasswd.Text = String.Empty;
@@ -52,6 +55,7 @@ namespace Passwd_VaultManager.Views {
             try {
                 txtCharactersToExclude.IsEnabled = true;
                 sldPasswdLength.IsEnabled = true;
+                txtPasswd.IsReadOnly = true;
 
                 var gen = new Passwd_VaultManager.Funcs.PasswdGen();
                 string pw = gen.GenPassword(bitRate: _bitRate);
@@ -156,6 +160,22 @@ namespace Passwd_VaultManager.Views {
 
             _targetLength = (int)Math.Round(e.NewValue);
             _vm.SliderValue = _targetLength.ToString();
+            _vm.Length = txtPasswd.Text.Trim().Length;
+
+            // Update bitrate
+            switch (_vm.Length) {
+                case >= 41:
+                    _vm.BitRate = 256;
+                    break;
+
+                case >= 31 and < 41:
+                    _vm.BitRate = 192;
+                    break;
+
+                case >= 21 and < 31:
+                    _vm.BitRate = 128;
+                    break;
+            }
 
             UpdateDisplayedPassword();
         }
@@ -165,24 +185,14 @@ namespace Passwd_VaultManager.Views {
 
             _updating = true;
             try {
-                string s = _passwdWhole ?? string.Empty;
-
-                // Apply exclusions
-                if (!string.IsNullOrEmpty(_excludedChars)) {
-                    var exclude = new HashSet<char>(_excludedChars);
-                    var sb = new StringBuilder(s.Length);
-                    foreach (char c in s)
-                        if (!exclude.Contains(c)) sb.Append(c);
-                    s = sb.ToString();
-                }
-
-                // Apply length
-                if (_targetLength > 0 && s.Length > _targetLength)
-                    s = s.Substring(0, _targetLength);
-
-                // Write result. The “Passwd” placeholder guard is what stopped your first click.
-                if (force || !string.Equals(txtPasswd.Text, "Passwd", StringComparison.Ordinal))
-                    txtPasswd.Text = s;
+                txtPasswd.Text = SharedFuncs.BuildDisplay(
+                    fullPassword: _passwdWhole.AsSpan(),
+                    excludedChars: _excludedChars.AsSpan(),
+                    targetLength: _targetLength,
+                    currentText: txtPasswd.Text.AsSpan(),
+                    force: false,
+                    placeholder: "Passwd".AsSpan(),
+                    mask: !_showPlain);
             } finally {
                 _updating = false;
             }
@@ -247,6 +257,11 @@ namespace Passwd_VaultManager.Views {
             } else {
                 // MESSAGES
             }
+        }
+
+        private void ToggleReveal_Click(object sender, RoutedEventArgs e) {
+            _showPlain = !_showPlain;       // flip reveal state
+            UpdateDisplayedPassword(force: true);
         }
     }
 }

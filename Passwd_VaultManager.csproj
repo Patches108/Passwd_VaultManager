@@ -15,6 +15,7 @@
     <None Remove="Images\CopyToClipboard.png" />
     <None Remove="Images\Delete.png" />
     <None Remove="Images\Edit.png" />
+    <None Remove="Images\hide_reveal.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\New.png" />
     <None Remove="Images\PanelSettings.png" />
@@ -43,6 +44,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Edit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\hide_reveal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\icon.ico">

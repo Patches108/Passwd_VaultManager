@@ -13,23 +13,23 @@
 
     </Style>
 
-    
-    <!-- For MessageWIndow -->
+
+    <!--  For MessageWIndow  -->
     <Style x:Key="MessageWindowStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="WhiteSmoke" />
         <Setter Property="FontSize" Value="14.5" />
     </Style>
 
-    <!-- Reusable bordered container for text -->
+    <!--  Reusable bordered container for text  -->
     <Style x:Key="BorderedTextContainer" TargetType="Border">
-        <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="BorderBrush" Value="#444"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Padding" Value="5,2,5,2"/>
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderBrush" Value="#444" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="5,2,5,2" />
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.6"/>
+                <Setter Property="Opacity" Value="0.6" />
             </Trigger>
         </Style.Triggers>
     </Style>

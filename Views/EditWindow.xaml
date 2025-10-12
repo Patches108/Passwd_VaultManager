@@ -73,6 +73,14 @@
                 Grid.RowSpan="2"
                 Orientation="Vertical">
 
+                <CheckBox
+                    x:Name="EditPassword"
+                    Grid.Column="0"
+                    Checked="chk_EditPassword_Checked"
+                    Content="Edit Password"
+                    Style="{StaticResource CheckControl}"
+                    Unchecked="EditPassword_Unchecked" />
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -151,6 +159,7 @@
                             Style="{StaticResource TextStyle}"
                             Text="Bit Rate:" />
                         <RadioButton
+                            x:Name="rdo_128"
                             Margin="0,2,10,0"
                             Click="rad_128_Click"
                             Content="128"
@@ -158,18 +167,41 @@
                             IsEnabled="False" />
                         <RadioButton
                             Margin="0,2,10,0"
+                            x:Name="rdo_192"
                             Click="rad_192_Click"
                             Content="192"
                             GroupName="BitRate"
                             IsEnabled="False" />
                         <RadioButton
                             Margin="0,2,10,0"
+                            x:Name="rdo_256"
                             Click="rad_256_Click"
                             Content="256"
                             GroupName="BitRate"
                             IsChecked="True"
                             IsEnabled="False" />
                     </StackPanel>
+
+                    <!--  Reveal button  -->
+                    <Button
+                        x:Name="cmdToggleReveal"
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Width="30"
+                        Height="25"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Left"
+                        Click="ToggleReveal_Click"
+                        FontSize="10"
+                        Style="{StaticResource ControlButton}">
+                        <Image
+                            x:Name="Img_TogglePasswdMask"
+                            Width="23"
+                            Height="23"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="/Images/hide_reveal.png" />
+                    </Button>
 
                     <Grid Grid.Row="2" Margin="40,5,0,0">
                         <Grid.ColumnDefinitions>

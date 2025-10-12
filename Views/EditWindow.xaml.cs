@@ -1,7 +1,8 @@
 ﻿using Passwd_VaultManager.Models;
 using Passwd_VaultManager.ViewModels;
-using System.Text;
+using Passwd_VaultManager.Funcs;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Passwd_VaultManager.Views
 {
@@ -12,6 +13,8 @@ namespace Passwd_VaultManager.Views
     {
         private EditWindowVM? _vm;
 
+        List<FrameworkElement> _PasswdControls = new();
+
         private bool ChangesMade = false;
 
         private int _bitRate = 256;
@@ -19,6 +22,7 @@ namespace Passwd_VaultManager.Views
         private int _targetLength = 0;        // current slider length (0 = no limit)
 
         private bool _updating;
+        private bool _showPlain;   // false = masked, true = reveal
 
         private string _passwdWhole = String.Empty;     // the generated full password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
@@ -32,11 +36,24 @@ namespace Passwd_VaultManager.Views
             Loaded += (_, __) =>
             {
                 if (_vm != null) {
-                    // seed the pipeline from the VM
                     _passwdWhole = _vm.Password ?? string.Empty;
-
-                    // if you must set the textbox here, do it once:
                     txtPasswd.Text = _passwdWhole;
+
+                    // Add password controls to list for later iteration as per checkbox
+                    _PasswdControls.Add(txtPasswd);
+                    _PasswdControls.Add(lblPasswd);
+                    _PasswdControls.Add(lblPasswdStatus);
+                    _PasswdControls.Add(lblBitRateLabel);
+                    _PasswdControls.Add(rdo_128);
+                    _PasswdControls.Add(rdo_192);
+                    _PasswdControls.Add(rdo_256);
+                    _PasswdControls.Add(Img_TogglePasswdMask);
+                    _PasswdControls.Add(txtCharactersToExclude);
+                    _PasswdControls.Add(sldPasswdLength);
+                    _PasswdControls.Add(cmdGenPasswd);
+                    _PasswdControls.Add(cmdManuallyEnterPasswd);
+                    _PasswdControls.Add(cmdManuallyEnterPasswd);
+                    //lblPasswdSliderValue
                 }
 
                 _updating = false; // allow UpdateDisplayedPassword to run later
@@ -80,9 +97,27 @@ namespace Passwd_VaultManager.Views
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
             if (_updating) return;
 
-            _targetLength = (int)Math.Round(e.NewValue);
-            if(_vm is not null)
+            if (_vm is not null) {
+                _targetLength = (int)Math.Round(e.NewValue);
+
                 _vm.SliderValue = _targetLength.ToString();
+                _vm.Length = txtPasswd.Text.Trim().Length;
+
+                // Update bitrate
+                switch (_vm.Length) {
+                    case >= 41:
+                        _vm.BitRate = 256;
+                        break;
+
+                    case >= 31 and < 41:
+                        _vm.BitRate = 192;
+                        break;
+
+                    case >= 21 and < 31:
+                        _vm.BitRate = 128;
+                        break;
+                }
+            }
 
             UpdateDisplayedPassword();
         }
@@ -114,24 +149,14 @@ namespace Passwd_VaultManager.Views
 
             _updating = true;
             try {
-                string s = _passwdWhole ?? string.Empty;
-
-                // Apply exclusions
-                if (!string.IsNullOrEmpty(_excludedChars)) {
-                    var exclude = new HashSet<char>(_excludedChars);
-                    var sb = new StringBuilder(s.Length);
-                    foreach (char c in s)
-                        if (!exclude.Contains(c)) sb.Append(c);
-                    s = sb.ToString();
-                }
-
-                // Apply length
-                if (_targetLength > 0 && s.Length > _targetLength)
-                    s = s.Substring(0, _targetLength);
-
-                // Write result. The “Passwd” placeholder guard is what stopped your first click.
-                if (force || !string.Equals(txtPasswd.Text, "Passwd", StringComparison.Ordinal))
-                    txtPasswd.Text = s;
+                txtPasswd.Text = SharedFuncs.BuildDisplay(
+                    fullPassword: _passwdWhole.AsSpan(),
+                    excludedChars: _excludedChars.AsSpan(),
+                    targetLength: _targetLength,
+                    currentText: txtPasswd.Text.AsSpan(),
+                    force: false,
+                    placeholder: "Passwd".AsSpan(),
+                    mask: !_showPlain);
             } finally {
                 _updating = false;
             }
@@ -225,6 +250,23 @@ namespace Passwd_VaultManager.Views
             //txtPasswd.IsEnabled = false;
             sldPasswdLength.IsEnabled = false;
             txtCharactersToExclude.IsEnabled = false;
+        }
+
+        private void ToggleReveal_Click(object sender, RoutedEventArgs e) {
+            _showPlain = !_showPlain;       // flip reveal state
+            UpdateDisplayedPassword(force: true);
+        }
+
+        private void chk_EditPassword_Checked(object sender, RoutedEventArgs e) {
+            // enable the password controls.
+            foreach (var c in _PasswdControls)
+                c.IsEnabled = true;
+        }
+
+        private void EditPassword_Unchecked(object sender, RoutedEventArgs e) {
+            // disable the password controls.
+            foreach (var c in _PasswdControls)
+                c.IsEnabled = false;
         }
     }
 }

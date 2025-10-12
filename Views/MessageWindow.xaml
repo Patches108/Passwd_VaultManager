@@ -38,8 +38,8 @@
                 Grid.Row="1"
                 Width="150"
                 Height="40"
-                Content="Okay"
                 Click="cmdOkayClose_Click"
+                Content="Okay"
                 Style="{StaticResource ControlButton}" />
         </Grid>
     </Border>
