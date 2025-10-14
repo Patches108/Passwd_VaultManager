@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Styles/MenuItems.xaml" />
                 <ResourceDictionary Source="Styles/RadioButtons.xaml" />
                 <ResourceDictionary Source="Styles/RadioCheckControls.xaml" />
+                <ResourceDictionary Source="Styles/SliderStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <models:BoolToTextConverter x:Key="BoolToTextConverter" />

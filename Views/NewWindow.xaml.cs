@@ -242,6 +242,9 @@ namespace Passwd_VaultManager.Views {
                 v.UserName = txtUserName.Text.Trim();
                 v.Password = txtPasswd.Text.Trim();
 
+                v.IsPasswdSet = true;
+                v.IsUserNameSet = true;
+
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
                     //_vm.TriggerMainWinLoadVaults();

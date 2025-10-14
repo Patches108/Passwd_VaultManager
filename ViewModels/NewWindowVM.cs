@@ -1,7 +1,6 @@
 ﻿using Passwd_VaultManager.Models;
 using System.Collections;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Passwd_VaultManager.ViewModels {
     internal sealed class NewWindowVM : ViewModelBase, INotifyDataErrorInfo {

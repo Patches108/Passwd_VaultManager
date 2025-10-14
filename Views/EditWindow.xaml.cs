@@ -16,13 +16,14 @@ namespace Passwd_VaultManager.Views
         List<FrameworkElement> _PasswdControls = new();
 
         private bool ChangesMade = false;
+        private bool _enableCharsExcludeSwitch = false;
 
         private int _bitRate = 256;
         private int _len = 41;
         private int _targetLength = 0;        // current slider length (0 = no limit)
 
         private bool _updating;
-        private bool _showPlain;   // false = masked, true = reveal
+        private bool _showPlain = false;   // false = masked, true = reveal
 
         private string _passwdWhole = String.Empty;     // the generated full password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
@@ -32,6 +33,8 @@ namespace Passwd_VaultManager.Views
             InitializeComponent();
             // get vm when it actually exists
             DataContextChanged += (_, e) => _vm = e.NewValue as EditWindowVM;
+
+            _updating = true;
 
             Loaded += (_, __) =>
             {
@@ -52,14 +55,16 @@ namespace Passwd_VaultManager.Views
                     _PasswdControls.Add(sldPasswdLength);
                     _PasswdControls.Add(cmdGenPasswd);
                     _PasswdControls.Add(cmdManuallyEnterPasswd);
-                    _PasswdControls.Add(cmdManuallyEnterPasswd);
-                    //lblPasswdSliderValue
-                }
+                    _PasswdControls.Add(lblPasswdSliderValue);
 
+                    UpdateDisplayedPassword(force: true);
+
+                }
                 _updating = false; // allow UpdateDisplayedPassword to run later
             };
 
-            _updating = true; // block changes until Loaded
+            //_updating = false;
+            //UpdateDisplayedPassword(force: true);
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
         }
@@ -163,8 +168,10 @@ namespace Passwd_VaultManager.Views
         }
 
         private void txtPasswd_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            if (txtPasswd.Text.Trim().Length > 0)
-                txtCharactersToExclude?.IsEnabled = true;
+            if(_enableCharsExcludeSwitch)
+                if (txtPasswd.Text.Trim().Length > 0)
+                    txtCharactersToExclude?.IsEnabled = true;
+            
 
             if (txtPasswd.Text.Trim().Length >= 16)
                 sldPasswdLength?.IsEnabled = true;
@@ -261,12 +268,16 @@ namespace Passwd_VaultManager.Views
             // enable the password controls.
             foreach (var c in _PasswdControls)
                 c.IsEnabled = true;
+
+            _enableCharsExcludeSwitch = true;
         }
 
         private void EditPassword_Unchecked(object sender, RoutedEventArgs e) {
             // disable the password controls.
             foreach (var c in _PasswdControls)
                 c.IsEnabled = false;
+
+            _enableCharsExcludeSwitch = false;
         }
     }
 }

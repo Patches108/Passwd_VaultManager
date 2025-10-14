@@ -1,5 +1,4 @@
-﻿1. Password mask converting password to * ???
-2. Add mask icon?
-3. app Icon?
-4. Test Edit window has same changes as new window.
-5. Is reveal toggle button enabling exlcude chars??
+﻿1. app Icon?
+2. Edit win - On load enable mask.
+3. Edit win - Is slider value setting properly when controls enabled?
+4. test is it now saving bools user name and passsword set?

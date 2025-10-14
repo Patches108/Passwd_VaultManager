@@ -166,15 +166,15 @@
                             GroupName="BitRate"
                             IsEnabled="False" />
                         <RadioButton
-                            Margin="0,2,10,0"
                             x:Name="rdo_192"
+                            Margin="0,2,10,0"
                             Click="rad_192_Click"
                             Content="192"
                             GroupName="BitRate"
                             IsEnabled="False" />
                         <RadioButton
-                            Margin="0,2,10,0"
                             x:Name="rdo_256"
+                            Margin="0,2,10,0"
                             Click="rad_256_Click"
                             Content="256"
                             GroupName="BitRate"
@@ -232,11 +232,13 @@
                                 x:Name="sldPasswdLength"
                                 Width="105"
                                 Margin="0,0,0,0"
+                                VerticalAlignment="Center"
                                 IsEnabled="False"
                                 LargeChange="6"
                                 Maximum="41"
                                 Minimum="21"
                                 SmallChange="1"
+                                Style="{StaticResource Horizontal_Slider}"
                                 ValueChanged="sldPasswdLength_ValueChanged" />
                             <TextBlock
                                 x:Name="lblPasswdSliderValue"
