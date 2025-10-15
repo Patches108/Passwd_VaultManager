@@ -29,6 +29,15 @@
         <StaticResource ResourceKey="PasswdPanelVM" />
     </Window.DataContext>
 
+
+    <!--  Press Delete key  -->
+    <Window.InputBindings>
+        <KeyBinding
+            Key="Delete"
+            Command="{Binding DeleteVaultEntryCommand}"
+            CommandParameter="{Binding SelectedAppVault}" />
+    </Window.InputBindings>
+
     <Border CornerRadius="8" Style="{StaticResource FormStyle}">
         <Grid>
             <Grid.ColumnDefinitions>

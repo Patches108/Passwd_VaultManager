@@ -1,0 +1,81 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.YesNoWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Are You Sure?"
+    ResizeMode="NoResize"
+    Width="450"
+    Height="300"
+    Loaded="YesNoWin_Loaded"
+    Style="{StaticResource WinStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Border CornerRadius="8" Style="{StaticResource FormStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="70" />
+            </Grid.RowDefinitions>
+
+            <!--  Message text  -->
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="10">
+                <Border Style="{StaticResource BorderedTextContainer}">
+                    <TextBlock
+                        x:Name="msg"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top" TextWrapping="Wrap"
+                        Style="{StaticResource TextStyle}"
+                        Text="" />
+                </Border>
+            </ScrollViewer>
+
+            <TextBlock
+                Grid.Row="1"
+                Margin="10,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Style="{StaticResource StatusText}"
+                Text="Press ESC to cancel" />
+
+            <!--  Buttons grid  -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <!--  Yes button  -->
+                <Button
+                    x:Name="cmdYes"
+                    Grid.Column="0"
+                    Width="200"
+                    Height="50"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="cmdYes_Click"
+                    Content="Yes"
+                    FontSize="18"
+                    Style="{StaticResource ControlButton}" />
+
+                <!--  No button  -->
+                <Button
+                    x:Name="cmdNo"
+                    Grid.Column="1"
+                    Width="200"
+                    Height="50"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="cmdNo_Click"
+                    Content="No"
+                    FontSize="18"
+                    Style="{StaticResource ControlButton}" />
+
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

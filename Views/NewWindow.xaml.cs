@@ -247,12 +247,11 @@ namespace Passwd_VaultManager.Views {
 
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
-                    //_vm.TriggerMainWinLoadVaults();
-                    MessageBox.Show("Vault entry created successfully.");
+                    new MessageWindow($"Vault entry - ({v.AppName}) - created successfully.");
 
                     _refreshAction();
                 } catch (Exception ex) {
-                    MessageBox.Show($"Failed to create vault entry: {ex.Message}");
+                    new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.");
                 }
 
                 this.Close();       // Close window after creating vault record.

@@ -1,4 +1,4 @@
 ﻿1. app Icon?
 2. Edit win - On load enable mask.
-3. Edit win - Is slider value setting properly when controls enabled?
+3. Edit win - Is slider value setting properly when controls renabled?
 4. test is it now saving bools user name and passsword set?

@@ -76,10 +76,17 @@ namespace Passwd_VaultManager.ViewModels
             if(vault is null) {
                 new MessageWindow("ERROR: No Vault unit detected").ShowDialog();
             } else {
-                // DB DELETE
-                Vaults.Remove(vault);
-                await DatabaseHandler.DeleteVaultAsync(vault);
-                await RefreshVaultsAsync();
+                
+                // confirm with yes/no dialog
+                YesNoWindow confirm = new YesNoWindow($"Are you sure you want to delete this record ({vault.AppName})? This cannot be undone.");
+                bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
+
+                if (confirmed) {
+                    // DB DELETE
+                    Vaults.Remove(vault);
+                    await DatabaseHandler.DeleteVaultAsync(vault);
+                    await RefreshVaultsAsync();
+                }                
             }
         }
 
