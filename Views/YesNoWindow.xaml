@@ -6,10 +6,10 @@
     xmlns:local="clr-namespace:Passwd_VaultManager.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Are You Sure?"
-    ResizeMode="NoResize"
     Width="450"
     Height="300"
     Loaded="YesNoWin_Loaded"
+    ResizeMode="NoResize"
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -22,15 +22,19 @@
             </Grid.RowDefinitions>
 
             <!--  Message text  -->
-            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="10">
+            <ScrollViewer
+                Grid.Row="0"
+                Padding="10"
+                VerticalScrollBarVisibility="Auto">
                 <Border Style="{StaticResource BorderedTextContainer}">
                     <TextBlock
                         x:Name="msg"
                         Margin="10"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Top" TextWrapping="Wrap"
+                        VerticalAlignment="Top"
                         Style="{StaticResource TextStyle}"
-                        Text="" />
+                        Text=""
+                        TextWrapping="Wrap" />
                 </Border>
             </ScrollViewer>
 

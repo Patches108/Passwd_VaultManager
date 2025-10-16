@@ -17,6 +17,7 @@
     <None Remove="Images\Edit.png" />
     <None Remove="Images\hide_reveal.png" />
     <None Remove="Images\icon.ico" />
+    <None Remove="Images\img_setting.png" />
     <None Remove="Images\New.png" />
     <None Remove="Images\PanelSettings.png" />
     <None Remove="Images\Settings.png" />
@@ -50,6 +51,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\img_setting.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\New.png">

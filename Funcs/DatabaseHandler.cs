@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Passwd_VaultManager.Models;
 using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
 using System.Security.Cryptography;
@@ -30,7 +29,8 @@ namespace Passwd_VaultManager.Funcs {
                             UserName       BLOB    NOT NULL,   
                             Passwd         BLOB    NOT NULL,   
                             IsUserNameSet  INTEGER NOT NULL,   
-                            IsPasswdSet    INTEGER NOT NULL    
+                            IsPasswdSet    INTEGER NOT NULL,
+                            BitRate        INTEGER NOT NULL    
                         );
                         ";
 
@@ -39,45 +39,49 @@ namespace Passwd_VaultManager.Funcs {
                         comm.ExecuteNonQuery();
                     }
                 }
-
-                //MessageBox.Show("DB created!");
             }
         }
 
         public static async Task<long> WriteRecordToDatabaseAsync(AppVault v, CancellationToken ct = default) {
-
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                INSERT INTO Vault (DateCreated, AppName, UserName, Passwd, IsUserNameSet, IsPasswdSet)
-                VALUES ($date, $app, $user, $pwd, $userSet, $pwdSet);
+                INSERT INTO Vault
+                    (DateCreated, AppName, UserName, Passwd, IsUserNameSet, IsPasswdSet, BitRate)
+                VALUES
+                    ($date, $app, $user, $pwd, $userSet, $pwdSet, $bitR);
                 SELECT last_insert_rowid();";
 
-            cmd.Parameters.AddWithValue("$date", DateTime.UtcNow.ToString("o"));
+            cmd.Parameters.AddWithValue("$date", DateTime.UtcNow.ToString("o")); // ISO 8601 UTC
 
-            var pApp = cmd.CreateParameter(); pApp.ParameterName = "$app"; pApp.SqliteType = SqliteType.Blob; pApp.Value = EncryptionService.EncryptToBlob(v.AppName); cmd.Parameters.Add(pApp);
-            var pUser = cmd.CreateParameter(); pUser.ParameterName = "$user"; pUser.SqliteType = SqliteType.Blob; pUser.Value = EncryptionService.EncryptToBlob(v.UserName ?? ""); cmd.Parameters.Add(pUser);
-            var pPwd = cmd.CreateParameter(); pPwd.ParameterName = "$pwd"; pPwd.SqliteType = SqliteType.Blob; pPwd.Value = EncryptionService.EncryptToBlob(v.Password ?? ""); cmd.Parameters.Add(pPwd);
-
+            cmd.Parameters.AddWithValue("$app", EncryptionService.EncryptToBlob(v.AppName));
+            cmd.Parameters.AddWithValue("$user", EncryptionService.EncryptToBlob(v.UserName ?? ""));
+            cmd.Parameters.AddWithValue("$pwd", EncryptionService.EncryptToBlob(v.Password ?? ""));
             cmd.Parameters.AddWithValue("$userSet", v.IsUserNameSet ? 1 : 0);
             cmd.Parameters.AddWithValue("$pwdSet", v.IsPasswdSet ? 1 : 0);
+            cmd.Parameters.AddWithValue("$bitR", v.BitRate);
 
             var scalar = await cmd.ExecuteScalarAsync(ct);
-            return (scalar is long id) ? id : Convert.ToInt64(scalar);
+            return scalar switch {
+                long id => id,
+                _ => Convert.ToInt64(scalar)
+            };
         }
+
 
         // Decrypt when you need to display/use the password
-        public static string UnprotectPassword(byte[] blob) {
-            byte[] entropy = GetAppEntropy();
-            byte[] clear = ProtectedData.Unprotect(blob, entropy, DataProtectionScope.CurrentUser);
-            return Encoding.UTF8.GetString(clear);
-        }
+        //public static string UnprotectPassword(byte[] blob) {
+        //    byte[] entropy = GetAppEntropy();
+        //    byte[] clear = ProtectedData.Unprotect(blob, entropy, DataProtectionScope.CurrentUser);
+        //    return Encoding.UTF8.GetString(clear);
+        //}
 
-        // Keep this value outside of source control or derive it from machine/user secrets
+        // extra salting.
         private static byte[] GetAppEntropy() =>
-            Encoding.UTF8.GetBytes("your-app-entropy-change-this");
+            Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
+
 
         public static void ReadRecordFromDatabase() {
 
@@ -95,56 +99,30 @@ namespace Passwd_VaultManager.Funcs {
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                SELECT
-                    id,
-                    DateCreated,
-                    AppName,        
-                    UserName,      
-                    Passwd,         
-                    IsUserNameSet,  
-                    IsPasswdSet     
+                SELECT id, DateCreated, AppName, UserName, Passwd,
+                       IsUserNameSet, IsPasswdSet, BitRate
                 FROM Vault;";
 
             await using var reader = await cmd.ExecuteReaderAsync(ct);
 
-            // Resolve ordinals once
-            int ordId = reader.GetOrdinal("id");
-            int ordDate = reader.GetOrdinal("DateCreated");
-            int ordAppName = reader.GetOrdinal("AppName");
-            int ordUserName = reader.GetOrdinal("UserName");
-            int ordPasswd = reader.GetOrdinal("Passwd");
-            int ordIsUserSet = reader.GetOrdinal("IsUserNameSet");
-            int ordIsPassSet = reader.GetOrdinal("IsPasswdSet");
-
             while (await reader.ReadAsync(ct)) {
-                // Decrypt BLOBs (handles empty/null defensively)
-                string appName = DecryptBlobSafe(reader, ordAppName);
-                string userName = DecryptBlobSafe(reader, ordUserName);
-                string password = DecryptBlobSafe(reader, ordPasswd);
-
-                // Booleans: prefer INTEGER 0/1; also tolerate legacy TEXT columns
-                bool isUserSet = ReadBoolFlexible(reader, ordIsUserSet);
-                bool isPassSet = ReadBoolFlexible(reader, ordIsPassSet);
-
-                // DateCreated: keep as string or parse to DateTime if you like
-                string dateCreatedStr = reader.IsDBNull(ordDate) ? "" : reader.GetString(ordDate);
-                DateTime? dateCreated = DateTime.TryParse(dateCreatedStr, out var dt) ? dt : null;
-
                 var app = new AppVault {
-                    AppName = appName,
-                    UserName = userName,
-                    Password = password,
-                    IsUserNameSet = isUserSet,
-                    IsPasswdSet = isPassSet,
-                    IsStatusGood = isUserSet && isPassSet // or whatever your rule is
-                                                          // you can add a DateCreated property to AppVault if needed
+                    AppName = DecryptBlobSafe(reader, reader.GetOrdinal("AppName")),
+                    UserName = DecryptBlobSafe(reader, reader.GetOrdinal("UserName")),
+                    Password = DecryptBlobSafe(reader, reader.GetOrdinal("Passwd")),
+                    IsUserNameSet = ReadBoolFlexible(reader, reader.GetOrdinal("IsUserNameSet")),
+                    IsPasswdSet = ReadBoolFlexible(reader, reader.GetOrdinal("IsPasswdSet")),
+                    BitRate = reader.GetInt32(reader.GetOrdinal("BitRate")),
+                    DateCreated = DateTime.TryParse(reader.GetString(reader.GetOrdinal("DateCreated")), out var dc) ? dc : null
                 };
 
+                app.IsStatusGood = app.IsUserNameSet && app.IsPasswdSet;
                 vaults.Add(app);
             }
 
             return vaults;
         }
+
 
 
         private static string DecryptBlobSafe(SqliteDataReader reader, int ordinal) {

@@ -145,6 +145,40 @@
                 </Menu:MenuCmd>
 
 
+                <!--  SETTINGS BUTTON  -->
+                <Menu:MenuCmd
+                    Width="90"
+                    Height="35"
+                    Margin="0,5,0,5"
+                    Command="{Binding OpenSettingsCommand}"
+                    IsChecked="False"
+                    Style="{StaticResource SideCmdStyle}">
+                    <Grid Margin="-10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="img_settings"
+                            Grid.Column="0"
+                            Width="25"
+                            Height="25">
+                            <Image.Source>
+                                <BitmapImage UriSource="Images/img_setting.png" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock
+                            x:Name="cmd_OpenSettings"
+                            Grid.Column="1"
+                            Width="45"
+                            Height="17"
+                            Margin="5,7,0,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource TextStyle}"
+                            Text="Settings" />
+                    </Grid>
+                </Menu:MenuCmd>
+
                 <!--  DELETE BUTTON  -->
                 <Menu:MenuCmd
                     Width="90"

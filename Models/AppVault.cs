@@ -10,6 +10,8 @@ namespace Passwd_VaultManager.Models
         private string _password;
         private string _userName;
 
+        private int _bitRate;
+
         private bool _userNameSet;
         private bool _passwdSet;
         private bool _statusOkay;
@@ -32,6 +34,17 @@ namespace Passwd_VaultManager.Models
         /// </summary>
         /// 
         public Guid getAppVaultInstanceGuid { get { return AppVaultGUID; } }
+
+        public DateTime? DateCreated { get; set; }
+
+        public int BitRate {
+            get => _bitRate;
+            set {
+                if (_bitRate == value) return;
+                _bitRate = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string AppName {
             get => _appName;
@@ -64,7 +77,7 @@ namespace Passwd_VaultManager.Models
         public bool IsUserNameSet {
             get => _userNameSet;
             set {
-                if (_userNameSet != value) return;
+                if (_userNameSet == value) return;
                 _userNameSet = value; 
                 OnPropertyChanged(); 
             }

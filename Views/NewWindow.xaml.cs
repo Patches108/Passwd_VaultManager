@@ -240,10 +240,11 @@ namespace Passwd_VaultManager.Views {
                 AppVault v = new AppVault();
                 v.AppName = txtAppName.Text.Trim();
                 v.UserName = txtUserName.Text.Trim();
-                v.Password = txtPasswd.Text.Trim();
+                v.Password = _passwdWhole;
 
                 v.IsPasswdSet = true;
                 v.IsUserNameSet = true;
+                v.BitRate = _bitRate;
 
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
@@ -257,7 +258,7 @@ namespace Passwd_VaultManager.Views {
                 this.Close();       // Close window after creating vault record.
 
             } else {
-                // MESSAGES
+                new MessageWindow("App name, User name/Email, and Password fields cannot be empty.");
             }
         }
 

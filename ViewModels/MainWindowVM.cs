@@ -17,6 +17,7 @@ namespace Passwd_VaultManager.ViewModels
         public ICommand EditVaultEntryCommand { get; }
         public ICommand NewVaultEntryCommand { get; }
         public ICommand DeleteVaultEntryCommand { get; }
+        public ICommand OpenSettingsCommand { get; }
 
         public ObservableCollection<AppVault> Vaults { get; } = new();
 
@@ -26,6 +27,7 @@ namespace Passwd_VaultManager.ViewModels
 
             EditVaultEntryCommand = new RelayCommand(param => OpenEditWindow((AppVault)param));
             NewVaultEntryCommand = new RelayCommand(_ => OpenNewVaultEntry(_refreshAction));
+            OpenSettingsCommand = new RelayCommand(_ => OpenSettings());
 
             DeleteVaultEntryCommand = new RelayCommand(
                 p => DeleteVaultEntry(p as AppVault),
@@ -68,10 +70,6 @@ namespace Passwd_VaultManager.ViewModels
             win.Show();
         }
 
-        //public void TriggerLoadVaults() {
-        //    //Load vaults on main form.
-        //}
-
         private async void DeleteVaultEntry(AppVault vault) {
             if(vault is null) {
                 new MessageWindow("ERROR: No Vault unit detected").ShowDialog();
@@ -88,6 +86,11 @@ namespace Passwd_VaultManager.ViewModels
                     await RefreshVaultsAsync();
                 }                
             }
+        }
+
+        private void OpenSettings() {
+            var win = new SettingsWindow();
+            win.Show();
         }
 
     }
