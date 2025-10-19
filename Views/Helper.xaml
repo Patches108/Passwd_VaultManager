@@ -80,7 +80,8 @@
                 Content="X"
                 Cursor="Hand"
                 FontWeight="Bold"
-                Foreground="White" />
+                Foreground="White" 
+                Click="cmdX_Click"/>
 
             <!--  Helper image/avatar  -->
             <Image
@@ -99,7 +100,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="10,0,0,0"
-                VerticalAlignment="Center"
+                VerticalAlignment="Top"
                 FontSize="14"
                 Foreground="White"
                 Text="message will appear here."

@@ -20,7 +20,7 @@ namespace Passwd_VaultManager.Services {
         }
 
         public static AppSettings Load() {
-            AppPaths.EnsureAppDataFolder();
+            //AppPaths.EnsureAppDataFolder();
             var path = AppPaths.SettingsFile;
 
             var settings = new AppSettings();

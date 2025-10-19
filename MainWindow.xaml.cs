@@ -2,6 +2,7 @@
 using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Properties;
+using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
 using System.Collections.ObjectModel;
@@ -16,7 +17,7 @@ namespace Passwd_VaultManager
     public partial class MainWindow : Window
     {
         private readonly MainWindowVM _vm = new();
-                
+
         public MainWindow()
         {
             InitializeComponent();
@@ -25,6 +26,15 @@ namespace Passwd_VaultManager
             var sharedPasswdPanelVM = (PasswdPanelVM)Resources["PasswdPanelVM"];
             _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store it inside your MainWindowVM
             DataContext = _vm;
+
+            App.Settings.FirstTimeOpeningApp = true;       // REMOVE THIS IN PROD
+
+            if (App.Settings.FirstTimeOpeningApp) {
+                var helpWin = new Helper("I see this is your first time using Password Vault Manager.\n\nWelcome!\n\nTo get started, click the \'New\'");
+                helpWin.Show();
+                App.Settings.FirstTimeOpeningApp = false;
+                SettingsService.Save(App.Settings);
+            }
         }        
 
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
