@@ -1,6 +1,6 @@
 ﻿using Passwd_VaultManager.Models;
 using Passwd_VaultManager.ViewModels;
-using System.Text;
+using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
 using Passwd_VaultManager.Funcs;
@@ -248,9 +248,15 @@ namespace Passwd_VaultManager.Views {
 
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
-                    new MessageWindow($"Vault entry - ({v.AppName}) - created successfully.");
+                    //new MessageWindow($"Vault entry - ({v.AppName}) - created successfully.");
+                    
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                        var toast = new ToastNotification($"Vault entry - ({v.AppName}) - created successfully.", true);
+                        toast.Show();
+                    });
 
                     _refreshAction();
+
                 } catch (Exception ex) {
                     new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.");
                 }

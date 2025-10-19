@@ -80,10 +80,17 @@ namespace Passwd_VaultManager.ViewModels
                 bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
 
                 if (confirmed) {
-                    // DB DELETE
+                    
+                    string s_VaultName = vault.AppName;
+
                     Vaults.Remove(vault);
                     await DatabaseHandler.DeleteVaultAsync(vault);
                     await RefreshVaultsAsync();
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                        var toast = new ToastNotification($"Vault entry - ({s_VaultName}) - has been successfully deleted.", true);
+                        toast.Show();
+                    });
                 }                
             }
         }

@@ -15,12 +15,15 @@
     <None Remove="Images\CopyToClipboard.png" />
     <None Remove="Images\Delete.png" />
     <None Remove="Images\Edit.png" />
+    <None Remove="Images\Failure_Icon.png" />
+    <None Remove="Images\helper.png" />
     <None Remove="Images\hide_reveal.png" />
     <None Remove="Images\icon.ico" />
     <None Remove="Images\img_setting.png" />
     <None Remove="Images\New.png" />
     <None Remove="Images\PanelSettings.png" />
     <None Remove="Images\Settings.png" />
+    <None Remove="Images\Success_Icon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +50,12 @@
     <Resource Include="Images\Edit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\Failure_Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\helper.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\hide_reveal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -63,6 +72,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Settings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Success_Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

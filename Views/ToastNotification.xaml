@@ -1,0 +1,84 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.ToastNotification"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="250"
+    Height="60"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStyle="None">
+
+
+    <Window.Resources>
+        <!--  Fade + slide in from right  -->
+        <Storyboard x:Key="EnterStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+
+            <DoubleAnimation
+                AccelerationRatio="0.3"
+                DecelerationRatio="0.7"
+                Storyboard.TargetProperty="(Window.Left)"
+                Duration="0:0:0.4" />
+        </Storyboard>
+
+        <!--  Fade + slide out to right  -->
+        <Storyboard x:Key="ExitStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                To="0"
+                Duration="0:0:0.4" />
+
+            <DoubleAnimation
+                AccelerationRatio="0.7"
+                DecelerationRatio="0.3"
+                Storyboard.TargetProperty="(Window.Left)"
+                Duration="0:0:0.4" />
+        </Storyboard>
+    </Window.Resources>
+
+
+
+    <Border
+        Padding="10"
+        Background="#DD333333"
+        CornerRadius="10">
+
+        <!--  Border can have only ONE child: this Grid  -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <!--  Auto + * = image sized to its content, text takes the rest  -->
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Helper image/avatar  -->
+            <Image
+                x:Name="imgState"
+                Grid.Column="0"
+                Width="40"
+                Height="40"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Source="/Images/Success_Icon.png"
+                Stretch="UniformToFill" />
+
+            <!--  Helper message  -->
+            <TextBlock
+                x:Name="txtMessage"
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                FontSize="14"
+                Foreground="White"
+                TextWrapping="Wrap" />
+        </Grid>
+    </Border>
+
+</Window>

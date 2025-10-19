@@ -1,5 +1,6 @@
 ﻿1. app Icon?
 2. Edit win - On load enable mask.
 3. Edit win - Is slider value setting properly when controls renabled?
-4. test is it now saving bools user name and passsword set - for passwds, yes...
-5. on mouseover context buttons - glow/highlight.
+4. on mouseover context buttons - glow/highlight.
+5. Add attirbute to window styling guy
+6. Add check/X icons for toast window to signify success/failure

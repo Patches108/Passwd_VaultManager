@@ -1,0 +1,109 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.Helper"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Helper"
+    Width="350"
+    Height="250"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <!--  Animations  -->
+    <Window.Resources>
+        <!--  Fade + slide in from right  -->
+        <Storyboard x:Key="EnterStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                AccelerationRatio="0.3"
+                DecelerationRatio="0.7"
+                Storyboard.TargetProperty="(Window.Left)"
+                Duration="0:0:0.4" />
+        </Storyboard>
+
+        <!--  Fade + slide out to right  -->
+        <Storyboard x:Key="ExitStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                To="0"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                AccelerationRatio="0.7"
+                DecelerationRatio="0.3"
+                Storyboard.TargetProperty="(Window.Left)"
+                Duration="0:0:0.4" />
+        </Storyboard>
+    </Window.Resources>
+
+    <!--  Main container  -->
+    <Border
+        x:Name="RootBorder"
+        Padding="10"
+        Background="#DD333333"
+        CornerRadius="10">
+
+        <Grid x:Name="MainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Close Button (top-right)  -->
+            <Button
+                x:Name="btnClose"
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="28"
+                Height="28"
+                Margin="0,0,0,5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Content="X"
+                Cursor="Hand"
+                FontWeight="Bold"
+                Foreground="White" />
+
+            <!--  Helper image/avatar  -->
+            <Image
+                x:Name="imgHelperAvatar"
+                Grid.Row="1"
+                Width="145"
+                Height="183"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Source="/Images/helper.png"
+                Stretch="UniformToFill" />
+
+            <!--  Helper text message  -->
+            <TextBlock
+                x:Name="txtMessage"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="14"
+                Foreground="White"
+                Text="message will appear here."
+                TextWrapping="Wrap" />
+        </Grid>
+    </Border>
+
+</Window>
