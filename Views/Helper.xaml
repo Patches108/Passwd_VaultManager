@@ -9,6 +9,7 @@
     Height="250"
     AllowsTransparency="True"
     Background="Transparent"
+    Loaded="frmHelper_Loaded"
     ResizeMode="NoResize"
     ShowActivated="False"
     ShowInTaskbar="False"

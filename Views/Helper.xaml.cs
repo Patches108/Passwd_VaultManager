@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace Passwd_VaultManager.Views {
     /// <summary>
     /// Interaction logic for Helper.xaml
     /// </summary>
     public partial class Helper : Window {
-        public Helper() {
+
+        readonly string txt = string.Empty;
+
+        public Helper(string msg) {
             InitializeComponent();
+            txt = msg;
+        }
+
+        private void frmHelper_Loaded(object sender, RoutedEventArgs e) {
+            txtMessage.Text = txt;
         }
     }
 }
