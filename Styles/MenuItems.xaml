@@ -1,8 +1,6 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"-->
+    <!--  xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"  -->
 
     <!--<ControlTemplate x:Key="MenuHeaderStyle" TargetType="{x:Type MenuItem}">
         <Border
@@ -434,22 +432,30 @@
                 <Setter Property="StaysOpenOnClick" Value="True" />
             </Trigger>
 
-            --><!--  Contained in Menu | has children  --><!--
+    -->
+    <!--  Contained in Menu | has children  -->
+    <!--
             <Trigger Property="Role" Value="TopLevelHeader">
                 <Setter Property="Template" Value="{DynamicResource TopLevelMenuItemControlTemplate}" />
                 <Setter Property="BorderThickness" Value="{DynamicResource MenuItem.TopLevelItem.Static.BorderThickness}" />
             </Trigger>
-            --><!--  Contained in Menu | is checkable or no children  --><!--
+    -->
+    <!--  Contained in Menu | is checkable or no children  -->
+    <!--
             <Trigger Property="Role" Value="TopLevelItem">
                 <Setter Property="Template" Value="{DynamicResource TopLevelMenuItemControlTemplate}" />
                 <Setter Property="BorderThickness" Value="{DynamicResource MenuItem.TopLevelItem.Static.BorderThickness}" />
             </Trigger>
-            --><!--  Contained in MenuItem hierarchy | has children  --><!--
+    -->
+    <!--  Contained in MenuItem hierarchy | has children  -->
+    <!--
             <Trigger Property="Role" Value="SubmenuHeader">
                 <Setter Property="Template" Value="{DynamicResource SubLevelMenuItem_SubmenuHeader_ControlTemplate}" />
                 <Setter Property="BorderThickness" Value="{DynamicResource MenuItem.SubLevelItem.Static.BorderThickness}" />
             </Trigger>
-            --><!--  Contained in MenuItem hierarchy | is checkable or no children  --><!--
+    -->
+    <!--  Contained in MenuItem hierarchy | is checkable or no children  -->
+    <!--
             <Trigger Property="Role" Value="SubmenuItem">
                 <Setter Property="Template" Value="{DynamicResource SubLevelMenuItem_SubmenuItem_ControlTemplate}" />
                 <Setter Property="BorderThickness" Value="{DynamicResource MenuItem.SubLevelItem.Static.BorderThickness}" />
@@ -504,7 +510,7 @@
 
                     <ControlTemplate.Triggers>
 
-                        <!--Mouse over animation-->
+                        <!--  Mouse over animation  -->
 
                         <EventTrigger RoutedEvent="MouseEnter">
                             <BeginStoryboard>
@@ -519,7 +525,7 @@
                         </EventTrigger>
 
 
-                        <!--Mouse leave animation-->
+                        <!--  Mouse leave animation  -->
 
                         <EventTrigger RoutedEvent="MouseLeave">
                             <BeginStoryboard>
@@ -543,6 +549,7 @@
         <Setter Property="Background" Value="#2F343B" />
         <Setter Property="BorderBrush" Value="#5A5F66" />
         <Setter Property="Padding" Value="12,6" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="MenuItem">
@@ -550,38 +557,38 @@
                         x:Name="Bd"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="1"
+                        BorderThickness="0"
                         CornerRadius="6"
                         SnapsToDevicePixels="True">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-    
-      <!--Icon--> 
-    
-                            <ContentPresenter
+
+                            <!--  Icon  -->
+                            <!--<ContentPresenter
                                 x:Name="IconHost"
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
-                                ContentSource="Icon" />
+                                ContentSource="Icon" />-->
 
-    
-      <!--Header-->  
-    
+
+                            <!--  Header  -->
                             <ContentPresenter
                                 x:Name="HeaderHost"
                                 Grid.Column="1"
+                                Height="20"
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 ContentSource="Header"
                                 RecognizesAccessKey="True" />
 
-    
-      <!--Arrow for submenu headers-->  
-    
+
+                            <!--  Arrow for submenu headers  -->
                             <Path
                                 x:Name="Arrow"
                                 Grid.Column="2"
@@ -592,9 +599,8 @@
                                 StrokeThickness="2"
                                 Visibility="Collapsed" />
 
-    
-      <!--Submenu popup-->  
-    
+
+                            <!--  Submenu popup  -->
                             <Popup
                                 x:Name="PART_Popup"
                                 AllowsTransparency="True"
@@ -621,9 +627,9 @@
                     </Border>
 
                     <ControlTemplate.Triggers>
-    
-      <!--Role-specific-->  
-    
+
+                        <!--  Role-specific  -->
+
                         <Trigger Property="Role" Value="TopLevelHeader">
                             <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
                         </Trigger>
@@ -638,9 +644,9 @@
                             <Setter TargetName="PART_Popup" Property="IsOpen" Value="False" />
                         </Trigger>
 
-    
-      <!--Visual states-->  
-    
+
+                        <!--  Visual states  -->
+
                         <Trigger Property="IsHighlighted" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="#3E434A" />
                         </Trigger>
@@ -661,9 +667,9 @@
     </Style>
 
 
-    
-      <!--a separator style--> 
-    
+
+    <!--  a separator style  -->
+
     <Style x:Key="MenuSeparator" TargetType="Separator">
         <Setter Property="Margin" Value="8,6" />
         <Setter Property="Template">
