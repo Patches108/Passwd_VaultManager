@@ -21,7 +21,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <models:BoolToTextConverter x:Key="BoolToTextConverter" />
-
+            <models:BoolToBrushConverter x:Key="BoolToBrushConverter" />
             <models:BoolToImageConverter x:Key="BoolToImageConverter" />
 
         </ResourceDictionary>

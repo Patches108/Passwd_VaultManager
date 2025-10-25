@@ -153,7 +153,7 @@
                     Command="{Binding OpenSettingsCommand}"
                     IsChecked="False"
                     Style="{StaticResource SideCmdStyle}">
-                    <Grid Margin="-10,0,0,0">
+                    <Grid Margin="-10,0,-8,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -170,10 +170,9 @@
                         <TextBlock
                             x:Name="cmd_OpenSettings"
                             Grid.Column="1"
-                            Width="45"
-                            Height="17"
-                            Margin="5,7,0,0"
-                            VerticalAlignment="Top"
+                            Height="21"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
                             Style="{StaticResource TextStyle}"
                             Text="Settings" />
                     </Grid>
