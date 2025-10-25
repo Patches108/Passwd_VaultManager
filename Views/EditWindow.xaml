@@ -186,14 +186,13 @@
                     <Button
                         x:Name="cmdToggleReveal"
                         Grid.Row="1"
-                        Grid.Column="2"
+                        Grid.Column="1"
                         Width="30"
                         Height="25"
-                        Margin="0,0,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Center"
                         Click="ToggleReveal_Click"
                         FontSize="10"
-                        Style="{StaticResource ControlButton}">
+                        Style="{StaticResource ControlButton}" VerticalAlignment="Top">
                         <Image
                             x:Name="Img_TogglePasswdMask"
                             Width="23"

@@ -220,6 +220,7 @@
                     Background="Transparent"
                     BorderThickness="0"
                     ItemsSource="{Binding Vaults}"
+                    PreviewKeyDown="ListBox_PreviewKeyDown"
                     SelectedItem="{Binding SelectedAppVault}">
 
                     <!--  Bind double-click & Enter at the ListBox level  -->
@@ -232,6 +233,8 @@
                             Key="Enter"
                             Command="{Binding DataContext.EditVaultEntryCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                             CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+
+
                     </ListBox.InputBindings>
 
                     <ListBox.ItemContainerStyle>

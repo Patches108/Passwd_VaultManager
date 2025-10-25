@@ -10,6 +10,8 @@ namespace Passwd_VaultManager.Services {
                 ["fontfamily"] = (s, v) => s.FontFamily = v,
                 ["fontsize"] = (s, v) => { if (TryParseDoubleAny(v, out var d)) s.FontSize = d; },
                 ["firsttimeopeningapp"] = (s, v) => s.FirstTimeOpeningApp = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeOpeningNewWin"] = (s, v) => s.FirstTimeOpeningNewWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeOpeningEditWin"] = (s, v) => s.FirstTimeOpeningEditWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
             };
 
         private static bool TryParseDoubleAny(string s, out double result) {
@@ -57,6 +59,8 @@ namespace Passwd_VaultManager.Services {
                 $"FontSize={s.FontSize.ToString(CultureInfo.InvariantCulture)}",
                 $"SoundEnabled={(s.SoundEnabled ? "true" : "false")}",
                 $"FirstTimeOpeningApp={(s.FirstTimeOpeningApp ? "true" : "false")}",
+                $"FirstTimeOpeningNewWin={(s.FirstTimeOpeningNewWin ? "true" : "false")}",
+                $"FirstTimeOpeningEditWin={(s.FirstTimeOpeningEditWin ? "true" : "false")}",
             };
             File.WriteAllLines(path, lines);
         }
@@ -67,7 +71,9 @@ namespace Passwd_VaultManager.Services {
                 "FontFamily=Segoe UI",
                 "FontSize=16.5",
                 "SoundEnabled=true",
-                "FirstTimeOpeningApp=true"
+                "FirstTimeOpeningApp=true",
+                "FirstTimeOpeningNewWin=true",
+                "FirstTimeOpeningEditWin=true"
             };
             File.WriteAllLines(path, defaults);
         }

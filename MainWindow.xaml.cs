@@ -1,13 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
-using Passwd_VaultManager.Funcs;
-using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
-using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Passwd_VaultManager
 {
@@ -27,7 +25,7 @@ namespace Passwd_VaultManager
             _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store it inside your MainWindowVM
             DataContext = _vm;
 
-            App.Settings.FirstTimeOpeningApp = true;       // REMOVE THIS IN PROD
+            //App.Settings.FirstTimeOpeningApp = true;       // REMOVE THIS IN PROD
 
             if (App.Settings.FirstTimeOpeningApp) {
                 var helpWin = new Helper("I see this is your first time using Password Vault Manager.\n\nWelcome!\n\nTo get started, click the \'New\'");
@@ -103,5 +101,13 @@ namespace Passwd_VaultManager
             //var win = new NewWindow { DataContext = shared }; // use SAME instance
             //win.Show();
         }
+
+        private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Escape && sender is ListBox lb) {
+                lb.SelectedItem = null;
+                e.Handled = true;
+            }
+        }
+
     }
 }

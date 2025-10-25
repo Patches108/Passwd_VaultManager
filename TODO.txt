@@ -1,6 +1,6 @@
 ﻿1. app Icon?
-2. Edit win - On load enable mask.
-3. Edit win - Is slider value setting properly when controls renabled?
-4. on mouseover context buttons - glow/highlight.
-5. Add attirbute to window styling guy
-6. Add check/X icons for toast window to signify success/failure
+2. on mouseover context buttons - glow/highlight.
+3. Add attirbute to window styling guy
+4. ESC deselect items
+5. Fix styling menu
+6. If NOT SET - mark it red. otherwise, green.

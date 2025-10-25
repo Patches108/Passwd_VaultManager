@@ -42,6 +42,12 @@ namespace Passwd_VaultManager.Views
                     _passwdWhole = _vm.Password ?? string.Empty;
                     txtPasswd.Text = _passwdWhole;
 
+                    _vm.BitRate = _bitRate;
+                    _vm.Length = _len;
+                    _targetLength = _len;
+                    sldPasswdLength.Value = _len;
+                    _vm.SliderValue = _len.ToString();
+
                     // Add password controls to list for later iteration as per checkbox
                     _PasswdControls.Add(txtPasswd);
                     _PasswdControls.Add(lblPasswd);
@@ -51,13 +57,19 @@ namespace Passwd_VaultManager.Views
                     _PasswdControls.Add(rdo_192);
                     _PasswdControls.Add(rdo_256);
                     _PasswdControls.Add(Img_TogglePasswdMask);
+                    _PasswdControls.Add(cmdToggleReveal);
                     _PasswdControls.Add(txtCharactersToExclude);
                     _PasswdControls.Add(sldPasswdLength);
                     _PasswdControls.Add(cmdGenPasswd);
                     _PasswdControls.Add(cmdManuallyEnterPasswd);
                     _PasswdControls.Add(lblPasswdSliderValue);
 
+                    txtPasswd.IsEnabled = true;
+                    _showPlain = !_showPlain;       // flip reveal state
                     UpdateDisplayedPassword(force: true);
+                    txtPasswd.IsEnabled = false;
+
+                    ChangesMade = false;
 
                 }
                 _updating = false; // allow UpdateDisplayedPassword to run later
@@ -199,7 +211,14 @@ namespace Passwd_VaultManager.Views
 
         private void EditWin_cmdClose_Click(object sender, RoutedEventArgs e) {
             if (ChangesMade) {
-                // DO YOU WANT TO SAVE?
+                
+                // confirm with yes/no dialog
+                YesNoWindow confirm = new YesNoWindow($"You have unsaved changes. Discard changes and close edit form?.");
+                bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
+
+                if (confirmed) 
+                    this.Close();   
+
             } else {
                 this.Close();
             }

@@ -4,6 +4,8 @@
         public double FontSize { get; set; } = 16.5;
         public bool SoundEnabled { get; set; } = true;
         public bool FirstTimeOpeningApp { get; set; } = true;
+        public bool FirstTimeOpeningNewWin { get; set; } = true;
+        public bool FirstTimeOpeningEditWin { get; set; } = true;
     }
 }
 
