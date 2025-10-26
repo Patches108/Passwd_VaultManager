@@ -1,6 +1,7 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
+using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
-using Passwd_VaultManager.Funcs;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -75,10 +76,15 @@ namespace Passwd_VaultManager.Views
                 _updating = false; // allow UpdateDisplayedPassword to run later
             };
 
-            //_updating = false;
-            //UpdateDisplayedPassword(force: true);
-
             lblPasswdStatus.Visibility = Visibility.Hidden;
+
+            App.Settings.FirstTimeOpeningEditWin = true;       // REMOVE THIS IN PROD
+
+            if (App.Settings.FirstTimeOpeningEditWin) {
+                // FIX THIS MESSAGE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
         }
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
@@ -225,7 +231,12 @@ namespace Passwd_VaultManager.Views
         }
 
         private void EditWin_cmdUpdateVault_Click(object sender, RoutedEventArgs e) {
-            //
+            // Update vault in DB
+
+            App.Settings.FirstTimeOpeningEditWin = false;
+            App.Settings.FirstTimeNewAppName_EditWin = false;
+            App.Settings.FirstTimeNewUserName_EditWin = false;
+            SettingsService.Save(App.Settings);
 
             ChangesMade = false;
         }
@@ -297,6 +308,22 @@ namespace Passwd_VaultManager.Views
                 c.IsEnabled = false;
 
             _enableCharsExcludeSwitch = false;
+        }
+
+        private void txtAppName_GotFocus(object sender, RoutedEventArgs e) {
+            if (App.Settings.FirstTimeNewAppName_EditWin) {
+                // FIX THIS MESSAGE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
+        }
+
+        private void txtUserName_GotFocus(object sender, RoutedEventArgs e) {
+            if (App.Settings.FirstTimeNewUserName_EditWin) {
+                // FIX THIS MESSAGE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
         }
     }
 }

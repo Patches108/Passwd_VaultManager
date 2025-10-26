@@ -1,10 +1,10 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
+using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
-using Passwd_VaultManager.Funcs;
-//using static Passwd_VaultManager.Funcs.PasswdGen;
 
 namespace Passwd_VaultManager.Views {
     /// <summary>
@@ -16,7 +16,7 @@ namespace Passwd_VaultManager.Views {
         
         private int _bitRate = 256;
         private int _len = 41;
-        private int _targetLength = 0;        // current slider length (0 = no limit)
+        private int _targetLength = 0;        // slider length
 
         private bool _updating;
         private bool _showPlain;   // false = masked, true = reveal
@@ -33,6 +33,14 @@ namespace Passwd_VaultManager.Views {
             this._refreshAction = _refreshAction;
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
+
+            //App.Settings.FirstTimeOpeningNewWin = true;       // REMOVE THIS IN PROD
+
+            if (App.Settings.FirstTimeOpeningNewWin) {
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+                SettingsService.Save(App.Settings);
+            }
         }
 
         private void cmdCancel_Click(object sender, RoutedEventArgs e) {
@@ -101,16 +109,34 @@ namespace Passwd_VaultManager.Views {
         private void txtAppName_GotFocus(object sender, RoutedEventArgs e) {
             if(String.IsNullOrWhiteSpace(txtAppName.Text) || txtAppName.Text.Equals("Website/Application Name"))
                 txtAppName.Text = String.Empty;
+
+            if (App.Settings.FirstTimeNewAppName_NewWin) {
+                // UPDATE MESSAGE HERE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
         }
 
         private void txtUserName_GotFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtUserName.Text) || txtUserName.Text.Equals("User Name / Email"))
                 txtUserName.Text = String.Empty;
+
+            if (App.Settings.FirstTimeNewUserName_NewWin) {
+                // UPDATE MESSAGE HERE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
         }
 
         private void txtPasswd_GotFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtPasswd.Text) || txtPasswd.Text.Equals("Passwd"))
                 txtPasswd.Text = String.Empty;
+
+            if (App.Settings.FirstTimeNewPassword_NewWin) {
+                // UPDATE MESSAGE HERE
+                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                helpWin.Show();
+            }
         }
 
         private void txtAppName_LostFocus(object sender, RoutedEventArgs e) {
@@ -248,7 +274,6 @@ namespace Passwd_VaultManager.Views {
 
                 try {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
-                    //new MessageWindow($"Vault entry - ({v.AppName}) - created successfully.");
                     
                     System.Windows.Application.Current.Dispatcher.Invoke(() => {
                         var toast = new ToastNotification($"Vault entry - ({v.AppName}) - created successfully.", true);
@@ -260,6 +285,12 @@ namespace Passwd_VaultManager.Views {
                 } catch (Exception ex) {
                     new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.");
                 }
+
+                App.Settings.FirstTimeNewAppName_NewWin = false;
+                App.Settings.FirstTimeNewPassword_NewWin = false;
+                App.Settings.FirstTimeNewUserName_NewWin = false;
+                App.Settings.FirstTimeOpeningNewWin = false;
+                SettingsService.Save(App.Settings);
 
                 this.Close();       // Close window after creating vault record.
 

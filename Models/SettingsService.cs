@@ -12,6 +12,14 @@ namespace Passwd_VaultManager.Services {
                 ["firsttimeopeningapp"] = (s, v) => s.FirstTimeOpeningApp = v.Equals("true", StringComparison.OrdinalIgnoreCase),
                 ["FirstTimeOpeningNewWin"] = (s, v) => s.FirstTimeOpeningNewWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
                 ["FirstTimeOpeningEditWin"] = (s, v) => s.FirstTimeOpeningEditWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+
+                ["FirstTimeNewAppName_NewWin"] = (s, v) => s.FirstTimeNewAppName_NewWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeNewUserName_NewWin"] = (s, v) => s.FirstTimeNewUserName_NewWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeNewPassword_NewWin"] = (s, v) => s.FirstTimeNewPassword_NewWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+
+                ["FirstTimeNewAppName_EditWin"] = (s, v) => s.FirstTimeNewAppName_EditWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeNewUserName_EditWin"] = (s, v) => s.FirstTimeNewUserName_EditWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
+                ["FirstTimeNewPassword_EditWin"] = (s, v) => s.FirstTimeNewPassword_EditWin = v.Equals("true", StringComparison.OrdinalIgnoreCase),
             };
 
         private static bool TryParseDoubleAny(string s, out double result) {
@@ -61,6 +69,14 @@ namespace Passwd_VaultManager.Services {
                 $"FirstTimeOpeningApp={(s.FirstTimeOpeningApp ? "true" : "false")}",
                 $"FirstTimeOpeningNewWin={(s.FirstTimeOpeningNewWin ? "true" : "false")}",
                 $"FirstTimeOpeningEditWin={(s.FirstTimeOpeningEditWin ? "true" : "false")}",
+
+                $"FirstTimeNewAppName_NewWin={(s.FirstTimeNewAppName_NewWin ? "true" : "false")}",
+                $"FirstTimeNewUserName_NewWin={(s.FirstTimeNewUserName_NewWin ? "true" : "false")}",
+                $"FirstTimeNewPassword_NewWin={(s.FirstTimeNewPassword_NewWin ? "true" : "false")}",
+
+                $"FirstTimeNewAppName_EditWin={(s.FirstTimeNewAppName_EditWin ? "true" : "false")}",
+                $"FirstTimeNewUserName_EditWin={(s.FirstTimeNewUserName_EditWin ? "true" : "false")}",
+                $"FirstTimeNewPassword_EditWin={(s.FirstTimeNewPassword_EditWin ? "true" : "false")}",
             };
             File.WriteAllLines(path, lines);
         }
@@ -68,12 +84,21 @@ namespace Passwd_VaultManager.Services {
         private static void InitializeDefaultsFile(string path) {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             var defaults = new[] {
+
                 "FontFamily=Segoe UI",
                 "FontSize=16.5",
                 "SoundEnabled=true",
                 "FirstTimeOpeningApp=true",
                 "FirstTimeOpeningNewWin=true",
-                "FirstTimeOpeningEditWin=true"
+                "FirstTimeOpeningEditWin=true",
+
+                "FirstTimeNewAppName_NewWin=true",
+                "FirstTimeNewUserName_NewWin=true",
+                "FirstTimeNewPassword_NewWin=true",
+
+                "FirstTimeNewAppName_EditWin=true",
+                "FirstTimeNewUserName_EditWin=true",
+                "FirstTimeNewPassword_EditWin=true"
             };
             File.WriteAllLines(path, defaults);
         }

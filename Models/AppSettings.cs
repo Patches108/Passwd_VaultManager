@@ -6,6 +6,16 @@
         public bool FirstTimeOpeningApp { get; set; } = true;
         public bool FirstTimeOpeningNewWin { get; set; } = true;
         public bool FirstTimeOpeningEditWin { get; set; } = true;
+
+        // New Window Settings
+        public bool FirstTimeNewAppName_NewWin { get; set; } = true;
+        public bool FirstTimeNewUserName_NewWin { get; set; } = true;
+        public bool FirstTimeNewPassword_NewWin { get; set; } = true;
+
+        // Edit Window Settings
+        public bool FirstTimeNewAppName_EditWin { get; set; } = true;
+        public bool FirstTimeNewUserName_EditWin { get; set; } = true;
+        public bool FirstTimeNewPassword_EditWin { get; set; } = true;
     }
 }
 

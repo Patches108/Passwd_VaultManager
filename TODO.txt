@@ -1,4 +1,5 @@
 ﻿1. app Icon?
 2. on mouseover context buttons - glow/highlight.
 3. Add attirbute to window styling guy
-5. Fix styling menu
+4. Fix styling menu
+5. Edit window Update vault in DB
