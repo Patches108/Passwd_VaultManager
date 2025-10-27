@@ -107,6 +107,7 @@ namespace Passwd_VaultManager.Funcs {
 
             while (await reader.ReadAsync(ct)) {
                 var app = new AppVault {
+                    Id = reader.GetInt64(reader.GetOrdinal("id")),
                     AppName = DecryptBlobSafe(reader, reader.GetOrdinal("AppName")),
                     UserName = DecryptBlobSafe(reader, reader.GetOrdinal("UserName")),
                     Password = DecryptBlobSafe(reader, reader.GetOrdinal("Passwd")),
@@ -123,6 +124,46 @@ namespace Passwd_VaultManager.Funcs {
             return vaults;
         }
 
+        public static async Task<int> UpdateVaultByIdAsync(
+    long id,
+    string appName,
+    string? userName,
+    string? password,
+    bool isUserNameSet,
+    bool isPasswdSet,
+    int bitRate,
+    CancellationToken ct = default) {
+
+            await using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync(ct);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE Vault
+                SET
+                    AppName        = $app,
+                    UserName       = $user,
+                    Passwd         = $pwd,
+                    IsUserNameSet  = $userSet,
+                    IsPasswdSet    = $pwdSet,
+                    BitRate        = $bitR
+                WHERE id = $id;";
+
+            // encrypted blobs
+            cmd.Parameters.AddWithValue("$app", EncryptionService.EncryptToBlob(appName ?? string.Empty));
+            cmd.Parameters.AddWithValue("$user", EncryptionService.EncryptToBlob(userName ?? string.Empty));
+            cmd.Parameters.AddWithValue("$pwd", EncryptionService.EncryptToBlob(password ?? string.Empty));
+
+            // plain ints/bools
+            cmd.Parameters.AddWithValue("$userSet", isUserNameSet ? 1 : 0);
+            cmd.Parameters.AddWithValue("$pwdSet", isPasswdSet ? 1 : 0);
+            cmd.Parameters.AddWithValue("$bitR", bitRate);
+
+            cmd.Parameters.AddWithValue("$id", id);
+
+            // returns number of rows affected (0 = not found / nothing updated, 1 = success)
+            return await cmd.ExecuteNonQueryAsync(ct);
+        }
 
 
         private static string DecryptBlobSafe(SqliteDataReader reader, int ordinal) {
@@ -247,6 +288,23 @@ namespace Passwd_VaultManager.Funcs {
                 return total;
             }
         }
+        // Convenience update overload
+        public static Task<int> UpdateVaultAsync(AppVault v, CancellationToken ct = default) {
+            if (v == null)
+                throw new ArgumentNullException(nameof(v));
+
+            return UpdateVaultByIdAsync(
+                id: v.Id,
+                appName: v.AppName,
+                userName: v.UserName,
+                password: v.Password,
+                isUserNameSet: v.IsUserNameSet,
+                isPasswdSet: v.IsPasswdSet,
+                bitRate: v.BitRate,
+                ct: ct);
+        }
+
+
 
         // Convenience overload: delete using an AppVault instance (SelectedAppVault, etc.)
         public static Task<int> DeleteVaultAsync(AppVault v, CancellationToken ct = default)

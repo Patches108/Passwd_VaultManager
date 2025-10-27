@@ -33,6 +33,8 @@ namespace Passwd_VaultManager.Models
         /// Getters and setters
         /// </summary>
         /// 
+        public long Id { get; set; }
+
         public Guid getAppVaultInstanceGuid { get { return AppVaultGUID; } }
 
         public DateTime? DateCreated { get; set; }

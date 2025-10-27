@@ -4,6 +4,7 @@ using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Passwd_VaultManager.Views
 {
@@ -230,8 +231,20 @@ namespace Passwd_VaultManager.Views
             }
         }
 
-        private void EditWin_cmdUpdateVault_Click(object sender, RoutedEventArgs e) {
+        private async void EditWin_cmdUpdateVault_Click(object sender, RoutedEventArgs e) {
+
             // Update vault in DB
+            try {
+                await _vm.SaveAsync();
+
+                System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                    var toast = new ToastNotification($"Vault entry - ({_vm.AppName}) - created successfully.", true);
+                    toast.Show();
+                });
+
+            } catch (Exception ex) {
+                new MessageWindow($"Failed to create vault entry - ({_vm.AppName}) \n\n {ex.Message}.");
+            }
 
             App.Settings.FirstTimeOpeningEditWin = false;
             App.Settings.FirstTimeNewAppName_EditWin = false;

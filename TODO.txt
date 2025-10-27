@@ -1,5 +1,5 @@
-﻿1. app Icon?
-2. on mouseover context buttons - glow/highlight.
-3. Add attirbute to window styling guy
-4. Fix styling menu
-5. Edit window Update vault in DB
+﻿1. on mouseover context buttons - glow/highlight.
+2. Add attirbute to window styling guy
+3. Fix styling menu
+
+4. Bug - New window > Genpassword doesn't put passwd in field first time.

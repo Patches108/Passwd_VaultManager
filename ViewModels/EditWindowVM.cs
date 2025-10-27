@@ -1,4 +1,5 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
 using System.Collections;
 using System.ComponentModel;
@@ -25,14 +26,20 @@ namespace Passwd_VaultManager.ViewModels
 
         private string _sliderValue = String.Empty;
 
+        private readonly AppVault _backingVault;
+
         public EditWindowVM() {
             
         }
 
         public EditWindowVM(AppVault appVault) {
-            _appName = appVault?.AppName ?? String.Empty;
-            _userName = appVault?.UserName ?? String.Empty;
-            _appPasswd = appVault?.Password ?? String.Empty;
+            _backingVault = appVault; // keep original (has Id)
+            _appName = appVault?.AppName ?? string.Empty;
+            _userName = appVault?.UserName ?? string.Empty;
+            _appPasswd = appVault?.Password ?? string.Empty;
+            _bitRate = appVault?.BitRate ?? 256;
+            _isUserNameSet = appVault?.IsUserNameSet ?? false;
+            _isPasswdSet = appVault?.IsPasswdSet ?? false;
         }
 
 
@@ -157,6 +164,20 @@ namespace Passwd_VaultManager.ViewModels
         private void ClearErrors(string prop) {
             if (_errors.Remove(prop))
                 ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(prop));
+        }
+
+
+        public async Task SaveAsync() {
+            // push edited values back into the source AppVault model (the one with Id)
+            _backingVault.AppName = AppName;
+            _backingVault.UserName = Username;
+            _backingVault.Password = Password;
+            _backingVault.IsUserNameSet = !string.IsNullOrWhiteSpace(Username);
+            _backingVault.IsPasswdSet = !string.IsNullOrWhiteSpace(Password);
+            _backingVault.BitRate = BitRate;
+
+            // write changes to DB
+            await DatabaseHandler.UpdateVaultAsync(_backingVault);
         }
     }
 }
