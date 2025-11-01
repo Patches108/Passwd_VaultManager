@@ -1,4 +1,0 @@
-﻿1. on mouseover context buttons - glow/highlight.
-2. Add attirbute to window styling guy
-3. Fix styling menu
-4. Add PIN system.
