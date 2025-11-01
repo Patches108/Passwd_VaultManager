@@ -6,6 +6,7 @@ using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Passwd_VaultManager.Funcs;
 
 namespace Passwd_VaultManager
 {
@@ -36,6 +37,14 @@ namespace Passwd_VaultManager
         }        
 
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
+
+            // Now gate access with PIN
+            if (PinStorage.HasPin()) {
+                var dlg = new pin();
+                bool? ok = dlg.ShowDialog();
+                if (ok != true) return; // user canceled/failed → app closes (by your window)
+            }
+
             await _vm.RefreshVaultsAsync();
         }
 

@@ -108,5 +108,94 @@
     </Style>
 
 
-    <!--  MAKE STYLE FOR PASSWORD GEN TEXTBLOCKS  -->
+
+
+    <!--  Dark Background and Card Colors  -->
+    <SolidColorBrush x:Key="DarkBackgroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="DarkCardBrush" Color="#FF2D2D30" />
+    <SolidColorBrush x:Key="DarkAccentBrush" Color="#FF3A96DD" />
+    <SolidColorBrush x:Key="DarkForegroundBrush" Color="#FFE5E5E5" />
+    <SolidColorBrush x:Key="DarkButtonHoverBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DarkButtonPressedBrush" Color="#FF005A9E" />
+
+
+    <!--  Label Style (PIN windows)  -->
+    <Style x:Key="DialogTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource DarkForegroundBrush}" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="16.5" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+    </Style>
+
+
+    <!--  For PIN textboxes.  -->
+    <Style x:Key="DarkRoundedTextBox" TargetType="TextBox">
+        <Setter Property="Foreground" Value="#DBDBDB" />
+        <Setter Property="Background" Value="#212529" />
+        <Setter Property="BorderBrush" Value="#3B3F45" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                        <ScrollViewer
+                            x:Name="PART_ContentHost"
+                            Margin="0"
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+
+                        <!--  Hover: show green border  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="border"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#FF3AA546"
+                                            Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="border"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#444"
+                                            Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <!--  Disabled  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#777" />
+                            <Setter TargetName="border" Property="Background" Value="#2A2A2A" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#444" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -1,0 +1,25 @@
+I am making a password vault manager to teach myself WPF development. Here, we have the new window form. This is where the user can create a new vault, which will contain the email or login, user name, and password.
+
+The password can be entered manually, or generated. It is recommended to use the generated function. The generate password comes with easy-to-use conditionals where by you can adjust characters to exclude, and adjust the bit rate.
+
+Let's run it and see what I've created so far. So far, I've added a new, edit, and delete button. There is also a menu dropdown, however I'm still figuring out the styling issues. Styling is hard in WPF.
+
+I'm using custom styling for better control and flexibility to get the right look and feel for the app. I'm the type of dev who likes to build the look-and-feel as I build the structure in code.
+
+If we click the new button, it will open the new window we started with. I've already added nice-to-look at placeholders to give it that professional feel.
+
+As you can see, the generate password function is already operational. I had to use some AI help to help me with the more advanced algorithms with this project. I work full time, and it's very time-consuming to create projects like this in those few free hours of the week. AI is a great tool for speeding up the process and doing the grunt work. I've always been big fan of AI for coding. But I think it's only useful when used sparingly and correctly. And when used correctly, it's a great help.
+
+But I try to do most of the development myself because I don't learn new things well when using AI to do all of the heavy lifting. So, I do what I can. Anyway, this window will allow the user to create a vault containing login details for a website or app. I plan to use SQL lite as the database. SQL server is a little overkill, but I'm more used to it coming from a win-forms background. SQL lite seems like a better fit for this app. SQL lite is more compact and doesn't require installations of any large client servers like SQL server.
+
+Anyway, that's all for now.  I'll be back soon when I have more to show.
+
+Hello and welcome back to dev log 2. I've made some improvements and upgrades, so let's see what I've been up to. So, if we run the app, you can see that I've configured the main window to load a list of vault objects. To do this, I had to implement SQL lite and some code for it. What we have here is just a draft, the final project will look much better with more detail and bells and whistles.
+
+I got some nice highlighting styling applied to the vault objects already, but I'll continue to improve and develop the styling as I go. WPF allows for binding of objects and datasets, so I didn't need to manually write code to have the main window load vault objects as lists. It's an efficient feature.
+
+I can create new vaults and add them to the database. Let's create one. I enter a log in, username, and then generate a password. I can adjust the password length with the slider. And I can exclude characters from the generated password. Excluding characters is a feature I added just in case an app or website doesn't allow certain characters in their passwords. 
+
+All I have to do then is click Create and it adds the vault to the SQL lite database. And as you can see, it shows up in the list. And, the delete function is working as well. It's pretty neat. I look forward to developing this project further. Well, that's all for now. See you next time.
+
+---BELOW---

@@ -15,10 +15,7 @@
             bool force = false,
             ReadOnlySpan<char> placeholder = default,
             bool mask = false) {
-            // 0) Placeholder guard (avoid work and allocations)
-            if (!force && !placeholder.IsEmpty && currentText.SequenceEqual(placeholder))
-                return new string(currentText); // small, unavoidable string; better to just pass through binding
-
+            
             // 1) Normalize target length
             if (targetLength < 0) targetLength = 0;
             if (targetLength > 41) targetLength = 41;

@@ -1,0 +1,124 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.pin"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Enter PIN"
+    Width="360"
+    Height="220"
+    AllowsTransparency="True"
+    Style="{StaticResource WinStyle}"
+    Icon="/Images/icon.ico"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None">
+
+    <Border
+        x:Name="RootBorder"
+        Padding="22"
+        Style="{StaticResource FormStyle}"
+        CornerRadius="12">
+        <DockPanel LastChildFill="True">
+
+            <!--  Bottom Buttons  -->
+            <StackPanel
+                x:Name="stkButtons"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Bottom"
+                KeyboardNavigation.TabNavigation="Continue"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="btnProceed"
+                    Width="100"
+                    Margin="6"
+                    Click="btnProceed_Click"
+                    Content="Proceed"
+                    IsDefault="True"
+                    IsEnabled="False"
+                    Style="{StaticResource ControlButton}" />
+                <Button
+                    x:Name="btnCancel"
+                    Width="100"
+                    Margin="6"
+                    Click="btnCancel_Click"
+                    Content="Cancel"
+                    IsCancel="True"
+                    Style="{StaticResource ControlButton}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="stkContent"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+                <!--  Prompt  -->
+                <TextBlock
+                    x:Name="txtPrompt"
+                    FontSize="16"
+                    Style="{StaticResource DialogTextBlockStyle}"
+                    Text="Enter your 4-digit PIN to unlock"
+                    TextAlignment="Center" />
+
+                <!--  PIN Boxes  -->
+                <StackPanel
+                    x:Name="stkPinBoxes"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBox
+                        x:Name="tb1"
+                        Width="48"
+                        Height="48"
+                        Margin="0,0,5,0"
+                        FontSize="20"
+                        MaxLength="1"
+                        PreviewKeyDown="PinBox_PreviewKeyDown"
+                        PreviewTextInput="PinBox_PreviewTextInput"
+                        Style="{StaticResource DarkRoundedTextBox}"
+                        TextAlignment="Center"
+                        TextChanged="PinBox_TextChanged" />
+                    <TextBox
+                        x:Name="tb2"
+                        Width="48"
+                        Height="48"
+                        Margin="5,0,5,0"
+                        FontSize="20"
+                        MaxLength="1"
+                        PreviewKeyDown="PinBox_PreviewKeyDown"
+                        PreviewTextInput="PinBox_PreviewTextInput"
+                        Style="{StaticResource DarkRoundedTextBox}"
+                        TextAlignment="Center"
+                        TextChanged="PinBox_TextChanged" />
+                    <TextBox
+                        x:Name="tb3"
+                        Width="48"
+                        Height="48"
+                        Margin="5,0,5,0"
+                        FontSize="20"
+                        MaxLength="1"
+                        PreviewKeyDown="PinBox_PreviewKeyDown"
+                        PreviewTextInput="PinBox_PreviewTextInput"
+                        Style="{StaticResource DarkRoundedTextBox}"
+                        TextAlignment="Center"
+                        TextChanged="PinBox_TextChanged" />
+                    <TextBox
+                        x:Name="tb4"
+                        Width="48"
+                        Height="48"
+                        Margin="5,0,0,0"
+                        FontSize="20"
+                        MaxLength="1"
+                        PreviewKeyDown="PinBox_PreviewKeyDown"
+                        PreviewTextInput="PinBox_PreviewTextInput"
+                        Style="{StaticResource DarkRoundedTextBox}"
+                        TextAlignment="Center"
+                        TextChanged="PinBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+
+</Window>
