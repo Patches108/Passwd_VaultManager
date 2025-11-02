@@ -5,9 +5,236 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Passwd_VaultManager.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="SettingsWindow"
-    Width="800"
-    Height="450"
+    Title="Settings"
+    Width="600"
+    Height="800"
+    AllowsTransparency="True"
+    Icon="/Images/icon.ico"
+    PreviewKeyDown="InputDialog_PreviewKeyDown"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    Style="{StaticResource WinStyle}"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
     mc:Ignorable="d">
-    <Grid />
+
+    <Border
+        Padding="5"
+        Background="#1E1E1E"
+        BorderBrush="#444"
+        BorderThickness="1"
+        CornerRadius="10"
+        MouseLeftButtonDown="DragWindow"
+        Style="{StaticResource FormStyle}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ScrollViewer.Resources>
+                <Style BasedOn="{StaticResource SlimScrollBarStyleVertical}" TargetType="ScrollBar" />
+            </ScrollViewer.Resources>
+            <StackPanel Margin="20">
+
+                <!--  Font and Font Size Section  -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Font Label  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="0,0,0,5"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="AntiqueWhite"
+                        Text="Font:" />
+
+                    <!--  Font Size Label  -->
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="10,0,0,5"
+                        HorizontalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="AntiqueWhite"
+                        Text="Font Size:" />
+
+                    <!--  Font ComboBox  -->
+                    <ComboBox
+                        x:Name="comFontList"
+                        Grid.Column="0"
+                        Margin="0,25,10,0"
+                        ItemsSource="{Binding AvailableFonts}"
+                        SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
+                        SelectionChanged="ComboBox_SelectionChanged"
+                        Style="{StaticResource DarkComboBox}" />
+
+                    <!--  Font Size ComboBox  -->
+                    <ComboBox
+                        x:Name="comFontSizeList"
+                        Grid.Column="1"
+                        Width="80"
+                        Margin="10,25,0,0"
+                        ItemsSource="{Binding AvailableFontSizes}"
+                        SelectedItem="{Binding SelectedFontSize, Mode=TwoWay}"
+                        Style="{StaticResource DarkComboBox}" />
+                </Grid>
+
+
+                <!--  Font Preview  -->
+                <TextBlock
+                    Margin="0,10,0,5"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Foreground="AntiqueWhite"
+                    Text="Preview:" />
+                <TextBlock
+                    Padding="5"
+                    Background="#252525"
+                    FontFamily="{Binding SelectedFont}"
+                    FontSize="16.5"
+                    Foreground="DarkGray"
+                    Text="The quick brown fox jumps over the lazy dog." />
+
+                <!--  Sound Checkbox  -->
+                <CheckBox
+                    x:Name="chkIsSoundEnabled"
+                    Margin="0,20,0,0"
+                    Checked="chkIsSoundEnabled_Checked"
+                    Content="Enable Sound Effects"
+                    FontSize="14"
+                    IsChecked="{Binding SoundEnabled}"
+                    Style="{StaticResource DarkCheckBox}"
+                    Unchecked="chkIsSoundEnabled_Unchecked" />
+
+                <!--  Backup Group  -->
+                <GroupBox
+                    Margin="0,30,0,0"
+                    Header="Database Maintenance"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+
+                        <Button
+                            Margin="0,5,0,0"
+                            Click="Backup_Click"
+                            Content="Backup Database"
+                            Style="{StaticResource DarkRoundedButton}" />
+
+                        <Button
+                            Margin="0,5,0,0"
+                            Click="Restore_Click"
+                            Content="Restore Database"
+                            Style="{StaticResource DarkRoundedButton}" />
+                    </StackPanel>
+                </GroupBox>
+
+                <!--  Backups Group  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="Backup Folder"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+
+                        <Button
+                            Margin="0,5,0,0"
+                            Click="DeleteBackups_Click"
+                            Content="Delete All Backups"
+                            Style="{StaticResource DarkRoundedButton}" />
+
+                        <Button
+                            Margin="0,5,0,0"
+                            Click="OpenBackupFolder_Click"
+                            Content="Open Backup Folder"
+                            Style="{StaticResource DarkRoundedButton}" />
+                    </StackPanel>
+                </GroupBox>
+
+
+                <!--  App Settings Group  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="App Settings"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+                        <Button
+                            Margin="0,5,0,0"
+                            Click="RestoreDefaults_Click"
+                            Content="Restore Defaults"
+                            Style="{StaticResource DarkRoundedButton}" />
+                    </StackPanel>
+                </GroupBox>
+
+                <!--  App Security Group  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="App Security"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+                        <ToggleButton
+                            x:Name="tglEnablePin"
+                            Margin="0,5,0,0"
+                            Click="EnablePin_Click"
+                            Style="{StaticResource DarkToggleButton}" />
+
+                    </StackPanel>
+                </GroupBox>
+
+                <!--  Danger Zone  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="Danger Zone"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+                        <Button
+                            Margin="0,5,0,0"
+                            Background="DarkRed"
+                            Click="WipeDatabase_Click"
+                            Content="Wipe Entire Database"
+                            Foreground="White"
+                            Style="{StaticResource DarkRoundedButton}" />
+                    </StackPanel>
+                </GroupBox>
+
+                <!--  Stats Info  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="Statistics"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+
+                        <!--  Database Stats  -->
+                        <TextBlock x:Name="lblRecordCount" Text="Number of Records: 0" />
+                        <TextBlock x:Name="lblDbSize" Text="Database Size: 40 KB" />
+
+                        <!--  Separator  -->
+                        <Separator Margin="0,10" />
+
+                        <!--  Backup Stats  -->
+                        <TextBlock x:Name="lblBackupSize" Text="Backup Folder Size: 120 KB" />
+                        <TextBlock x:Name="NumberOfBackups" Text="Total Backups: 3" />
+
+                    </StackPanel>
+                </GroupBox>
+
+
+                <!--  Save / Close  -->
+                <StackPanel
+                    Margin="0,30,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="80"
+                        Margin="0,0,10,0"
+                        Click="Save_Click"
+                        Content="Save"
+                        Style="{StaticResource DarkRoundedButton}" />
+                    <Button
+                        Width="80"
+                        Click="Cancel_Click"
+                        Content="Close"
+                        Style="{StaticResource DarkRoundedButton}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+
 </Window>

@@ -1,0 +1,65 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <!--  Dark-Themed ToggleButton  -->
+    <Style x:Key="DarkToggleButton" TargetType="ToggleButton">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="#333" />
+        <Setter Property="BorderBrush" Value="#555" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource AppFontSize}" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+
+        <!--  default content text when unchecked  -->
+        <Setter Property="Content" Value="Enable PIN" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border
+                        x:Name="Root"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!--  Checked  -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <!--  change look  -->
+                            <Setter TargetName="Root" Property="Background" Value="#1E88E5" />
+                            <Setter Property="Foreground" Value="White" />
+                            <!--  change label  -->
+                            <Setter Property="Content" Value="Disable PIN" />
+                        </Trigger>
+
+                        <!--  Unchecked  -->
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Root" Property="Background" Value="#333" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Content" Value="Enable PIN" />
+                        </Trigger>
+
+                        <!--  Hover  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#444" />
+                        </Trigger>
+
+                        <!--  Disabled  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.6" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>

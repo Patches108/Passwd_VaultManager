@@ -77,11 +77,11 @@
                 VerticalAlignment="Top"
                 Background="Transparent"
                 BorderBrush="Transparent"
+                Click="cmdX_Click"
                 Content="X"
                 Cursor="Hand"
                 FontWeight="Bold"
-                Foreground="White" 
-                Click="cmdX_Click"/>
+                Foreground="White" />
 
             <!--  Helper image/avatar  -->
             <Image
@@ -95,16 +95,19 @@
                 Stretch="UniformToFill" />
 
             <!--  Helper text message  -->
-            <TextBlock
-                x:Name="txtMessage"
+            <ScrollViewer
                 Grid.Row="1"
                 Grid.Column="1"
-                Margin="10,0,0,0"
-                VerticalAlignment="Top"
-                FontSize="14"
-                Foreground="White"
-                Text="message will appear here."
-                TextWrapping="Wrap" />
+                VerticalScrollBarVisibility="Auto">
+                <TextBlock
+                    x:Name="txtMessage"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Top"
+                    FontSize="14"
+                    Foreground="White"
+                    Text="message will appear here."
+                    TextWrapping="Wrap" />
+            </ScrollViewer>
         </Grid>
     </Border>
 

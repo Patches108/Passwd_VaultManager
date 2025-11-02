@@ -1,0 +1,46 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="DarkGroupBoxStyle" TargetType="GroupBox">
+        <Setter Property="Foreground" Value="#DBDBDB" />
+        <Setter Property="Background" Value="#212529" />
+        <Setter Property="BorderBrush" Value="#3B3F45" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource AppFontSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GroupBox">
+                    <Grid>
+                        <!--  Main Border  -->
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <Grid Margin="10,15,10,10">
+                                <ContentPresenter />
+                            </Grid>
+                        </Border>
+
+                        <!--  Header  -->
+                        <Border
+                            Margin="15,0,0,0"
+                            Padding="4,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="{TemplateBinding Background}">
+                            <TextBlock
+                                FontSize="{TemplateBinding FontSize}"
+                                FontWeight="Bold"
+                                Foreground="{TemplateBinding Foreground}"
+                                Text="{TemplateBinding Header}" />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

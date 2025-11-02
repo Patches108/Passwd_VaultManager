@@ -9,18 +9,18 @@
     Width="360"
     Height="220"
     AllowsTransparency="True"
-    Style="{StaticResource WinStyle}"
     Icon="/Images/icon.ico"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
+    Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None">
 
     <Border
         x:Name="RootBorder"
         Padding="22"
-        Style="{StaticResource FormStyle}"
-        CornerRadius="12">
+        CornerRadius="12"
+        Style="{StaticResource FormStyle}">
         <DockPanel LastChildFill="True">
 
             <!--  Bottom Buttons  -->

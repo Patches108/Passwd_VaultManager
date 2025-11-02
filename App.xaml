@@ -18,6 +18,11 @@
                 <ResourceDictionary Source="Styles/RadioButtons.xaml" />
                 <ResourceDictionary Source="Styles/RadioCheckControls.xaml" />
                 <ResourceDictionary Source="Styles/SliderStyle.xaml" />
+                <ResourceDictionary Source="Styles/ScrollBar.xaml" />
+                <ResourceDictionary Source="Styles/ComboBox.xaml" />
+                <ResourceDictionary Source="Styles/DarkCheckBox.xaml" />
+                <ResourceDictionary Source="Styles/DarkGroupBoxStyle.xaml" />
+                <ResourceDictionary Source="Styles/ToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <models:BoolToTextConverter x:Key="BoolToTextConverter" />

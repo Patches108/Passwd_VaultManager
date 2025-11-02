@@ -1,0 +1,77 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.InputDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Confirm Deletion"
+    Width="420"
+    Height="180"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Icon="/Images/icon.ico"
+    Loaded="frmInputDialog_Loaded"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None">
+
+
+    <Border
+        Padding="20"
+        Background="#1E1E1E"
+        BorderBrush="DarkRed"
+        BorderThickness="1"
+        CornerRadius="10">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!--  Instruction  -->
+            <TextBlock
+                Grid.Row="0"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Center"
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Type DELETE to confirm. Case-sensitive." />
+
+            <!--  Input Box  -->
+            <TextBox
+                x:Name="txtInput"
+                Grid.Row="1"
+                Height="30"
+                Margin="10,0,10,15"
+                HorizontalAlignment="Stretch"
+                KeyDown="txtInput_KeyDown"
+                Style="{StaticResource DarkRoundedTextBox}" />
+
+            <!--  Buttons  -->
+            <StackPanel
+                Grid.Row="2"
+                Margin="0,30,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal">
+                <Button
+                    Width="80"
+                    Margin="0,0,10,0"
+                    Click="Ok_Click"
+                    Content="OK"
+                    Style="{StaticResource ControlButton}" />
+                <Button
+                    Width="80"
+                    Click="Cancel_Click"
+                    Content="Cancel"
+                    Style="{StaticResource ControlButton}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+
+
+</Window>
