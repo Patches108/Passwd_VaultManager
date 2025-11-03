@@ -82,15 +82,6 @@ namespace Passwd_VaultManager.Funcs {
         private static byte[] GetAppEntropy() =>
             Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
 
-
-        public static void ReadRecordFromDatabase() {
-
-        }
-
-        public static void SearchDBByID(int id) {
-
-        }
-
         public static async Task<ObservableCollection<AppVault>> GetVaults(CancellationToken ct = default) {
             var vaults = new ObservableCollection<AppVault>();
 
@@ -310,7 +301,7 @@ namespace Passwd_VaultManager.Funcs {
         public static Task<int> DeleteVaultAsync(AppVault v, CancellationToken ct = default)
             => DeleteVaultAsync(v?.AppName ?? "", v?.UserName ?? "", v?.Password ?? "", ct);
 
-        // If you ever have the row id, this is simpler & faster:
+        // If have  row id, this is faster:
         public static async Task<int> DeleteVaultByIdAsync(long id, CancellationToken ct = default) {
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);
@@ -321,6 +312,18 @@ namespace Passwd_VaultManager.Funcs {
 
             return await cmd.ExecuteNonQueryAsync(ct);
         }
+
+        public static async Task<int> GetRecordCountAsync(CancellationToken ct = default) {
+            await using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync(ct);
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM Vault;";
+
+            var result = await cmd.ExecuteScalarAsync(ct);
+            return Convert.ToInt32(result);
+        }
+
 
     }
 }

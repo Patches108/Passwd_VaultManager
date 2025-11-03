@@ -38,14 +38,30 @@
                     Height="26"
                     Content="Application/Website Name:"
                     Style="{StaticResource LabelHeader}" />
-                <TextBox
-                    x:Name="txtAppName"
-                    Width="300"
-                    Height="25"
-                    GotFocus="txtAppName_GotFocus"
-                    Style="{StaticResource WhiteTextField}"
-                    Text="{Binding AppName}"
-                    TextChanged="txtAppName_TextChanged" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="txtAppName"
+                        Grid.Column="0"
+                        Width="300"
+                        Height="25"
+                        Margin="37,0,0,0"
+                        GotFocus="txtAppName_GotFocus"
+                        Style="{StaticResource WhiteTextField}"
+                        Text="{Binding AppName}"
+                        TextChanged="txtAppName_TextChanged" />
+
+                    <Button
+                        x:Name="AppName_HelpMe"
+                        Grid.Column="1"
+                        Margin="17,0,7,2"
+                        Click="AppNameHelpMe_Click"
+                        Content="?"
+                        FontSize="13.5"/>
+                </Grid>
             </StackPanel>
 
             <!--  User Name  -->
@@ -61,9 +77,9 @@
                     Style="{StaticResource LabelHeader}" />
                 <TextBox
                     x:Name="txtUserName"
-                    GotFocus="txtUserName_GotFocus"
                     Width="300"
                     Height="25"
+                    GotFocus="txtUserName_GotFocus"
                     Style="{StaticResource WhiteTextField}"
                     Text="{Binding Username}"
                     TextChanged="txtUserName_TextChanged" />
@@ -192,9 +208,10 @@
                         Width="30"
                         Height="25"
                         HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
                         Click="ToggleReveal_Click"
                         FontSize="10"
-                        Style="{StaticResource ControlButton}" VerticalAlignment="Top">
+                        Style="{StaticResource ControlButton}">
                         <Image
                             x:Name="Img_TogglePasswdMask"
                             Width="23"

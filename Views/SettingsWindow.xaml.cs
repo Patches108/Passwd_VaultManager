@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using System.Windows.Forms;
+using Microsoft.Win32; 
 using System.Windows.Input;
 using System.Windows.Shapes;
 
@@ -84,38 +84,39 @@ namespace Passwd_VaultManager.Views {
                     source.BackupDatabase(destination);
                 }
 
-                new YesNoWindow("Backup completed successfully.").ShowDialog();
+                new ToastNotification("Backup completed successfully.", true).ShowDialog();
                 LoadStats();
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
             } catch (Exception ex) {
-                new YesNoWindow("Backup failed: " + ex.Message).ShowDialog();
+                new MessageWindow("Backup failed: " + ex.Message).ShowDialog();
             }
         }
 
 
         private void Restore_Click(object sender, RoutedEventArgs e) {
+
             OpenFileDialog ofd = new OpenFileDialog {
                 Filter = "SQLite Database (*.db)|*.db",
                 InitialDirectory = AppPaths.BackupFolder
             };
 
-            //if (ofd.ShowDialog() == true) {
-            //    try {
-            //        // Close any open DB connections first
-            //        GC.Collect();
-            //        GC.WaitForPendingFinalizers();
+            if (ofd.ShowDialog() == true) {
+                try {
+                    // Close any open DB connections first
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
 
-            //        // Overwrite DB file
-            //        //File.Copy(ofd.FileName, AppPaths.DatabaseFile, overwrite: true);
+                    // Overwrite DB file
+                    File.Copy(ofd.FileName, AppPaths.DatabaseFile, overwrite: true);
 
-            //        new YesNoWindow("Database restored successfully.").ShowDialog();
+                    new MessageWindow("Database restored successfully.").ShowDialog();
 
-            //        // Reload context and UI
-            //        LoadStats();
-            //    } catch (Exception ex) {
-            //        new YesNoWindow("Restore failed: " + ex.Message).ShowDialog();
-            //    }
-            //}
+                    // Reload context and UI
+                    LoadStats();
+                } catch (Exception ex) {
+                    new MessageWindow("Restore failed: " + ex.Message).ShowDialog();
+                }
+            }
         }
 
 
@@ -127,12 +128,14 @@ namespace Passwd_VaultManager.Views {
 
             if (confirmed) {
                 try {
+                    
                     foreach (var file in Directory.GetFiles(AppPaths.BackupFolder))
                         File.Delete(file);
-                    new YesNoWindow("All backups deleted.").ShowDialog();
+
+                    new ToastNotification("All backups deleted.", true).ShowDialog();
                     LoadStats();
                 } catch (Exception ex) {
-                    new YesNoWindow("Failed to delete backups: " + ex.Message).ShowDialog();
+                    new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
                 }
             }
         }
@@ -141,7 +144,7 @@ namespace Passwd_VaultManager.Views {
             if (Directory.Exists(AppPaths.BackupFolder)) {
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
             } else {
-                new YesNoWindow("No backups folder exists.").ShowDialog();
+                new MessageWindow("No backups folder exists.").ShowDialog();
             }
         }
 
@@ -155,34 +158,34 @@ namespace Passwd_VaultManager.Views {
             bool inputConfirmed = inputDialog.ShowDialog() == true && inputDialog.UserInput == "DELETE";
 
             if (!inputConfirmed) {
-                new YesNoWindow("Wipe cancelled. You must type DELETE exactly.").ShowDialog();
+                new MessageWindow("Wipe cancelled. You must type DELETE exactly.").ShowDialog();
                 return;
             }
 
             try {
-                //DatabaseCleaner.ReleaseAllContexts(_navVM);
 
-                //// Ensure all file handles are closed
-                //GC.Collect();
-                //GC.WaitForPendingFinalizers();
+                // Ensure all file handles are closed
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-                //if (File.Exists(AppPaths.DatabaseFile)) {
-                //    try {
-                //        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-                //        File.Delete(AppPaths.DatabaseFile);
-                //    } catch (Exception ex) {
-                //        new YesNoWindow("WOOPS: " + ex.Message).ShowDialog();
-                //    }
+                if (File.Exists(AppPaths.DatabaseFile)) {
+                    try {
+                        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+                        File.Delete(AppPaths.DatabaseFile);
+                    } catch (Exception ex) {
+                        new MessageWindow("WOOPS: " + ex.Message).ShowDialog();
+                    }
 
-                //    DatabaseInitializer.CreateDatabase();
+                    File.Delete(AppPaths.DatabaseFile);     // Delete DB file
+                    DatabaseHandler.initDatabase();         // remake the DB file anew.
 
-                //    new YesNoWindow("Database wiped and recreated.").ShowDialog();
-                //    LoadStats();
-                //} else {
-                //    new YesNoWindow("Database file not found.").ShowDialog();
-                //}
+                    new ToastNotification("Database wiped and recreated.", true).ShowDialog();
+                    LoadStats();
+                } else {
+                    new MessageWindow("Database file not found.").ShowDialog();
+                }
             } catch (Exception ex) {
-                new YesNoWindow("Failed to wipe database: " + ex.Message).ShowDialog();
+                new MessageWindow("Failed to wipe database: " + ex.Message).ShowDialog();
             }
         }
 
@@ -194,25 +197,25 @@ namespace Passwd_VaultManager.Views {
 
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
             } catch (Exception ex) {
-                new YesNoWindow($"Failed to open folder:\n{ex.Message}").ShowDialog();
+                new MessageWindow($"Failed to open folder:\n{ex.Message}").ShowDialog();
             }
         }
 
-        private void LoadStats() {
+        private async void LoadStats() {
             // Count number of records in database
             if (File.Exists(AppPaths.DatabaseFile)) {
-                //try {
-                //    using var context = new DreamContext();
-                //    int recordCount = context.Dreams.Count();
-                //    lblRecordCount.Text = $"Number of Records: {recordCount}";
-                //} catch {
-                //    lblRecordCount.Text = "Number of Records: (error)";
-                //}
+                try {
+                    int recordCount = await DatabaseHandler.GetRecordCountAsync();
+                    lblRecordCount.Text = $"Number of Records: {recordCount}";
+                } catch (Exception ex) {
+                    lblRecordCount.Text = "Number of Records: (error)";
+                    new ToastNotification($"ERROR: {ex.Message}", false).ShowDialog();
+                }
 
-                //lblDbSize.Text = $"Database Size: {FormatSize(new FileInfo(AppPaths.DatabaseFile).Length)}";
+                lblDbSize.Text = $"Database Size: {FormatSize(new FileInfo(AppPaths.DatabaseFile).Length)}";
             } else {
-                lblRecordCount.Text = "Number of Records: (missing)";
-                lblDbSize.Text = "Database Size: (missing)";
+                lblRecordCount.Text = "Number of Records: (DB missing)";
+                lblDbSize.Text = "Database Size: (N/A)";
             }
 
             // Backup folder stats
@@ -284,7 +287,7 @@ namespace Passwd_VaultManager.Views {
             string settingsPath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "PasswordVaultManager",
-                    "settings.txt"
+                    "settings.ini"
                 );
 
             SettingsService.Load();
@@ -314,6 +317,7 @@ namespace Passwd_VaultManager.Views {
 
                     if (confirmed) {
                         PinStorage.RemovePin();
+                        new ToastNotification("Pin Removed Successfully.", true).Show();
                     } else {
                         tgl.IsChecked = true; // keep enabled
                     }

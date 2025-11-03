@@ -338,5 +338,9 @@ namespace Passwd_VaultManager.Views
                 helpWin.Show();
             }
         }
+
+        private void AppNameHelpMe_Click(object sender, RoutedEventArgs e) {
+
+        }
     }
 }
