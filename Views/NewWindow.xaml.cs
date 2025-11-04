@@ -303,5 +303,20 @@ namespace Passwd_VaultManager.Views {
             _showPlain = !_showPlain;       // flip reveal state
             UpdateDisplayedPassword(force: true);
         }
+
+        private void AppNameHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("This is where you enter the application/website name. i.e, Gmail, Youtube, etc...");
+            helpWin.Show();
+        }
+
+        private void PasswordHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("It is recommended you generate a password with the \'Generate\' button with bit rate to 256.\n\nAdjust length and characters as needed with the slider and \'Exclude Characters\' controls.");
+            helpWin.Show();
+        }
+
+        private void UsernameHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("Here, you enter the user name you use to login.\n\nUsually this is a custom username or an email.");
+            helpWin.Show();
+        }
     }
 }

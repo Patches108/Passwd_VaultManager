@@ -220,7 +220,7 @@ namespace Passwd_VaultManager.Views
             if (ChangesMade) {
                 
                 // confirm with yes/no dialog
-                YesNoWindow confirm = new YesNoWindow($"You have unsaved changes. Discard changes and close edit form?.");
+                YesNoWindow confirm = new YesNoWindow($"You have unsaved changes. Discard changes and close edit form?");
                 bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
 
                 if (confirmed) 
@@ -340,7 +340,18 @@ namespace Passwd_VaultManager.Views
         }
 
         private void AppNameHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("This is where you edit the Application/website name.");
+            helpWin.Show();
+        }
 
+        private void UsernameHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("This is where you edit the User Name/Login/Email for the account.");
+            helpWin.Show();
+        }
+
+        private void EditHelpMe_Click(object sender, RoutedEventArgs e) {
+            var helpWin = new Helper("Enable this checkbox to edit the password.\n\nYou can also regenerate a new password.");
+            helpWin.Show();
         }
     }
 }
