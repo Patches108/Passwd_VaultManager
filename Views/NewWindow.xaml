@@ -58,7 +58,8 @@
                         Margin="17,0,7,2"
                         Click="AppNameHelpMe_Click"
                         Content="?"
-                        FontSize="13.5" />
+                        FontSize="13.5"
+                        Style="{StaticResource InfoButtons}" />
 
                 </Grid>
 
@@ -97,7 +98,8 @@
                         Margin="17,0,7,2"
                         Click="UsernameHelpMe_Click"
                         Content="?"
-                        FontSize="13.5" />
+                        FontSize="13.5"
+                        Style="{StaticResource InfoButtons}" />
 
                 </Grid>
 
@@ -278,7 +280,8 @@
                             Margin="22,0,-25,0"
                             Click="PasswordHelpMe_Click"
                             Content="?"
-                            FontSize="13.5" />
+                            FontSize="13.5"
+                            Style="{StaticResource InfoButtons}" />
                     </Grid>
                 </Grid>
 

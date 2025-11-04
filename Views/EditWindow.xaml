@@ -60,7 +60,8 @@
                         Margin="17,0,7,2"
                         Click="AppNameHelpMe_Click"
                         Content="?"
-                        FontSize="13.5" />
+                        FontSize="13.5"
+                        Style="{StaticResource InfoButtons}" />
                 </Grid>
             </StackPanel>
 
@@ -97,7 +98,8 @@
                         Margin="17,0,7,2"
                         Click="UsernameHelpMe_Click"
                         Content="?"
-                        FontSize="13.5" />
+                        FontSize="13.5"
+                        Style="{StaticResource InfoButtons}" />
                 </Grid>
             </StackPanel>
 
@@ -129,7 +131,8 @@
                         Margin="196,0,0,0"
                         Click="EditHelpMe_Click"
                         Content="?"
-                        FontSize="13.5" />
+                        FontSize="13.5"
+                        Style="{StaticResource InfoButtons}" />
 
                 </Grid>
 

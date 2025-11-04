@@ -101,8 +101,6 @@
         ======================================================================================
     -->
 
-
-    <!--  TO BE UPDATE TO BE MORE STYLISH LATER  -->
     <Style x:Key="ControlButton" TargetType="Button">
         <Setter Property="Foreground" Value="WhiteSmoke" />
         <Setter Property="Background" Value="#2F343B" />
@@ -362,6 +360,120 @@
         INFO/HELPER BUTTON
         ======================================================================================
     -->
+    <Style x:Key="InfoButtons" TargetType="Button">
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="Background" Value="#FF302424" />
+        <Setter Property="BorderBrush" Value="#FF584442" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+
+                <!--  Round corners  -->
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border
+                            x:Name="Bloom"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="4"
+                            CornerRadius="8"
+                            Opacity="0"
+                            SnapsToDevicePixels="True" />
+
+                        <!--  Actual button surface  -->
+                        <Border
+                            x:Name="ButtonSurface"
+                            Padding="5,2,5,2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True" />
+
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!--  Hover glow  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bloom" Property="BorderBrush" Value="#40FFFFFF" />
+                            <Setter TargetName="Bloom" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <!--  Pressed glow (brighter)  -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bloom" Property="BorderBrush" Value="#80FFFFFF" />
+                            <Setter TargetName="Bloom" Property="Opacity" Value="1" />
+                        </Trigger>
+
+                        <!--  Disabled state  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="ButtonSurface" Property="Background" Value="Gray" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <!--  Is mouse over trigger & Animation  -->
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <ThicknessAnimation
+                                Storyboard.TargetProperty="BorderThickness"
+                                From="1"
+                                To="3"
+                                Duration="0:0:0.3" />
+
+
+                            <!--  Background Panel Animation  -->
+                            <ColorAnimation
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                To="#544343"
+                                Duration="0:0:0.25" />
+
+                            <!--  Border Animation  -->
+                            <ColorAnimation
+                                Storyboard.TargetProperty="(Button.BorderBrush).(SolidColorBrush.Color)"
+                                To="#f75c69"
+                                Duration="0:0:0.25" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <ThicknessAnimation
+                                Storyboard.TargetProperty="BorderThickness"
+                                From="3"
+                                To="1"
+                                Duration="0:0:0.3" />
+
+                            <!--  Background Panel Animation  -->
+                            <ColorAnimation
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                To="#544343"
+                                Duration="0:0:0.25" />
+
+                            <!--  Border Animation  -->
+                            <ColorAnimation
+                                Storyboard.TargetProperty="(Button.BorderBrush).(SolidColorBrush.Color)"
+                                To="#FF584442"
+                                Duration="0:0:0.25" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 
 
 </ResourceDictionary>
