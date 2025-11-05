@@ -5,8 +5,9 @@
         <Setter Property="Background" Value="#212529" />
         <Setter Property="BorderBrush" Value="#3B3F45" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
-        <Setter Property="FontSize" Value="{DynamicResource AppFontSize}" />
+        <Setter Property="FontSize" Value="14" />
+        <!--<Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource AppFontSize}" />-->
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="10" />
         <Setter Property="Template">

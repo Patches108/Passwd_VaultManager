@@ -103,7 +103,7 @@
                     Content="Enable Sound Effects"
                     FontSize="14"
                     IsChecked="{Binding SoundEnabled}"
-                    Style="{StaticResource DarkCheckBox}"
+                    Style="{StaticResource CheckControl}"
                     Unchecked="chkIsSoundEnabled_Unchecked" />
 
                 <!--  Backup Group  -->

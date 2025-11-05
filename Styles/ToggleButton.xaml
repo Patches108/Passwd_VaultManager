@@ -7,8 +7,6 @@
         <Setter Property="Background" Value="#333" />
         <Setter Property="BorderBrush" Value="#555" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
-        <Setter Property="FontSize" Value="{DynamicResource AppFontSize}" />
         <Setter Property="Padding" Value="10,6" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
 
@@ -29,6 +27,51 @@
 
                     <ControlTemplate.Triggers>
 
+
+                        <!--  Hover: show bluish border  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <ThicknessAnimation
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            From="1"
+                                            To="2"
+                                            Duration="0:0:0.3" />
+
+                                        <ColorAnimation
+                                            Storyboard.TargetName="Root"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#4da8f7"
+                                            Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <ThicknessAnimation
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            From="2"
+                                            To="1"
+                                            Duration="0:0:0.3" />
+
+                                        <ColorAnimation
+                                            Storyboard.TargetName="Root"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                            To="#444"
+                                            Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+
+
+
                         <!--  Checked  -->
                         <Trigger Property="IsChecked" Value="True">
                             <!--  change look  -->
@@ -46,9 +89,9 @@
                         </Trigger>
 
                         <!--  Hover  -->
-                        <Trigger Property="IsMouseOver" Value="True">
+                        <!--<Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Root" Property="Background" Value="#444" />
-                        </Trigger>
+                        </Trigger>-->
 
                         <!--  Disabled  -->
                         <Trigger Property="IsEnabled" Value="False">

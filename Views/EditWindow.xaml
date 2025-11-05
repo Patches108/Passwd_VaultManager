@@ -57,7 +57,8 @@
                     <Button
                         x:Name="AppName_HelpMe"
                         Grid.Column="1"
-                        Margin="17,0,7,2"
+                        Width="18"
+                        Margin="15,0,8,2"
                         Click="AppNameHelpMe_Click"
                         Content="?"
                         FontSize="13.5"
@@ -95,7 +96,8 @@
                     <Button
                         x:Name="UserName_HelpMe"
                         Grid.Column="1"
-                        Margin="17,0,7,2"
+                        Width="18"
+                        Margin="15,0,8,2"
                         Click="UsernameHelpMe_Click"
                         Content="?"
                         FontSize="13.5"
@@ -126,7 +128,7 @@
                     <Button
                         x:Name="Edit_HelpMe"
                         Grid.Column="1"
-                        Width="17"
+                        Width="18"
                         Height="25"
                         Margin="196,0,0,0"
                         Click="EditHelpMe_Click"

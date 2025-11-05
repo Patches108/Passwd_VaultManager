@@ -288,9 +288,7 @@
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10,5" />
-        <!--<Setter Property="FontSize" Value="18" />-->
-        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
-        <Setter Property="FontSize" Value="{DynamicResource AppFontSizePlus2}" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
@@ -310,15 +308,22 @@
                     </Border>
                     <ControlTemplate.Triggers>
 
-                        <!--  Hover: show green border  -->
+                        <!--  Hover: show bluish border  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
+
+                                        <ThicknessAnimation
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            From="1"
+                                            To="2"
+                                            Duration="0:0:0.3" />
+
                                         <ColorAnimation
                                             Storyboard.TargetName="border"
                                             Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                            To="#FF3AA546"
+                                            To="#4da8f7"
                                             Duration="0:0:0.2" />
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -327,6 +332,13 @@
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
+
+                                        <ThicknessAnimation
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            From="2"
+                                            To="1"
+                                            Duration="0:0:0.3" />
+
                                         <ColorAnimation
                                             Storyboard.TargetName="border"
                                             Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
@@ -427,9 +439,8 @@
                             <ThicknessAnimation
                                 Storyboard.TargetProperty="BorderThickness"
                                 From="1"
-                                To="3"
+                                To="1.5"
                                 Duration="0:0:0.3" />
-
 
                             <!--  Background Panel Animation  -->
                             <ColorAnimation
@@ -452,7 +463,7 @@
 
                             <ThicknessAnimation
                                 Storyboard.TargetProperty="BorderThickness"
-                                From="3"
+                                From="1.5"
                                 To="1"
                                 Duration="0:0:0.3" />
 
