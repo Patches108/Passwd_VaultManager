@@ -22,6 +22,7 @@
     <None Remove="Images\img_setting.png" />
     <None Remove="Images\New.png" />
     <None Remove="Images\PanelSettings.png" />
+    <None Remove="Images\Search.png" />
     <None Remove="Images\Settings.png" />
     <None Remove="Images\Success_Icon.png" />
   </ItemGroup>
@@ -69,6 +70,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\PanelSettings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Search.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Settings.png">

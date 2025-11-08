@@ -1,11 +1,13 @@
-﻿using Passwd_VaultManager.Funcs;
+﻿using Microsoft.Win32; 
+using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
+using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
+using Passwd_VaultManager.ViewModels;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using Microsoft.Win32; 
 using System.Windows.Input;
 using System.Windows.Shapes;
 
@@ -22,6 +24,8 @@ namespace Passwd_VaultManager.Views {
         public SettingsWindow() {
 
             InitializeComponent();
+
+            DataContext = new SettingsWindowVM();
 
             _settings = SettingsService.Load();
         }
@@ -63,7 +67,7 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e) {
-            DialogResult = false;
+            DialogResult = false;       // ERROR HERE: System.InvalidOperationException: 'DialogResult can be set only after Window is created and shown as dialog.'
 
             CheckUnsavedChanges();
 
@@ -84,9 +88,9 @@ namespace Passwd_VaultManager.Views {
                     source.BackupDatabase(destination);
                 }
 
-                new ToastNotification("Backup completed successfully.", true).ShowDialog();
                 LoadStats();
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
+                new ToastNotification("Backup completed successfully.", true).ShowDialog(); // Place at end (hogs UI)
             } catch (Exception ex) {
                 new MessageWindow("Backup failed: " + ex.Message).ShowDialog();
             }
@@ -109,10 +113,11 @@ namespace Passwd_VaultManager.Views {
                     // Overwrite DB file
                     File.Copy(ofd.FileName, AppPaths.DatabaseFile, overwrite: true);
 
-                    new MessageWindow("Database restored successfully.").ShowDialog();
-
                     // Reload context and UI
                     LoadStats();
+
+                    new ToastNotification("Backup completed successfully.", true).ShowDialog(); // Place at end (hogs UI)
+
                 } catch (Exception ex) {
                     new MessageWindow("Restore failed: " + ex.Message).ShowDialog();
                 }

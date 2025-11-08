@@ -82,8 +82,7 @@ namespace Passwd_VaultManager.Views
             App.Settings.FirstTimeOpeningEditWin = true;       // REMOVE THIS IN PROD
 
             if (App.Settings.FirstTimeOpeningEditWin) {
-                // FIX THIS MESSAGE
-                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.");
                 helpWin.Show();
             }
         }

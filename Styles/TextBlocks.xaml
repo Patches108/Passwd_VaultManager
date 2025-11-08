@@ -198,4 +198,40 @@
         </Setter>
     </Style>
 
+
+    <!--  For search text field on main window  -->
+    <!--  Maybe update to use gradient colours?  -->
+    <Style x:Key="SearchTextField" TargetType="TextBox">
+        <Setter Property="Background" Value="#FF323544" />
+        <Setter Property="FontFamily" Value="Courier New" />
+        <Setter Property="Foreground" Value="#FF2BA33B" />
+        <Setter Property="FontSize" Value="15.5" />
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Opacity" Value="0.6" />
+                            <Setter TargetName="border" Property="Background" Value="Gray" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#FF1F89F6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

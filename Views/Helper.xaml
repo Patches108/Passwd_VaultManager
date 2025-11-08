@@ -95,19 +95,16 @@
                 Stretch="UniformToFill" />
 
             <!--  Helper text message  -->
-            <ScrollViewer
+            <TextBlock
+                x:Name="txtMessage"
                 Grid.Row="1"
                 Grid.Column="1"
-                VerticalScrollBarVisibility="Auto">
-                <TextBlock
-                    x:Name="txtMessage"
-                    Margin="10,0,0,0"
-                    VerticalAlignment="Top"
-                    FontSize="14"
-                    Foreground="White"
-                    Text="message will appear here."
-                    TextWrapping="Wrap" />
-            </ScrollViewer>
+                Margin="10,0,0,0"
+                VerticalAlignment="Top"
+                FontSize="14"
+                Foreground="White"
+                Text="message will appear here."
+                TextWrapping="Wrap" />
         </Grid>
     </Border>
 
