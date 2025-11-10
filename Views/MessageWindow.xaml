@@ -9,6 +9,7 @@
     Width="550"
     Height="400"
     Loaded="MessageWindow_Loaded"
+    ResizeMode="NoResize"
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -28,7 +29,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Style="{StaticResource TextStyle}"
-                        Text="" />
+                        Text=""
+                        TextWrapping="Wrap" />
                 </Border>
             </ScrollViewer>
 

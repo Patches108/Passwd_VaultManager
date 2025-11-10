@@ -16,6 +16,7 @@
     <None Remove="Images\Delete.png" />
     <None Remove="Images\Edit.png" />
     <None Remove="Images\Failure_Icon.png" />
+    <None Remove="Images\filter.png" />
     <None Remove="Images\helper.png" />
     <None Remove="Images\hide_reveal.png" />
     <None Remove="Images\icon.ico" />
@@ -52,6 +53,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Failure_Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\filter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\helper.png">

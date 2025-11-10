@@ -41,6 +41,8 @@ namespace Passwd_VaultManager.Views {
                 helpWin.Show();
                 SettingsService.Save(App.Settings);
             }
+
+            sldPasswdLength.Minimum = 8;
         }
 
         private void cmdCancel_Click(object sender, RoutedEventArgs e) {
@@ -266,7 +268,10 @@ namespace Passwd_VaultManager.Views {
                 AppVault v = new AppVault();
                 v.AppName = txtAppName.Text.Trim();
                 v.UserName = txtUserName.Text.Trim();
-                v.Password = _passwdWhole;
+
+                //if((int)sldPasswdLength.Value < _passwdWhole.Length)
+                //v.Password = _passwdWhole;
+                v.Password = txtPasswd.Text.Trim();
 
                 v.IsPasswdSet = true;
                 v.IsUserNameSet = true;

@@ -86,11 +86,21 @@ namespace Passwd_VaultManager.Views {
                     source.Open();
                     destination.Open();
                     source.BackupDatabase(destination);
+
+                    //source.Close();
+                    //destination.Close();
+
+                    //source.Dispose();
+                    //destination.Dispose();                    
                 }
+
+                // Ensure all file handles are closed
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 LoadStats();
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
-                new ToastNotification("Backup completed successfully.", true).ShowDialog(); // Place at end (hogs UI)
+                new ToastNotification("Backup completed successfully.", true).Show(); // Place at end (hogs UI)
             } catch (Exception ex) {
                 new MessageWindow("Backup failed: " + ex.Message).ShowDialog();
             }
@@ -116,7 +126,7 @@ namespace Passwd_VaultManager.Views {
                     // Reload context and UI
                     LoadStats();
 
-                    new ToastNotification("Backup completed successfully.", true).ShowDialog(); // Place at end (hogs UI)
+                    new ToastNotification("Backup completed successfully.", true).Show(); // Place at end (hogs UI)
 
                 } catch (Exception ex) {
                     new MessageWindow("Restore failed: " + ex.Message).ShowDialog();
@@ -131,19 +141,70 @@ namespace Passwd_VaultManager.Views {
             var confirm = new YesNoWindow("Are you sure you want to delete all backup files?");
             bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
 
-            if (confirmed) {
-                try {
-                    
-                    foreach (var file in Directory.GetFiles(AppPaths.BackupFolder))
-                        File.Delete(file);
+            if (!confirmed) return;
 
-                    new ToastNotification("All backups deleted.", true).ShowDialog();
-                    LoadStats();
-                } catch (Exception ex) {
-                    new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
+            try {
+                // Forcefully release potential SQLite handles
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                foreach (var file in Directory.GetFiles(AppPaths.BackupFolder)) {
+                    bool deleted = false;
+                    int attempts = 0;
+
+                    while (!deleted && attempts < 4) {
+                        try {
+                            File.Delete(file);
+                            deleted = true;
+                        } catch (IOException) {
+                            attempts++;
+                            Thread.Sleep(400); // wait a bit, try again
+                            GC.Collect();
+                            GC.WaitForPendingFinalizers();
+                        } catch (UnauthorizedAccessException) {
+                            attempts++;
+                            Thread.Sleep(400);
+                            GC.Collect();
+                            GC.WaitForPendingFinalizers();
+                        }
+                    }
+
+                    if (!deleted)
+                        Debug.WriteLine($"Failed to delete backup: {file}");
                 }
+
+                new ToastNotification("All backups deleted.", true).Show();
+                LoadStats();
+            } catch (Exception ex) {
+                new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
             }
         }
+
+
+
+
+        //private void DeleteBackups_Click(object sender, RoutedEventArgs e) {
+        //    if (!Directory.Exists(AppPaths.BackupFolder)) return;
+
+        //    var confirm = new YesNoWindow("Are you sure you want to delete all backup files?");
+        //    bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
+
+        //    if (confirmed) {
+        //        try {
+
+        //            GC.Collect();
+        //            GC.WaitForPendingFinalizers();
+
+        //            foreach (var file in Directory.GetFiles(AppPaths.BackupFolder))
+        //                File.Delete(file);
+
+        //            new ToastNotification("All backups deleted.", true).Show();
+        //            LoadStats();
+        //        } catch (Exception ex) {
+        //            new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
+        //        }
+        //    }
+        //}
 
         private void OpenBackupsFolder_Click(object sender, RoutedEventArgs e) {
             if (Directory.Exists(AppPaths.BackupFolder)) {
@@ -184,7 +245,7 @@ namespace Passwd_VaultManager.Views {
                     File.Delete(AppPaths.DatabaseFile);     // Delete DB file
                     DatabaseHandler.initDatabase();         // remake the DB file anew.
 
-                    new ToastNotification("Database wiped and recreated.", true).ShowDialog();
+                    new ToastNotification("Database wiped and recreated.", true).Show();
                     LoadStats();
                 } else {
                     new MessageWindow("Database file not found.").ShowDialog();
@@ -214,7 +275,7 @@ namespace Passwd_VaultManager.Views {
                     lblRecordCount.Text = $"Number of Records: {recordCount}";
                 } catch (Exception ex) {
                     lblRecordCount.Text = "Number of Records: (error)";
-                    new ToastNotification($"ERROR: {ex.Message}", false).ShowDialog();
+                    new ToastNotification($"ERROR: {ex.Message}", false).Show();
                 }
 
                 lblDbSize.Text = $"Database Size: {FormatSize(new FileInfo(AppPaths.DatabaseFile).Length)}";

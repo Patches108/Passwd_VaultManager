@@ -27,7 +27,7 @@ namespace Passwd_VaultManager.Views
         private bool _updating;
         private bool _showPlain = false;   // false = masked, true = reveal
 
-        private string _passwdWhole = String.Empty;     // the generated full password
+        private string _passwdWhole = String.Empty;     // password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
 
         public EditWindow()
@@ -41,14 +41,46 @@ namespace Passwd_VaultManager.Views
             Loaded += (_, __) =>
             {
                 if (_vm != null) {
-                    _passwdWhole = _vm.Password ?? string.Empty;
+                    //_passwdWhole = _vm.Password ?? string.Empty;
+                    //txtPasswd.Text = _passwdWhole;
+
+                    //_len = _passwdWhole.Length;
+
+                    //_vm.BitRate = _bitRate;
+                    //_vm.Length = _len;
+                    //_targetLength = _len;
+                    //sldPasswdLength.Value = _len;
+                    //_vm.SliderValue = _len.ToString();
+
+                    //_passwdWhole = txtPasswd.Text.Trim();
+                    //sldPasswdLength.Maximum = _passwdWhole.Length;
+                    //sldPasswdLength.Value = _passwdWhole.Length;
+
+
+                    // 1. Get full password text
+                    _passwdWhole = _vm.Password?.Trim() ?? string.Empty;
+
+                    // 2. Sync password display
                     txtPasswd.Text = _passwdWhole;
 
-                    _vm.BitRate = _bitRate;
-                    _vm.Length = _len;
+                    // 3. Cache and propagate length + bitrate
+                    _len = _passwdWhole.Length;
                     _targetLength = _len;
-                    sldPasswdLength.Value = _len;
+                    _vm.Length = _len;
                     _vm.SliderValue = _len.ToString();
+
+                    // Optional: if BitRate is already set from generation logic, skip overwrite
+                    if (_vm.BitRate <= 0)
+                        _vm.BitRate = _bitRate;
+
+                    // 4. Configure slider range
+                    sldPasswdLength.Minimum = 8;
+                    sldPasswdLength.Maximum = _passwdWhole.Length;
+                    sldPasswdLength.Value = _passwdWhole.Length;
+
+                    // Optional: disable slider if password has fixed length (e.g. 128-bit)
+                    sldPasswdLength.IsEnabled = _bitRate != 128;
+
 
                     // Add password controls to list for later iteration as per checkbox
                     _PasswdControls.Add(txtPasswd);
@@ -65,6 +97,7 @@ namespace Passwd_VaultManager.Views
                     _PasswdControls.Add(cmdGenPasswd);
                     _PasswdControls.Add(cmdManuallyEnterPasswd);
                     _PasswdControls.Add(lblPasswdSliderValue);
+                    _PasswdControls.Add(cmdCopyToClipboard);
 
                     txtPasswd.IsEnabled = true;
                     _showPlain = !_showPlain;       // flip reveal state
@@ -79,7 +112,7 @@ namespace Passwd_VaultManager.Views
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
 
-            App.Settings.FirstTimeOpeningEditWin = true;       // REMOVE THIS IN PROD
+            //App.Settings.FirstTimeOpeningEditWin = true;       // REMOVE THIS IN PROD
 
             if (App.Settings.FirstTimeOpeningEditWin) {
                 var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.");
@@ -122,21 +155,18 @@ namespace Passwd_VaultManager.Views
 
             if (_vm is not null) {
                 _targetLength = (int)Math.Round(e.NewValue);
-
                 _vm.SliderValue = _targetLength.ToString();
-                _vm.Length = txtPasswd.Text.Trim().Length;
+                _vm.Length = _targetLength;
 
-                // Update bitrate
+                // Update bitrate dynamically
                 switch (_vm.Length) {
                     case >= 41:
                         _vm.BitRate = 256;
                         break;
-
-                    case >= 31 and < 41:
+                    case >= 31:
                         _vm.BitRate = 192;
                         break;
-
-                    case >= 21 and < 31:
+                    case >= 21:
                         _vm.BitRate = 128;
                         break;
                 }
@@ -144,6 +174,7 @@ namespace Passwd_VaultManager.Views
 
             UpdateDisplayedPassword();
         }
+
 
         private void txtCharactersToExclude_GotFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtCharactersToExclude.Text) || txtCharactersToExclude.Text.Equals("Chars to Exclude"))

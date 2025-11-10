@@ -109,11 +109,11 @@
                     Style="{StaticResource ControlButton}">
                     <!--  TO BE UPDATED WITH FILTER ICON  -->
                     <Image
-                        Width="20"
-                        Height="20"
+                        Width="26"
+                        Height="24"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Source="/Images/Search.png" />
+                        Source="/Images/filter.png" />
                 </Button>
             </Grid>
 
