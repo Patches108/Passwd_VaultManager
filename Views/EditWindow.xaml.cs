@@ -2,6 +2,7 @@
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -326,8 +327,6 @@ namespace Passwd_VaultManager.Views
         }
 
         private void NewWindow_Loaded(object sender, RoutedEventArgs e) {
-            //_updating = false;
-            //txtPasswd.IsEnabled = false;
             sldPasswdLength.IsEnabled = false;
             txtCharactersToExclude.IsEnabled = false;
         }
@@ -382,6 +381,11 @@ namespace Passwd_VaultManager.Views
         private void EditHelpMe_Click(object sender, RoutedEventArgs e) {
             var helpWin = new Helper("Enable this checkbox to edit the password.\n\nYou can also regenerate a new password.");
             helpWin.Show();
+        }
+
+        protected override void OnClosing(CancelEventArgs e) {
+            e.Cancel = true;
+            Hide();
         }
     }
 }

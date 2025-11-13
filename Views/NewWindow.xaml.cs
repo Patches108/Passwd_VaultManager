@@ -34,8 +34,6 @@ namespace Passwd_VaultManager.Views {
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
 
-            //App.Settings.FirstTimeOpeningNewWin = true;       // REMOVE THIS IN PROD
-
             if (App.Settings.FirstTimeOpeningNewWin) {
                 var helpWin = new Helper("Enter the website/app name.\n\nThen enter the username/email you'll use for the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nAdjust password length with the slider, or exclude characters. Lastly, click the \'Create\' button");
                 helpWin.Show();

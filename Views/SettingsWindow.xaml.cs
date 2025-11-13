@@ -67,11 +67,10 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e) {
-            DialogResult = false;       // ERROR HERE: System.InvalidOperationException: 'DialogResult can be set only after Window is created and shown as dialog.'
-
+            
             CheckUnsavedChanges();
-
             Close();
+
         }
 
         private void Backup_Click(object sender, RoutedEventArgs e) {
@@ -85,13 +84,7 @@ namespace Passwd_VaultManager.Views {
                 using (var destination = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={destFile}")) {
                     source.Open();
                     destination.Open();
-                    source.BackupDatabase(destination);
-
-                    //source.Close();
-                    //destination.Close();
-
-                    //source.Dispose();
-                    //destination.Dispose();                    
+                    source.BackupDatabase(destination);               
                 }
 
                 // Ensure all file handles are closed
@@ -152,25 +145,27 @@ namespace Passwd_VaultManager.Views {
                     bool deleted = false;
                     int attempts = 0;
 
-                    while (!deleted && attempts < 4) {
+                    while (!deleted && attempts < 2) {
                         try {
                             File.Delete(file);
                             deleted = true;
                         } catch (IOException) {
                             attempts++;
-                            Thread.Sleep(400); // wait a bit, try again
+                            Thread.Sleep(200);
                             GC.Collect();
                             GC.WaitForPendingFinalizers();
                         } catch (UnauthorizedAccessException) {
                             attempts++;
-                            Thread.Sleep(400);
+                            Thread.Sleep(200);
                             GC.Collect();
                             GC.WaitForPendingFinalizers();
                         }
                     }
 
-                    if (!deleted)
-                        Debug.WriteLine($"Failed to delete backup: {file}");
+                    if (!deleted) {
+                        new ToastNotification($"Failed to delete backup: {file}", false).Show();
+                        new MessageWindow($"Failed to delete backup: {file}\n\nRestart the app to fully break all file handles and try again.").ShowDialog();
+                    }
                 }
 
                 new ToastNotification("All backups deleted.", true).Show();

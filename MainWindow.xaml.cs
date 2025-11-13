@@ -1,4 +1,6 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
@@ -6,7 +8,6 @@ using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Passwd_VaultManager.Funcs;
 
 namespace Passwd_VaultManager
 {
@@ -16,6 +17,10 @@ namespace Passwd_VaultManager
     public partial class MainWindow : Window
     {
         private readonly MainWindowVM _vm = new();
+
+        internal MainWindowVM ViewModel { get; set; }
+
+        internal MainWindowVM MainVM => this.DataContext as MainWindowVM;
 
         public MainWindow()
         {
@@ -58,19 +63,34 @@ namespace Passwd_VaultManager
         }
 
         private void NewVaultRecord_Click(object sender, RoutedEventArgs e) {
-
+            OpenNewVaultWindow();
         }
 
         private void EditVaultRecord_Click(object sender, RoutedEventArgs e) {
+            
+            AppVault vault =  _vm.SelectedAppVault; // Get selected vault
+            if (vault is null) {
+                new Helper("First, select a vault to edit.").Show();
+                return;
+            }
 
+            var vm = new EditWindowVM(vault);
+            var win = new EditWindow { DataContext = vm };
+            win.ShowDialog();
         }
 
         private void DeleteVaultRecord_Click(object sender, RoutedEventArgs e) {
+            AppVault vault = _vm.SelectedAppVault; // Get selected vault
+            if (vault is null) {
+                new Helper("First, select a vault to delete.").Show();
+                return;
+            }
 
+            _vm.DeleteVaultEntryCommand.Execute(vault);
         }
 
         private void ExitApp_Click(object sender, RoutedEventArgs e) {
-            CloseWindowHandler();   // Call handler to minimise to system tray.
+            Application.Current.Shutdown(); // Hard exit.
         }
 
 
@@ -118,5 +138,22 @@ namespace Passwd_VaultManager
             }
         }
 
+
+        public void OpenNewVaultWindow() {
+            Func<Task> _refreshAction;
+            _refreshAction = _vm.RefreshVaultsAsync;
+            var win = new NewWindow(_refreshAction);
+            win.Show();
+        }
+
+
+        public void OpenSettingsWindow() {
+            var win = new SettingsWindow();
+            win.Show();
+        }
+
+        private void OpenSettings_Click(object sender, RoutedEventArgs e) {
+            OpenSettingsWindow();
+        }
     }
 }

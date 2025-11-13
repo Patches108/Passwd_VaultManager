@@ -61,6 +61,7 @@
                 <MenuItem Header="Operations">
                     <MenuItem Click="NewVaultRecord_Click" Header="New" />
                     <MenuItem Click="EditVaultRecord_Click" Header="Edit" />
+                    <MenuItem Click="OpenSettings_Click" Header="Settings" />
                     <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
                     <Separator Style="{StaticResource MenuSeparator}" />
