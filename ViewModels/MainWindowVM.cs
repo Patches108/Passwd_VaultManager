@@ -22,6 +22,7 @@ namespace Passwd_VaultManager.ViewModels
         public ICommand NewVaultEntryCommand { get; }
         public ICommand DeleteVaultEntryCommand { get; }
         public ICommand OpenSettingsCommand { get; }
+        public ICommand OpenAboutCommand { get; }
 
         public ObservableCollection<AppVault> Vaults { get; } = new();
 
@@ -32,6 +33,7 @@ namespace Passwd_VaultManager.ViewModels
             EditVaultEntryCommand = new RelayCommand(param => OpenEditWindow((AppVault)param));
             NewVaultEntryCommand = new RelayCommand(_ => OpenNewVaultEntry(_refreshAction));
             OpenSettingsCommand = new RelayCommand(_ => OpenSettings());
+            OpenAboutCommand = new RelayCommand(_ => OpenABoutWin());
 
             DeleteVaultEntryCommand = new RelayCommand(
                 p => DeleteVaultEntry(p as AppVault),
@@ -118,6 +120,11 @@ namespace Passwd_VaultManager.ViewModels
 
         private void OpenSettings() {
             var win = new SettingsWindow();
+            win.Show();
+        }
+
+        private void OpenABoutWin() {
+            var win = new About();
             win.Show();
         }
 

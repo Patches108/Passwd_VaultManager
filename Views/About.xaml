@@ -1,0 +1,66 @@
+﻿<Window
+    x:Class="Passwd_VaultManager.Views.About"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Passwd_VaultManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="About"
+    Width="550"
+    Height="400"
+    Loaded="About_Loaded"
+    ResizeMode="NoResize"
+    Style="{StaticResource WinStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Border CornerRadius="8" Style="{StaticResource FormStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <!--  Message text  -->
+            <ScrollViewer
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                VerticalScrollBarVisibility="Auto">
+                <Border Margin="10" Style="{StaticResource BorderedTextContainer}">
+                    <TextBlock
+                        x:Name="msg"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Style="{StaticResource TextStyle}"
+                        Text=""
+                        TextWrapping="Wrap" />
+                </Border>
+            </ScrollViewer>
+
+            <!--  Okay button  -->
+            <Button
+                x:Name="cmdClose"
+                Grid.Row="1"
+                Grid.Column="0"
+                Width="150"
+                Height="40"
+                Click="cmdOkayClose_Click"
+                Content="Close"
+                Style="{StaticResource ControlButton}" />
+            <!--  Okay button  -->
+            <Button
+                x:Name="cmdCopyToClip"
+                Grid.Row="1"
+                Grid.Column="1"
+                Height="40"
+                Margin="47,30,47,30"
+                Click="cmdCopyToClipboard_Click"
+                Content="Copy to Clipboard"
+                Style="{StaticResource ControlButton}" />
+        </Grid>
+    </Border>
+</Window>

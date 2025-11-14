@@ -229,6 +229,41 @@
                     </Grid>
                 </Menu:MenuCmd>
 
+
+                <!--  ABOUT BUTTON  -->
+                <Menu:MenuCmd
+                    Width="90"
+                    Height="35"
+                    Margin="0,5,0,5"
+                    Command="{Binding OpenAboutCommand}"
+                    IsChecked="False"
+                    Style="{StaticResource SideCmdStyle}">
+                    <Grid Margin="-10,0,-8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="img_about"
+                            Grid.Column="0"
+                            Width="25"
+                            Height="25">
+                            <Image.Source>
+                                <BitmapImage UriSource="Images/about.png" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock
+                            x:Name="cmd_OpenAbout"
+                            Grid.Column="1"
+                            Height="21"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource TextStyle}"
+                            Text="About" />
+                    </Grid>
+                </Menu:MenuCmd>
+
+
                 <!--  DELETE BUTTON  -->
                 <Menu:MenuCmd
                     Width="90"
