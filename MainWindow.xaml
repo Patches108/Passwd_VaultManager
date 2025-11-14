@@ -83,7 +83,7 @@
                     x:Name="txtSearch"
                     Grid.Column="0"
                     Margin="0,8,5,10"
-                    Style="{StaticResource SearchTextField}" />
+                    Style="{StaticResource SearchTextField}" GotFocus="txtSearch_GotFocus" LostFocus="txtSearch_LostFocus" />
 
                 <!--  SEARCH BUTTON  -->
                 <Button

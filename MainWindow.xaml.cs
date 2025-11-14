@@ -8,6 +8,7 @@ using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Passwd_VaultManager
 {
@@ -18,6 +19,11 @@ namespace Passwd_VaultManager
     {
         private readonly MainWindowVM _vm = new();
 
+        private static readonly string PlaceholderText = "Search by App Name";
+
+        private static readonly Brush PlaceholderBrush = new SolidColorBrush(Color.FromRgb(140, 140, 140));
+        private static readonly Brush InputBrush = (Brush)new BrushConverter().ConvertFromString("#FF2BA33B");
+
         internal MainWindowVM ViewModel { get; set; }
 
         internal MainWindowVM MainVM => this.DataContext as MainWindowVM;
@@ -26,6 +32,9 @@ namespace Passwd_VaultManager
         {
             InitializeComponent();
             DataContext = _vm;
+
+            txtSearch.Text = "Search by App Name";
+            txtSearch.Foreground = new SolidColorBrush(Color.FromRgb(140, 140, 140));
 
             var sharedPasswdPanelVM = (PasswdPanelVM)Resources["PasswdPanelVM"];
             _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store it inside your MainWindowVM
@@ -123,13 +132,13 @@ namespace Passwd_VaultManager
             }
         }
 
-        private void cmd_OpenNewVaultWindow_Click(object sender, RoutedEventArgs e) {
+        //private void cmd_OpenNewVaultWindow_Click(object sender, RoutedEventArgs e) {
 
-            // pass in _refreshAction
-            //var shared = (NewWindowVM)Resources["NewWindowVM"];
-            //var win = new NewWindow { DataContext = shared }; // use SAME instance
-            //win.Show();
-        }
+        //    // pass in _refreshAction
+        //    //var shared = (NewWindowVM)Resources["NewWindowVM"];
+        //    //var win = new NewWindow { DataContext = shared }; // use SAME instance
+        //    //win.Show();
+        //}
 
         private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Escape && sender is ListBox lb) {
@@ -154,6 +163,20 @@ namespace Passwd_VaultManager
 
         private void OpenSettings_Click(object sender, RoutedEventArgs e) {
             OpenSettingsWindow();
+        }
+
+        private void txtSearch_GotFocus(object sender, RoutedEventArgs e) {
+            if (txtSearch.Text == PlaceholderText) {
+                txtSearch.Text = "";
+                txtSearch.Foreground = InputBrush;
+            }
+        }
+
+        private void txtSearch_LostFocus(object sender, RoutedEventArgs e) {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text)) {
+                txtSearch.Text = PlaceholderText;
+                txtSearch.Foreground = PlaceholderBrush;
+            }
         }
     }
 }
