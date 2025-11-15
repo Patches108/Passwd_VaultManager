@@ -286,7 +286,7 @@ namespace Passwd_VaultManager.Views {
                     _refreshAction();
 
                 } catch (Exception ex) {
-                    new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.");
+                    new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.").ShowDialog();
                 }
 
                 App.Settings.FirstTimeNewAppName_NewWin = false;
@@ -298,7 +298,7 @@ namespace Passwd_VaultManager.Views {
                 this.Close();       // Close window after creating vault record.
 
             } else {
-                new MessageWindow("App name, User name/Email, and Password fields cannot be empty.");
+                new MessageWindow("App name, User name/Email, and Password fields cannot be empty.").ShowDialog();
             }
         }
 

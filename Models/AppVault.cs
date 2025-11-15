@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Passwd_VaultManager.Views;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 
 namespace Passwd_VaultManager.Models
 {
@@ -43,8 +43,13 @@ namespace Passwd_VaultManager.Models
             get => _bitRate;
             set {
                 if (_bitRate == value) return;
-                _bitRate = value;
-                OnPropertyChanged();
+
+                if(ValidateNumeral(_bitRate)) {
+                    _bitRate = value;
+                    OnPropertyChanged();
+                } else {
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
+                }                
             }
         }
 
@@ -52,18 +57,31 @@ namespace Passwd_VaultManager.Models
             get => _appName;
             set {
                 if (_appName == value) return;
-                // Add try catches with help window later...
-                _appName = ValidateString(value, nameof(value)); 
-                OnPropertyChanged(); 
+
+                try {
+                    string validated = ValidateString(value, nameof(value));
+                    _appName = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             }
         }
+
 
         public string Password {
             get => _password;
             set {
                 if (_password == value) return;
-                _password = ValidateString(value, nameof(value)); 
-                OnPropertyChanged(); 
+
+
+                try {
+                    string validated = ValidateString(value, nameof(value));
+                    _password = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             }
         }
 
@@ -71,8 +89,14 @@ namespace Passwd_VaultManager.Models
             get => _userName;
             set {
                 if (_userName == value) return;
-                _userName = ValidateString(value, nameof(value)); 
-                OnPropertyChanged(); 
+
+                try {
+                    string validated = ValidateString(value, nameof(value));
+                    _userName = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             }
         }
 
@@ -121,6 +145,10 @@ namespace Passwd_VaultManager.Models
             if (s.Any(char.IsControl)) throw new ArgumentException("App Name cannot contain controls or escape characters - Use numbers and letters only.", PropName);
 
             return s;
+        }
+
+        private static bool ValidateNumeral(int val) { 
+            return val >= 8 && val <= 256;
         }
     }
 }

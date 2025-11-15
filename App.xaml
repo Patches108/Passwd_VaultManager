@@ -23,6 +23,7 @@
                 <ResourceDictionary Source="Styles/ComboBox.xaml" />
                 <ResourceDictionary Source="Styles/DarkGroupBoxStyle.xaml" />
                 <ResourceDictionary Source="Styles/ToggleButton.xaml" />
+                <ResourceDictionary Source="Styles/ContextMenuStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <models:BoolToTextConverter x:Key="BoolToTextConverter" />
@@ -31,11 +32,11 @@
 
 
             <!--  Context menu for tray icon  -->
-            <ContextMenu x:Key="TrayContextMenu">
+            <ContextMenu x:Key="TrayContextMenu" Style="{StaticResource ContextMenuStyle}">
                 <MenuItem Click="TrayMenu_Open_Click" Header="Open" />
                 <MenuItem Click="TrayMenu_New_Click" Header="New Vault" />
                 <MenuItem Click="TrayMenu_Settings_Click" Header="Settings" />
-                <Separator />
+                <Separator Style="{StaticResource MenuSeparator}" />
                 <MenuItem Click="TrayMenu_Exit_Click" Header="Exit" />
             </ContextMenu>
 

@@ -83,7 +83,9 @@
                     x:Name="txtSearch"
                     Grid.Column="0"
                     Margin="0,8,5,10"
-                    Style="{StaticResource SearchTextField}" GotFocus="txtSearch_GotFocus" LostFocus="txtSearch_LostFocus" />
+                    GotFocus="txtSearch_GotFocus"
+                    LostFocus="txtSearch_LostFocus"
+                    Style="{StaticResource SearchTextField}" />
 
                 <!--  SEARCH BUTTON  -->
                 <Button
@@ -345,16 +347,6 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </ScrollViewer>
-
-            <!--<ScrollViewer Grid.Row="2" Grid.Column="1">
-                <ItemsControl ItemsSource="{Binding Vaults}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type m:AppVault}">
-                            <v:PasswordPanel />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>-->
 
 
             <!--  Footer Controls  -->

@@ -269,7 +269,7 @@ namespace Passwd_VaultManager.Views
                 await _vm.SaveAsync();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                    var toast = new ToastNotification($"Vault entry - ({_vm.AppName}) - created successfully.", true);
+                    var toast = new ToastNotification($"Vault entry - ({_vm.AppName}) - updated successfully.", true);
                     toast.Show();
                 });
 
@@ -283,6 +283,8 @@ namespace Passwd_VaultManager.Views
             SettingsService.Save(App.Settings);
 
             ChangesMade = false;
+
+            this.Close();
         }
 
         private void txtAppName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {

@@ -68,13 +68,13 @@ namespace Passwd_VaultManager.Views {
             // incorrect
             _failedAttempts++;
 
-            new MessageWindow($"Incorrect PIN. Attempt {_failedAttempts} of {MaxAttempts}.");
+            new MessageWindow($"Incorrect PIN. Attempt {_failedAttempts} of {MaxAttempts}.").ShowDialog();
 
             ClearInputs();      // this should: clear all 4, focus tb1, disable Proceed
             txtPrompt.Text = "Incorrect PIN. Try again.";
 
             if (_failedAttempts >= MaxAttempts) {
-                new MessageWindow($"Too many failed attempts. The application will now close.");
+                new MessageWindow($"Too many failed attempts. The application will now close.").ShowDialog();
                 
                 // no UI freeze
                 await Task.Delay(300);
