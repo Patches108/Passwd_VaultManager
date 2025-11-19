@@ -15,7 +15,7 @@
     Background="Transparent"
     Closing="MainWindow_Closing"
     Loaded="frmMainWindow_Loaded"
-    ResizeMode="NoResize"
+    ResizeMode="CanMinimize"
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">

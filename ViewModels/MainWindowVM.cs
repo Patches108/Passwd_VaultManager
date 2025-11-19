@@ -79,7 +79,7 @@ namespace Passwd_VaultManager.ViewModels
         private void OpenEditWindow(AppVault vault) {
 
             if (vault is null) {
-                new Helper("First, select a vault to edit.").Show();
+                new Helper("Opps!\n\nFirst, select a vault to edit.").Show();
                 return;
             }
 
