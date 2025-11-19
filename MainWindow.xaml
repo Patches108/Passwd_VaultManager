@@ -63,6 +63,11 @@
                     <MenuItem Click="EditVaultRecord_Click" Header="Edit" />
                     <MenuItem Click="OpenSettings_Click" Header="Settings" />
                     <Separator Style="{StaticResource MenuSeparator}" />
+                    <MenuItem
+                        Header="_Run on Startup"
+                        IsCheckable="True"
+                        IsChecked="{Binding IsStartupEnabled, Mode=TwoWay}" />
+                    <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
                     <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="ExitApp_Click" Header="Exit" />

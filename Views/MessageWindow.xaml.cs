@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.Views {
@@ -22,6 +23,16 @@ namespace Passwd_VaultManager.Views {
             if (e.Key == Key.Escape) {
                 DialogResult = false;
                 Close();
+            }
+        }
+
+        // DO I NEED THIS?
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            var closeBtn = GetTemplateChild("btnClose") as Button;
+            if (closeBtn != null) {
+                closeBtn.Click += (s, e) => this.Close();
             }
         }
     }

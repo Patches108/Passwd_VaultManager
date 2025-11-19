@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.Views
@@ -41,6 +42,16 @@ namespace Passwd_VaultManager.Views
 
         private void frmInputDialog_Loaded(object sender, RoutedEventArgs e) {
             txtInput.Focus();
+        }
+
+        // DO I NEED THIS?
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            var closeBtn = GetTemplateChild("btnClose") as Button;
+            if (closeBtn != null) {
+                closeBtn.Click += (s, e) => this.Close();
+            }
         }
     }
 }

@@ -321,5 +321,14 @@ namespace Passwd_VaultManager.Views {
             var helpWin = new Helper("Here, you enter the user name you use to login.\n\nUsually this is a custom username or an email.");
             helpWin.Show();
         }
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            var closeBtn = GetTemplateChild("btnClose") as Button;
+            if (closeBtn != null) {
+                closeBtn.Click += (s, e) => this.Close();
+            }
+        }
     }
 }

@@ -178,5 +178,19 @@ namespace Passwd_VaultManager
                 txtSearch.Foreground = PlaceholderBrush;
             }
         }
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            var closeBtn = GetTemplateChild("btnClose") as Button;
+            if (closeBtn != null) {
+                closeBtn.Click += (s, e) => this.Close();
+            }
+
+            var minimizeBtn = GetTemplateChild("btnMinimize") as Button;
+            if (minimizeBtn != null) {
+                minimizeBtn.Click += (s, e) => this.WindowState = WindowState.Minimized;
+            }
+        }
     }
 }

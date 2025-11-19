@@ -7,6 +7,7 @@ using Passwd_VaultManager.ViewModels;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Shapes;
@@ -301,7 +302,6 @@ namespace Passwd_VaultManager.Views {
 
         private void InputDialog_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
             if (e.Key == Key.Escape) {
-                DialogResult = false;
                 CheckUnsavedChanges();
                 Close();
             }

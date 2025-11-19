@@ -1,7 +1,9 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Microsoft.Win32;
+using Passwd_VaultManager.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -11,6 +13,9 @@ using System.Windows.Media;
 namespace Passwd_VaultManager.ViewModels
 {
     class SettingsWindowVM : ViewModelBase {
+
+        private bool _isStartupEnabled;
+
         // Font size options
         public ObservableCollection<double> AvailableFontSizes { get; } = new ObservableCollection<double>(Enumerable.Range(20, 29).Select(i => i / 2.0));
 
@@ -22,6 +27,17 @@ namespace Passwd_VaultManager.ViewModels
                 if (_selectedFontSize != value) {
                     _selectedFontSize = value;
                     OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsStartupEnabled {
+            get => _isStartupEnabled;
+            set {
+                if (_isStartupEnabled != value) {
+                    _isStartupEnabled = value;
+                    OnPropertyChanged();
+                    RegisterInStartup(value); // call your registry method
                 }
             }
         }
@@ -88,6 +104,19 @@ namespace Passwd_VaultManager.ViewModels
             //AppPaths.SaveSetting("FontFamily", SelectedFont);
             //AppPaths.SaveSetting("FontSize", SelectedFontSize.ToString(CultureInfo.InvariantCulture));
             //AppPaths.SaveSetting("SoundEnabled", SoundEnabled ? "true" : "false");
+        }
+
+        public static void RegisterInStartup(bool enable) {
+            string appName = "PasswordVaultManager";
+            string exePath = Process.GetCurrentProcess().MainModule.FileName;
+
+            using RegistryKey rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+
+            if (enable) {
+                rk.SetValue(appName, $"\"{exePath}\"");
+            } else {
+                rk.DeleteValue(appName, false);
+            }
         }
     }
 }

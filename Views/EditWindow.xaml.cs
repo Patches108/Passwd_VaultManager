@@ -389,5 +389,14 @@ namespace Passwd_VaultManager.Views
             e.Cancel = true;
             Hide();
         }
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            var closeBtn = GetTemplateChild("btnClose") as Button;
+            if (closeBtn != null) {
+                closeBtn.Click += (s, e) => this.Close();
+            }
+        }
     }
 }
