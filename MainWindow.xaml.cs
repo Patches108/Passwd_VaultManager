@@ -7,6 +7,8 @@ using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Ribbon;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -192,5 +194,44 @@ namespace Passwd_VaultManager
                 minimizeBtn.Click += (s, e) => this.WindowState = WindowState.Minimized;
             }
         }
+
+        private void FilterMenu_IsPasswdSet_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_IsUserNameSet_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_BitRate265_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_BitRate192_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_BitRate128OrLess_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_StatusGood_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void FilterMenu_Cancel_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void cmdFilter_Click(object sender, RoutedEventArgs e) {
+            Button btn = (Button)sender;
+
+            if (btn.ContextMenu != null) {
+                btn.ContextMenu.PlacementTarget = btn;
+                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                btn.ContextMenu.IsOpen = true;
+            }
+        }
+
     }
 }

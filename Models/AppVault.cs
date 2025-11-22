@@ -44,12 +44,13 @@ namespace Passwd_VaultManager.Models
             set {
                 if (_bitRate == value) return;
 
-                if(ValidateNumeral(_bitRate)) {
+                if (ValidateNumeral(value))   // <-- validate value, not _bitRate
+                {
                     _bitRate = value;
                     OnPropertyChanged();
                 } else {
                     new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
-                }                
+                }
             }
         }
 

@@ -113,8 +113,6 @@ namespace Passwd_VaultManager.Views
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
 
-            //App.Settings.FirstTimeOpeningEditWin = true;       // REMOVE THIS IN PROD
-
             if (App.Settings.FirstTimeOpeningEditWin) {
                 var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.");
                 helpWin.Show();

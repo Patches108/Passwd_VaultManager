@@ -70,14 +70,6 @@ namespace Passwd_VaultManager.Funcs {
             };
         }
 
-
-        // Decrypt when you need to display/use the password
-        //public static string UnprotectPassword(byte[] blob) {
-        //    byte[] entropy = GetAppEntropy();
-        //    byte[] clear = ProtectedData.Unprotect(blob, entropy, DataProtectionScope.CurrentUser);
-        //    return Encoding.UTF8.GetString(clear);
-        //}
-
         // extra salting.
         private static byte[] GetAppEntropy() =>
             Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
