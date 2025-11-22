@@ -385,5 +385,16 @@ namespace Passwd_VaultManager.Views {
                 }
             }
         }
+
+        private void cmdResetHelperBot_Click(object sender, RoutedEventArgs e) {
+            string res = SettingsService.ResetHelperBot(_settings).Trim();
+
+            if (res == String.Empty) {
+                //new ToastNotification("Thanks for resetting me!", true).Show();
+                new Helper("Thanks for resetting me!").Show();
+            } else {
+                new MessageWindow($"ERROR: Opps! There was an error updating the systems:\n\n{res}").Show();
+            }
+        }
     }
 }

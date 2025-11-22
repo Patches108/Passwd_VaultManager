@@ -102,5 +102,37 @@ namespace Passwd_VaultManager.Services {
             };
             File.WriteAllLines(path, defaults);
         }
+
+        public static string ResetHelperBot(AppSettings s) {
+
+            try {
+                AppPaths.EnsureAppDataFolder();
+                var path = AppPaths.SettingsFile;
+
+                var lines = new[] {
+                $"FontFamily={s.FontFamily}",
+                $"FontSize={s.FontSize.ToString(CultureInfo.InvariantCulture)}",
+                $"SoundEnabled={(s.SoundEnabled ? "true" : "false")}",
+
+                "FirstTimeOpeningApp=true",
+                "FirstTimeOpeningNewWin=true",
+                "FirstTimeOpeningEditWin=true",
+
+                "FirstTimeNewAppName_NewWin=true",
+                "FirstTimeNewUserName_NewWin=true",
+                "FirstTimeNewPassword_NewWin=true",
+
+                "FirstTimeNewAppName_EditWin=true",
+                "FirstTimeNewUserName_EditWin=true",
+                "FirstTimeNewPassword_EditWin=true"
+            };
+                File.WriteAllLines(path, lines);
+            } catch (Exception e) {
+                return e.Message;
+            }
+
+            return "";
+            
+        }
     }
 }

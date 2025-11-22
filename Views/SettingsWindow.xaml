@@ -96,7 +96,7 @@
                     Text="The quick brown fox jumps over the lazy dog." />
 
                 <!--  Sound Checkbox  -->
-                <CheckBox
+                <!--<CheckBox
                     x:Name="chkIsSoundEnabled"
                     Margin="0,20,0,0"
                     Checked="chkIsSoundEnabled_Checked"
@@ -104,7 +104,7 @@
                     FontSize="14"
                     IsChecked="{Binding SoundEnabled}"
                     Style="{StaticResource CheckControl}"
-                    Unchecked="chkIsSoundEnabled_Unchecked" />
+                    Unchecked="chkIsSoundEnabled_Unchecked" />-->
 
                 <!--  Backup Group  -->
                 <GroupBox
@@ -155,6 +155,27 @@
                     Header="App Settings"
                     Style="{StaticResource DarkGroupBoxStyle}">
                     <StackPanel Margin="10">
+
+                        <!--  Sound Checkbox  -->
+                        <CheckBox
+                            x:Name="chkIsSoundEnabled"
+                            Margin="0,20,0,0"
+                            Checked="chkIsSoundEnabled_Checked"
+                            Content="Enable Sound Effects"
+                            FontSize="14"
+                            IsChecked="{Binding SoundEnabled}"
+                            Style="{StaticResource CheckControl}"
+                            Unchecked="chkIsSoundEnabled_Unchecked" />
+
+
+                        <!--  Helper bot reset Checkbox  -->
+                        <Button
+                            x:Name="cmdResetHelperBot"
+                            Margin="0,5,0,0"
+                            Click="cmdResetHelperBot_Click"
+                            Content="Reset Helper Bot"
+                            Style="{StaticResource DarkRoundedButton}" />
+
                         <Button
                             Margin="0,5,0,0"
                             Click="RestoreDefaults_Click"
