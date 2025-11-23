@@ -34,7 +34,9 @@
             <MenuItem Click="FilterMenu_BitRate128OrLess_Click" Header="BitRate (8 &lt;= 128)" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="FilterMenu_StatusGood_Click" Header="Status Good" />
-            <MenuItem Click="FilterMenu_StatusGood_Click" Header="Status Bad" />
+            <MenuItem Click="FilterMenu_StatusBad_Click" Header="Status Bad" />
+            <Separator Style="{StaticResource MenuSeparator}" />
+            <MenuItem Click="FilterMenu_Reset_Click" Header="Reset" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="FilterMenu_Cancel_Click" Header="Cancel" />
         </ContextMenu>
@@ -105,6 +107,7 @@
                     x:Name="txtSearch"
                     Grid.Column="0"
                     Margin="0,8,5,10"
+                    TextChanged="txtSearch_TextChanged"
                     GotFocus="txtSearch_GotFocus"
                     LostFocus="txtSearch_LostFocus"
                     Style="{StaticResource SearchTextField}" />
@@ -343,6 +346,7 @@
 
             <ScrollViewer Grid.Row="2" Grid.Column="1">
                 <ListBox
+                    x:Name="lstVaultList"
                     Background="Transparent"
                     BorderThickness="0"
                     ItemsSource="{Binding Vaults}"

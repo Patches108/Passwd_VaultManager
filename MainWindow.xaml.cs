@@ -5,6 +5,8 @@ using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
@@ -25,6 +27,9 @@ namespace Passwd_VaultManager
 
         private static readonly Brush PlaceholderBrush = new SolidColorBrush(Color.FromRgb(140, 140, 140));
         private static readonly Brush InputBrush = (Brush)new BrushConverter().ConvertFromString("#FF2BA33B");
+        private static readonly Brush DefaultBorderBrush = (Brush)new BrushConverter().ConvertFrom("#FF1F89F6");   // default blue
+        private static readonly Brush MatchBorderBrush = Brushes.LimeGreen;
+        private static readonly Brush NoResultBorderBrush = Brushes.Red;
 
         internal MainWindowVM ViewModel { get; set; }
 
@@ -39,7 +44,7 @@ namespace Passwd_VaultManager
             txtSearch.Foreground = new SolidColorBrush(Color.FromRgb(140, 140, 140));
 
             var sharedPasswdPanelVM = (PasswdPanelVM)Resources["PasswdPanelVM"];
-            _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store it inside your MainWindowVM
+            _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store inside MainWindowVM
             DataContext = _vm;
 
             //App.Settings.FirstTimeOpeningApp = true;       // REMOVE THIS IN PROD
@@ -79,7 +84,7 @@ namespace Passwd_VaultManager
 
         private void EditVaultRecord_Click(object sender, RoutedEventArgs e) {
             
-            AppVault vault =  _vm.SelectedAppVault; // Get selected vault
+            AppVault vault = _vm.SelectedAppVault; // Get selected vault
             if (vault is null) {
                 new Helper("First, select a vault to edit.").Show();
                 return;
@@ -196,31 +201,37 @@ namespace Passwd_VaultManager
         }
 
         private void FilterMenu_IsPasswdSet_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("IsPasswdSet");
         }
 
         private void FilterMenu_IsUserNameSet_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("IsUserNameSet");
         }
 
         private void FilterMenu_BitRate265_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("BitRate265");
         }
 
         private void FilterMenu_BitRate192_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("BitRate192");
         }
 
         private void FilterMenu_BitRate128OrLess_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("BitRate128");
         }
 
         private void FilterMenu_StatusGood_Click(object sender, RoutedEventArgs e) {
-
+            FilterHandler("StatusGood");
+        }
+        private void FilterMenu_StatusBad_Click(object sender, RoutedEventArgs e) {
+            FilterHandler("StatusBad");
+        }
+        private void FilterMenu_Reset_Click(object sender, RoutedEventArgs e) {
+            FilterHandler("Reset");
         }
 
         private void FilterMenu_Cancel_Click(object sender, RoutedEventArgs e) {
-
+            // NOTHING HERE, IT WILL JUST CLOSE.
         }
 
         private void cmdFilter_Click(object sender, RoutedEventArgs e) {
@@ -233,5 +244,107 @@ namespace Passwd_VaultManager
             }
         }
 
+        private async void txtSearch_TextChanged(object sender, TextChangedEventArgs e) {
+            string searchText = txtSearch.Text;
+
+            // 1. Empty or whitespace -> reset
+            if (string.IsNullOrWhiteSpace(searchText) || txtSearch.Text.Equals("Search by App Name")) {
+                txtSearch.BorderBrush = DefaultBorderBrush;
+
+                // ensure vault list is up to date
+                await _vm.RefreshVaultsAsync();
+                lstVaultList.ItemsSource = _vm.Vaults;
+
+                return;
+            }
+
+            // 2. Make sure we have the latest vaults once per change
+            await _vm.RefreshVaultsAsync();
+            var allVaults = _vm.Vaults ?? new System.Collections.ObjectModel.ObservableCollection<AppVault>();
+
+            string search = searchText.Trim();
+
+            // 3. Case-insensitive, null-safe search in memory
+            var searchedList = allVaults
+                .Where(v => !string.IsNullOrEmpty(v.AppName) &&
+                            v.AppName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+
+            // 4. Update UI + border color based on results
+            if (searchedList.Count > 0) {
+                txtSearch.BorderBrush = MatchBorderBrush;
+                lstVaultList.ItemsSource = searchedList;
+            } else {
+                txtSearch.BorderBrush = NoResultBorderBrush;
+
+                // your original comment: "load all list - Mark red"
+                lstVaultList.ItemsSource = allVaults;
+            }
+        }
+
+
+        private async void FilterHandler(string s) {
+            // get all vaults
+            await _vm.RefreshVaultsAsync();
+
+            var allVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
+            ObservableCollection<AppVault> searchedList = allVaults;
+
+            switch (s) {
+                case "IsPasswdSet":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.IsPasswdSet));
+                    break;
+
+                case "IsUserNameSet":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.IsUserNameSet));
+                    break;
+
+                case "BitRate265":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.BitRate == 256));
+                    break;
+
+                case "BitRate192":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.BitRate == 192));
+                    break;
+
+                case "BitRate128":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.BitRate == 128));
+                    break;
+
+                case "StatusGood":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => v.IsStatusGood));
+                    break;
+
+                case "StatusBad":
+                    searchedList = new ObservableCollection<AppVault>(
+                        allVaults.Where(v => !v.IsStatusGood));
+                    break;
+
+                case "Reset":
+                    await _vm.RefreshVaultsAsync();
+                    lstVaultList.ItemsSource = _vm.Vaults;
+                    return;
+
+                default:
+                    new MessageWindow("INTERNAL ERROR: Unknown Option");
+                    return;
+            }
+
+            lstVaultList.ItemsSource = searchedList;
+
+            //if (searchedList.Count > 0) {
+            //    // e.g. show results
+            //    //lstVaultList.Items.Clear();
+            //    lstVaultList.ItemsSource = searchedList;
+            //}
+        }
+
+        
     }
 }
