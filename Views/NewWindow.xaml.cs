@@ -244,6 +244,8 @@ namespace Passwd_VaultManager.Views {
                 _excludedChars = string.Empty;
 
             UpdateDisplayedPassword();
+
+            _vm.Length = txtPasswd.Text.Trim().Length;
         }
 
         private void txtPasswd_TextChanged(object sender, TextChangedEventArgs e) {
@@ -266,13 +268,12 @@ namespace Passwd_VaultManager.Views {
                 AppVault v = new AppVault();
                 v.AppName = txtAppName.Text.Trim();
                 v.UserName = txtUserName.Text.Trim();
-
-                //if((int)sldPasswdLength.Value < _passwdWhole.Length)
-                //v.Password = _passwdWhole;
                 v.Password = txtPasswd.Text.Trim();
+                v.ExcludedChars = txtCharactersToExclude.Text.Trim();
 
                 v.IsPasswdSet = true;
                 v.IsUserNameSet = true;
+                
                 v.BitRate = _bitRate;
 
                 try {

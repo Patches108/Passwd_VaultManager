@@ -60,6 +60,33 @@
                 ArrayPool<char>.Shared.Return(rented);
             }
         }
+
+
+        /// <summary>
+        /// Validates string input, throws exception is invalid.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="PropName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static string ValidateString(string value, string PropName) {
+
+            var s = value?.Trim() ?? throw new ArgumentNullException(PropName);
+
+            if (s.Length == 0) throw new ArgumentException("Value cannot be empty.", PropName);
+            if (s.Length > 100) throw new ArgumentOutOfRangeException("Value cannot exceed 100 characters.", PropName);
+            if (s.Any(char.IsControl)) throw new ArgumentException("App Name cannot contain controls or escape characters - Use numbers and letters only.", PropName);
+
+            return s;
+        }
+
+        public static bool ValidateNumeral(int val) {
+            return val >= 8 && val <= 256;
+        }
+
+
     }
 
 }

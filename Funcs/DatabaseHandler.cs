@@ -26,10 +26,11 @@ namespace Passwd_VaultManager.Funcs {
                             id             INTEGER PRIMARY KEY AUTOINCREMENT,
                             DateCreated    TEXT    NOT NULL,   
                             AppName        BLOB    NOT NULL,   
-                            UserName       BLOB    NOT NULL,   
-                            Passwd         BLOB    NOT NULL,   
+                            UserName       BLOB    NULL,   
+                            Passwd         BLOB    NULL,   
                             IsUserNameSet  INTEGER NOT NULL,   
                             IsPasswdSet    INTEGER NOT NULL,
+                            ExcludedChars  BLOB    NULL,
                             BitRate        INTEGER NOT NULL    
                         );
                         ";
@@ -49,9 +50,9 @@ namespace Passwd_VaultManager.Funcs {
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 INSERT INTO Vault
-                    (DateCreated, AppName, UserName, Passwd, IsUserNameSet, IsPasswdSet, BitRate)
+                    (DateCreated, AppName, UserName, Passwd, IsUserNameSet, IsPasswdSet, ExcludedChars, BitRate)
                 VALUES
-                    ($date, $app, $user, $pwd, $userSet, $pwdSet, $bitR);
+                    ($date, $app, $user, $pwd, $userSet, $pwdSet, $excluded, $bitR);
                 SELECT last_insert_rowid();";
 
             cmd.Parameters.AddWithValue("$date", DateTime.UtcNow.ToString("o")); // ISO 8601 UTC
@@ -61,6 +62,7 @@ namespace Passwd_VaultManager.Funcs {
             cmd.Parameters.AddWithValue("$pwd", EncryptionService.EncryptToBlob(v.Password ?? ""));
             cmd.Parameters.AddWithValue("$userSet", v.IsUserNameSet ? 1 : 0);
             cmd.Parameters.AddWithValue("$pwdSet", v.IsPasswdSet ? 1 : 0);
+            cmd.Parameters.AddWithValue("$excluded", EncryptionService.EncryptToBlob(v.ExcludedChars ?? ""));
             cmd.Parameters.AddWithValue("$bitR", v.BitRate);
 
             var scalar = await cmd.ExecuteScalarAsync(ct);
@@ -71,8 +73,8 @@ namespace Passwd_VaultManager.Funcs {
         }
 
         // extra salting.
-        private static byte[] GetAppEntropy() =>
-            Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
+        //private static byte[] GetAppEntropy() =>
+        //    Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
 
         public static async Task<ObservableCollection<AppVault>> GetVaults(CancellationToken ct = default) {
             var vaults = new ObservableCollection<AppVault>();
@@ -83,7 +85,7 @@ namespace Passwd_VaultManager.Funcs {
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 SELECT id, DateCreated, AppName, UserName, Passwd,
-                       IsUserNameSet, IsPasswdSet, BitRate
+                       IsUserNameSet, IsPasswdSet, ExcludedChars, BitRate
                 FROM Vault;";
 
             await using var reader = await cmd.ExecuteReaderAsync(ct);
@@ -94,6 +96,7 @@ namespace Passwd_VaultManager.Funcs {
                     AppName = DecryptBlobSafe(reader, reader.GetOrdinal("AppName")),
                     UserName = DecryptBlobSafe(reader, reader.GetOrdinal("UserName")),
                     Password = DecryptBlobSafe(reader, reader.GetOrdinal("Passwd")),
+                    ExcludedChars = DecryptBlobSafe(reader, reader.GetOrdinal("ExcludedChars")),
                     IsUserNameSet = ReadBoolFlexible(reader, reader.GetOrdinal("IsUserNameSet")),
                     IsPasswdSet = ReadBoolFlexible(reader, reader.GetOrdinal("IsPasswdSet")),
                     BitRate = reader.GetInt32(reader.GetOrdinal("BitRate")),
@@ -114,6 +117,7 @@ namespace Passwd_VaultManager.Funcs {
     string? password,
     bool isUserNameSet,
     bool isPasswdSet,
+    string excluded,
     int bitRate,
     CancellationToken ct = default) {
 
@@ -129,6 +133,7 @@ namespace Passwd_VaultManager.Funcs {
                     Passwd         = $pwd,
                     IsUserNameSet  = $userSet,
                     IsPasswdSet    = $pwdSet,
+                    ExcludedChars  = $excluded,
                     BitRate        = $bitR
                 WHERE id = $id;";
 
@@ -136,12 +141,13 @@ namespace Passwd_VaultManager.Funcs {
             cmd.Parameters.AddWithValue("$app", EncryptionService.EncryptToBlob(appName ?? string.Empty));
             cmd.Parameters.AddWithValue("$user", EncryptionService.EncryptToBlob(userName ?? string.Empty));
             cmd.Parameters.AddWithValue("$pwd", EncryptionService.EncryptToBlob(password ?? string.Empty));
+            cmd.Parameters.AddWithValue("$excluded", EncryptionService.EncryptToBlob(excluded ?? string.Empty));
 
             // plain ints/bools
             cmd.Parameters.AddWithValue("$userSet", isUserNameSet ? 1 : 0);
             cmd.Parameters.AddWithValue("$pwdSet", isPasswdSet ? 1 : 0);
-            cmd.Parameters.AddWithValue("$bitR", bitRate);
 
+            cmd.Parameters.AddWithValue("$bitR", bitRate);
             cmd.Parameters.AddWithValue("$id", id);
 
             // returns number of rows affected (0 = not found / nothing updated, 1 = success)
@@ -283,6 +289,7 @@ namespace Passwd_VaultManager.Funcs {
                 password: v.Password,
                 isUserNameSet: v.IsUserNameSet,
                 isPasswdSet: v.IsPasswdSet,
+                excluded: v.ExcludedChars,
                 bitRate: v.BitRate,
                 ct: ct);
         }

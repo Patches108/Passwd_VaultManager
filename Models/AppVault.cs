@@ -1,6 +1,7 @@
 ﻿using Passwd_VaultManager.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Passwd_VaultManager.Funcs;
 
 namespace Passwd_VaultManager.Models
 {
@@ -9,6 +10,7 @@ namespace Passwd_VaultManager.Models
         private string _appName;
         private string _password;
         private string _userName;
+        private string _excludes;
 
         private int _bitRate;
 
@@ -39,12 +41,27 @@ namespace Passwd_VaultManager.Models
 
         public DateTime? DateCreated { get; set; }
 
+        public string ExcludedChars {
+            get => _excludes;
+            set {
+                if (_excludes == value) return;
+
+                try {
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
+                    _excludes = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
+            }
+        }
+
         public int BitRate {
             get => _bitRate;
             set {
                 if (_bitRate == value) return;
 
-                if (ValidateNumeral(value))   // <-- validate value, not _bitRate
+                if (Funcs.SharedFuncs.ValidateNumeral(value))   // <-- validate value, not _bitRate
                 {
                     _bitRate = value;
                     OnPropertyChanged();
@@ -60,7 +77,7 @@ namespace Passwd_VaultManager.Models
                 if (_appName == value) return;
 
                 try {
-                    string validated = ValidateString(value, nameof(value));
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
                     _appName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
@@ -77,7 +94,7 @@ namespace Passwd_VaultManager.Models
 
 
                 try {
-                    string validated = ValidateString(value, nameof(value));
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
                     _password = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
@@ -92,7 +109,7 @@ namespace Passwd_VaultManager.Models
                 if (_userName == value) return;
 
                 try {
-                    string validated = ValidateString(value, nameof(value));
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
                     _userName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
@@ -126,30 +143,6 @@ namespace Passwd_VaultManager.Models
                 _statusOkay = value;
                 OnPropertyChanged();
             }
-        }
-
-        /// <summary>
-        /// Validates string input, throws exception is invalid.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="PropName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        private static string ValidateString(string value, string PropName) {
-
-            var s = value?.Trim() ?? throw new ArgumentNullException(PropName);
-
-            if (s.Length == 0) throw new ArgumentException("Value cannot be empty.", PropName);
-            if (s.Length > 100) throw new ArgumentOutOfRangeException("Value cannot exceed 100 characters.", PropName);
-            if (s.Any(char.IsControl)) throw new ArgumentException("App Name cannot contain controls or escape characters - Use numbers and letters only.", PropName);
-
-            return s;
-        }
-
-        private static bool ValidateNumeral(int val) { 
-            return val >= 8 && val <= 256;
         }
     }
 }

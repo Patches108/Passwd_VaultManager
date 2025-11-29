@@ -47,8 +47,6 @@ namespace Passwd_VaultManager
             _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store inside MainWindowVM
             DataContext = _vm;
 
-            //App.Settings.FirstTimeOpeningApp = true;       // REMOVE THIS IN PROD
-
             if (App.Settings.FirstTimeOpeningApp) {
                 var helpWin = new Helper("I see this is your first time using Password Vault Manager.\n\nWelcome!\n\nTo get started, click the \'New\'");
                 helpWin.Show();
@@ -337,12 +335,6 @@ namespace Passwd_VaultManager
             }
 
             lstVaultList.ItemsSource = searchedList;
-
-            //if (searchedList.Count > 0) {
-            //    // e.g. show results
-            //    //lstVaultList.Items.Clear();
-            //    lstVaultList.ItemsSource = searchedList;
-            //}
         }
 
         

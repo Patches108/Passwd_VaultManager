@@ -6,7 +6,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
-//using static Passwd_VaultManager.MainWindow;
 
 namespace Passwd_VaultManager.ViewModels
 {

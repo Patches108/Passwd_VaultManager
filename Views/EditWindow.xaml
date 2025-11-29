@@ -277,7 +277,7 @@
                             IsEnabled="False"
                             LostFocus="txtCharactersToExclude_LostFocus"
                             Style="{StaticResource WhiteTextField}"
-                            Text="Chars to Exclude"
+                            Text="{Binding ExcludedChars}"
                             TextChanged="txtCharactersToExclude_TextChanged" />
 
                         <!--  Controls for string length  -->

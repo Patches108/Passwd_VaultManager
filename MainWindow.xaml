@@ -24,7 +24,7 @@
         <!--  Shared VM  -->
         <vm:PasswdPanelVM x:Key="PasswdPanelVM" />
 
-        <!--  Context menu for Filer icon  -->
+        <!--  Context menu for Filter icon  -->
         <ContextMenu x:Key="FilterContextMenu" Style="{StaticResource ContextMenuStyle}">
             <MenuItem Click="FilterMenu_IsPasswdSet_Click" Header="Password Set?" />
             <MenuItem Click="FilterMenu_IsUserNameSet_Click" Header="UserName Set?" />

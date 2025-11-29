@@ -17,6 +17,7 @@ namespace Passwd_VaultManager.ViewModels
         private string _appName = String.Empty;
         private string _userName = String.Empty;
         private string _appPasswd = String.Empty;
+        private string _excludes = String.Empty;
 
         private bool _isUserNameSet = false;
         private bool _isPasswdSet = false;
@@ -112,6 +113,20 @@ namespace Passwd_VaultManager.ViewModels
                 OnPropertyChanged();
             }
         }
+        public string ExcludedChars {
+            get => _excludes;
+            set {
+                if (_excludes == value) return;
+
+                try {
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
+                    _excludes = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
+            }
+        }
 
         public bool UserNameSet {
             get => _isUserNameSet; 
@@ -172,8 +187,11 @@ namespace Passwd_VaultManager.ViewModels
             _backingVault.AppName = AppName;
             _backingVault.UserName = Username;
             _backingVault.Password = Password;
+            _backingVault.ExcludedChars = ExcludedChars;
+
             _backingVault.IsUserNameSet = !string.IsNullOrWhiteSpace(Username);
             _backingVault.IsPasswdSet = !string.IsNullOrWhiteSpace(Password);
+
             _backingVault.BitRate = BitRate;
 
             // write changes to DB

@@ -42,21 +42,6 @@ namespace Passwd_VaultManager.Views
             Loaded += (_, __) =>
             {
                 if (_vm != null) {
-                    //_passwdWhole = _vm.Password ?? string.Empty;
-                    //txtPasswd.Text = _passwdWhole;
-
-                    //_len = _passwdWhole.Length;
-
-                    //_vm.BitRate = _bitRate;
-                    //_vm.Length = _len;
-                    //_targetLength = _len;
-                    //sldPasswdLength.Value = _len;
-                    //_vm.SliderValue = _len.ToString();
-
-                    //_passwdWhole = txtPasswd.Text.Trim();
-                    //sldPasswdLength.Maximum = _passwdWhole.Length;
-                    //sldPasswdLength.Value = _passwdWhole.Length;
-
 
                     // 1. Get full password text
                     _passwdWhole = _vm.Password?.Trim() ?? string.Empty;
@@ -107,8 +92,10 @@ namespace Passwd_VaultManager.Views
 
                     ChangesMade = false;
 
+                } else {
+                    // error msg
                 }
-                _updating = false; // allow UpdateDisplayedPassword to run later
+                    _updating = false; // allow UpdateDisplayedPassword to run later
             };
 
             lblPasswdStatus.Visibility = Visibility.Hidden;
