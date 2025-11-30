@@ -66,14 +66,23 @@
 
                     <ControlTemplate.Triggers>
 
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Chk_Border_Focus}" />
+                        </Trigger>
+
                         <!--  Pressed  -->
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Box" Property="Background" Value="{StaticResource Chk_BoxBg_Press}" />
                         </Trigger>
 
                         <!--  Focus  -->
-                        <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Chk_Border_Focus}" />
+                        </Trigger>
+
+                        <!--  Unfocused  -->
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Chk_BoxBg}" />
                         </Trigger>
 
                         <!--  Disabled  -->

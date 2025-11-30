@@ -107,10 +107,10 @@
                     x:Name="txtSearch"
                     Grid.Column="0"
                     Margin="0,8,5,10"
-                    TextChanged="txtSearch_TextChanged"
                     GotFocus="txtSearch_GotFocus"
                     LostFocus="txtSearch_LostFocus"
-                    Style="{StaticResource SearchTextField}" />
+                    Style="{StaticResource SearchTextField}"
+                    TextChanged="txtSearch_TextChanged" />
 
                 <!--  SEARCH BUTTON  -->
                 <!--<Button
@@ -394,6 +394,8 @@
 
             <!--  Footer Controls  -->
             <Grid Grid.Row="3" Grid.Column="1">
+
+                <!--  Replace this with somrething else...  -->
                 <TextBlock
                     x:Name="lblStat"
                     Margin="50,0,0,0"
