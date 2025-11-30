@@ -30,6 +30,7 @@ namespace Passwd_VaultManager.Views
 
         private string _passwdWhole = String.Empty;     // password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
+        private string _exclOriginalChars = String.Empty;   // original exclusions for comparison
 
         public EditWindow()
         {
@@ -67,6 +68,7 @@ namespace Passwd_VaultManager.Views
                     // Optional: disable slider if password has fixed length (e.g. 128-bit)
                     sldPasswdLength.IsEnabled = _bitRate != 128;
 
+                    _exclOriginalChars = _vm.ExcludedChars;
 
                     // Add password controls to list for later iteration as per checkbox
                     _PasswdControls.Add(txtPasswd);
@@ -98,7 +100,8 @@ namespace Passwd_VaultManager.Views
                     _updating = false; // allow UpdateDisplayedPassword to run later
             };
 
-            lblPasswdStatus.Visibility = Visibility.Hidden;
+            //lblPasswdStatus.Visibility = Visibility.Hidden;
+            lblPasswdStatus.IsEnabled = false;
 
             if (App.Settings.FirstTimeOpeningEditWin) {
                 var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.");
@@ -181,6 +184,20 @@ namespace Passwd_VaultManager.Views
             if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
                 _excludedChars = string.Empty;
 
+            // add chars back in if erased from txtbox
+            // 1. Get diff, add it to passwd.
+            if(_exclOriginalChars != _excludedChars) {
+                for (int i = 0; i < _exclOriginalChars.Length; i++) {
+                    if (!_excludedChars.Contains(_exclOriginalChars[i])) {
+                        txtPasswd.Text += _exclOriginalChars[i];
+                        _passwdWhole = txtPasswd.Text.Trim();
+                        _exclOriginalChars = _excludedChars.Trim();
+                    }
+                }
+            }
+
+            _vm?.Length = txtPasswd.Text.Trim().Length;
+
             UpdateDisplayedPassword();
         }
 
@@ -188,6 +205,9 @@ namespace Passwd_VaultManager.Views
             if (_updating) return;
 
             _updating = true;
+
+            _targetLength = _passwdWhole.Length;
+
             try {
                 txtPasswd.Text = SharedFuncs.BuildDisplay(
                     fullPassword: _passwdWhole.AsSpan(),
@@ -251,15 +271,15 @@ namespace Passwd_VaultManager.Views
 
             // Update vault in DB
             try {
-                await _vm.SaveAsync();
+                await _vm?.SaveAsync();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                    var toast = new ToastNotification($"Vault entry - ({_vm.AppName}) - updated successfully.", true);
+                    var toast = new ToastNotification($"Vault entry - ({_vm?.AppName}) - updated successfully.", true);
                     toast.Show();
                 });
 
             } catch (Exception ex) {
-                new MessageWindow($"Failed to create vault entry - ({_vm.AppName}) \n\n {ex.Message}.");
+                new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.");
             }
 
             App.Settings.FirstTimeOpeningEditWin = false;

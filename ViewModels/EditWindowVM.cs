@@ -9,7 +9,7 @@ namespace Passwd_VaultManager.ViewModels
 {
     internal sealed class EditWindowVM : ViewModelBase {
 
-        private const int MinLength = 21;
+        private const int MinLength = 8;
         private const int MaxLength = 41;
 
         private const double BitsPerChar = 6.27; // log2(78) ≈ 6.27 (recompute if alphabet changes)
@@ -38,6 +38,7 @@ namespace Passwd_VaultManager.ViewModels
             _appName = appVault?.AppName ?? string.Empty;
             _userName = appVault?.UserName ?? string.Empty;
             _appPasswd = appVault?.Password ?? string.Empty;
+            _excludes = appVault?.ExcludedChars ?? string.Empty;
             _bitRate = appVault?.BitRate ?? 256;
             _isUserNameSet = appVault?.IsUserNameSet ?? false;
             _isPasswdSet = appVault?.IsPasswdSet ?? false;
