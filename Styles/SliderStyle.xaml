@@ -24,11 +24,22 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
                     <Border
+                        x:Name="brdLong"
                         Height="3"
                         Background="Green"
                         BorderBrush="YellowGreen"
                         BorderThickness="1"
                         SnapsToDevicePixels="True" />
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="brdLong" Property="Background" Value="Gray" />
+                            <Setter TargetName="brdLong" Property="BorderBrush" Value="Gray" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -50,6 +61,11 @@
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter TargetName="Ellipse" Property="Fill" Value="DodgerBlue" />
                         </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Ellipse" Property="Fill" Value="Gray" />
+                        </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -88,6 +104,9 @@
                 <Setter Property="MinWidth" Value="104" />
                 <Setter Property="Template" Value="{StaticResource Slider}" />
             </Trigger>
+
+
+
         </Style.Triggers>
     </Style>
 </ResourceDictionary>

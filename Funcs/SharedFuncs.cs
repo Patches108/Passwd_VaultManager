@@ -77,7 +77,7 @@
 
             if (s.Length == 0) throw new ArgumentException("Value cannot be empty.", PropName);
             if (s.Length > 100) throw new ArgumentOutOfRangeException("Value cannot exceed 100 characters.", PropName);
-            if (s.Any(char.IsControl)) throw new ArgumentException("App Name cannot contain controls or escape characters - Use numbers and letters only.", PropName);
+            if (s.Any(char.IsControl)) throw new ArgumentException("Value cannot contain controls or escape characters - Use numbers and letters only.", PropName);
 
             return s;
         }

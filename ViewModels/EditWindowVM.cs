@@ -49,17 +49,27 @@ namespace Passwd_VaultManager.ViewModels
         public int BitRate {
             get => _bitRate;
             set {
-                if (value != 128 && value != 192 && value != 256) {
-                    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
-                    return;
-                }
-                ClearErrors(nameof(BitRate));
-                if (_bitRate != value) {
+                if (_bitRate == value) return;
+
+                if (Funcs.SharedFuncs.ValidateNumeral(value))
+                {
                     _bitRate = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(RequiredLength));
-                    OnPropertyChanged(nameof(PasswdStatus));
+                } else {
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
                 }
+
+                //if (value != 128 && value != 192 && value != 256) {
+                //    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
+                //    return;
+                //}
+                //ClearErrors(nameof(BitRate));
+                //if (_bitRate != value) {
+                //    _bitRate = value;
+                //    OnPropertyChanged();
+                //    OnPropertyChanged(nameof(RequiredLength));
+                //    OnPropertyChanged(nameof(PasswdStatus));
+                //}
             }
         }
 
@@ -90,10 +100,15 @@ namespace Passwd_VaultManager.ViewModels
 
         public string AppName { 
             get => _appName; 
-            set { 
-                if (_appName == value) return; 
-                _appName = value; 
-                OnPropertyChanged(); 
+            set {
+                if (_appName == value) return;
+                try {
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
+                    _appName = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             } 
         }        
 
@@ -101,8 +116,13 @@ namespace Passwd_VaultManager.ViewModels
             get => _userName; 
             set {
                 if (_userName == value) return;
-                _userName = value; 
-                OnPropertyChanged();
+                try {
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
+                    _userName = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             }
         }
 
@@ -110,22 +130,21 @@ namespace Passwd_VaultManager.ViewModels
             get => _appPasswd; 
             set {
                 if (_appPasswd == value) return;
-                _appPasswd = value;
-                OnPropertyChanged();
+                try {
+                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
+                    _appPasswd = validated;
+                    OnPropertyChanged();
+                } catch (Exception ex) {
+                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                }
             }
         }
         public string ExcludedChars {
             get => _excludes;
             set {
                 if (_excludes == value) return;
-
-                try {
-                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-                    _excludes = validated;
-                    OnPropertyChanged();
-                } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
-                }
+                _excludes = value;
+                OnPropertyChanged();
             }
         }
 

@@ -100,7 +100,6 @@ namespace Passwd_VaultManager.Views
                     _updating = false; // allow UpdateDisplayedPassword to run later
             };
 
-            //lblPasswdStatus.Visibility = Visibility.Hidden;
             lblPasswdStatus.IsEnabled = false;
 
             if (App.Settings.FirstTimeOpeningEditWin) {
@@ -111,8 +110,8 @@ namespace Passwd_VaultManager.Views
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
             _bitRate = 128;
+            sldPasswdLength.IsEnabled = true;
             sldPasswdLength.Value = (double)21;
-            sldPasswdLength.IsEnabled = false;
         }
 
         private void rad_256_Click(object sender, RoutedEventArgs e) {
@@ -269,6 +268,12 @@ namespace Passwd_VaultManager.Views
 
         private async void EditWin_cmdUpdateVault_Click(object sender, RoutedEventArgs e) {
 
+            // if mask enabled. 1. toggle it off THEN save.
+            if (!_showPlain) {
+                _showPlain = !_showPlain;       // flip reveal state
+                UpdateDisplayedPassword(force: true);
+            }
+
             // Update vault in DB
             try {
                 await _vm?.SaveAsync();
@@ -341,6 +346,9 @@ namespace Passwd_VaultManager.Views
         private void ToggleReveal_Click(object sender, RoutedEventArgs e) {
             _showPlain = !_showPlain;       // flip reveal state
             UpdateDisplayedPassword(force: true);
+
+            txtCharactersToExclude.IsEnabled = _showPlain;
+            sldPasswdLength.IsEnabled = _showPlain;
         }
 
         private void chk_EditPassword_Checked(object sender, RoutedEventArgs e) {

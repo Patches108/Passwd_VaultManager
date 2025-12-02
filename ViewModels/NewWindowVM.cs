@@ -1,4 +1,5 @@
 ﻿using Passwd_VaultManager.Models;
+using Passwd_VaultManager.Views;
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -27,17 +28,25 @@ namespace Passwd_VaultManager.ViewModels {
         public int BitRate {
             get => _bitRate;
             set {
-                if (value != 128 && value != 192 && value != 256) {
-                    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
-                    return;
-                }
-                ClearErrors(nameof(BitRate));
-                if (_bitRate != value) {
+                if (_bitRate == value) return;
+
+                if (Funcs.SharedFuncs.ValidateNumeral(value)) {
                     _bitRate = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(RequiredLength));
-                    OnPropertyChanged(nameof(PasswdStatus));
+                } else {
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
                 }
+                //if (value != 128 && value != 192 && value != 256) {
+                //    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
+                //    return;
+                //}
+                //ClearErrors(nameof(BitRate));
+                //if (_bitRate != value) {
+                //    _bitRate = value;
+                //    OnPropertyChanged();
+                //    OnPropertyChanged(nameof(RequiredLength));
+                //    OnPropertyChanged(nameof(PasswdStatus));
+                //}
             }
         }
 
