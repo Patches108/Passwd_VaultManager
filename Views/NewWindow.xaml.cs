@@ -253,7 +253,7 @@ namespace Passwd_VaultManager.Views {
             if (txtPasswd.Text.Trim().Length > 0)
                 txtCharactersToExclude?.IsEnabled = true;
 
-            if (txtPasswd.Text.Trim().Length >= 16)
+            if (txtPasswd.Text.Trim().Length >= 8)
                 sldPasswdLength?.IsEnabled = true;
         }
 

@@ -141,23 +141,37 @@ namespace Passwd_VaultManager.Views
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
             if (_updating) return;
 
-            if (_vm is not null) {
-                _targetLength = (int)Math.Round(e.NewValue);
-                _vm.SliderValue = _targetLength.ToString();
-                _vm.Length = _targetLength;
+            _targetLength = (int)Math.Round(e.NewValue);
+            _vm?.SliderValue = _targetLength.ToString();
+            //_vm?.Length = _targetLength;
+            _vm?.Length = txtPasswd.Text.Trim().Length;
 
-                // Update bitrate dynamically
-                switch (_vm.Length) {
-                    case >= 41:
-                        _vm.BitRate = 256;
-                        break;
-                    case >= 31:
-                        _vm.BitRate = 192;
-                        break;
-                    case >= 21:
-                        _vm.BitRate = 128;
-                        break;
-                }
+            // Update bitrate dynamically
+            //switch (_vm?.Length) {
+            //    case >= 41:
+            //        _vm?.BitRate = 256;
+            //        break;
+            //    case >= 31:
+            //        _vm?.BitRate = 192;
+            //        break;
+            //    case >= 21:
+            //        _vm?.BitRate = 128;
+            //        break;
+            //}
+
+            // Update bitrate
+            switch (_vm?.Length) {
+                case >= 41:
+                    _vm?.BitRate = 256;
+                    break;
+
+                case >= 31 and < 41:
+                    _vm?.BitRate = 192;
+                    break;
+
+                case >= 21 and < 31:
+                    _vm?.BitRate = 128;
+                    break;
             }
 
             UpdateDisplayedPassword();
@@ -205,7 +219,7 @@ namespace Passwd_VaultManager.Views
 
             _updating = true;
 
-            _targetLength = _passwdWhole.Length;
+            //_targetLength = _passwdWhole.Length;
 
             try {
                 txtPasswd.Text = SharedFuncs.BuildDisplay(
@@ -227,7 +241,7 @@ namespace Passwd_VaultManager.Views
                     txtCharactersToExclude?.IsEnabled = true;
             
 
-            if (txtPasswd.Text.Trim().Length >= 16)
+            if (txtPasswd.Text.Trim().Length >= 8)
                 sldPasswdLength?.IsEnabled = true;
 
             ChangesMade = true;
