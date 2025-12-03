@@ -158,11 +158,13 @@
                         Height="25"
                         Margin="40,0,0,0"
                         GotFocus="txtPasswd_GotFocus"
+                        HorizontalScrollBarVisibility="Auto"
                         IsReadOnly="True"
                         LostFocus="txtPasswd_LostFocus"
                         Style="{StaticResource WhiteTextField}"
                         Text="Passwd"
-                        TextChanged="txtPasswd_TextChanged" />
+                        TextChanged="txtPasswd_TextChanged"
+                        VerticalScrollBarVisibility="Disabled" />
                     <Button
                         x:Name="cmdCopyToClipboard"
                         Grid.Row="0"

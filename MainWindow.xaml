@@ -88,7 +88,7 @@
                     <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
                     <Separator Style="{StaticResource MenuSeparator}" />
-                    <MenuItem Click="ExitApp_Click" Header="Exit" />
+                    <MenuItem Click="ExitApp_Click" Header="Hard Exit" />
                 </MenuItem>
             </Menu>
 
