@@ -67,9 +67,10 @@
 
             <!--  User Name  -->
             <StackPanel
+                Grid.Row="1"
                 Grid.RowSpan="2"
                 Margin="0,3,0,144"
-                Orientation="Vertical" Grid.Row="1">
+                Orientation="Vertical">
                 <Label
                     x:Name="lblUserName"
                     Width="300"
@@ -108,7 +109,8 @@
             <StackPanel
                 Grid.Row="2"
                 Grid.RowSpan="2"
-                Orientation="Vertical" Margin="0,8,0,0">
+                Margin="0,8,0,0"
+                Orientation="Vertical">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -182,12 +184,12 @@
                         Width="300"
                         Height="34"
                         Margin="40,0,0,0"
+                        HorizontalScrollBarVisibility="Auto"
                         IsReadOnly="True"
                         Style="{StaticResource WhiteTextField}"
                         Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                         TextChanged="txtPasswd_TextChanged"
-                        VerticalScrollBarVisibility="Disabled"
-                        HorizontalScrollBarVisibility="Auto"/>
+                        VerticalScrollBarVisibility="Disabled" />
                     <Button
                         x:Name="cmdCopyToClipboard"
                         Grid.Row="0"
@@ -351,18 +353,20 @@
                     Grid.Column="0"
                     Width="120"
                     Height="35"
+                    Margin="34,23,35,22"
                     Click="EditWin_cmdUpdateVault_Click"
                     Content="Update"
-                    Style="{StaticResource ControlButton}" Margin="34,23,35,22" />
+                    Style="{StaticResource ControlButton}" />
 
                 <Button
                     x:Name="EditWin_cmdClose"
                     Grid.Column="1"
                     Width="120"
                     Height="35"
+                    Margin="35,23,34,22"
                     Click="EditWin_cmdClose_Click"
                     Content="Close"
-                    Style="{StaticResource ControlButton}" Margin="35,23,34,22" />
+                    Style="{StaticResource ControlButton}" />
             </Grid>
         </Grid>
     </Border>

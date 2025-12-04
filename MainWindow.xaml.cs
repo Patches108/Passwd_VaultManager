@@ -31,6 +31,8 @@ namespace Passwd_VaultManager
         private static readonly Brush MatchBorderBrush = Brushes.LimeGreen;
         private static readonly Brush NoResultBorderBrush = Brushes.Red;
 
+        private ObservableCollection<AppVault> SearchedVaults = new ObservableCollection<AppVault>();
+
         internal MainWindowVM ViewModel { get; set; }
 
         internal MainWindowVM MainVM => this.DataContext as MainWindowVM;
@@ -258,12 +260,12 @@ namespace Passwd_VaultManager
 
             // 2. Make sure we have the latest vaults once per change
             await _vm.RefreshVaultsAsync();
-            var allVaults = _vm.Vaults ?? new System.Collections.ObjectModel.ObservableCollection<AppVault>();
+            SearchedVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
 
             string search = searchText.Trim();
 
             // 3. Case-insensitive, null-safe search in memory
-            var searchedList = allVaults
+            var searchedList = SearchedVaults
                 .Where(v => !string.IsNullOrEmpty(v.AppName) &&
                             v.AppName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
@@ -275,8 +277,9 @@ namespace Passwd_VaultManager
             } else {
                 txtSearch.BorderBrush = NoResultBorderBrush;
 
-                // your original comment: "load all list - Mark red"
-                lstVaultList.ItemsSource = allVaults;
+                //lstVaultList.ItemsSource = allVaults;
+                // Empty list.
+                lstVaultList.ItemsSource = new ObservableCollection<AppVault>();
             }
         }
 
@@ -337,6 +340,38 @@ namespace Passwd_VaultManager
             lstVaultList.ItemsSource = searchedList;
         }
 
-        
+        private void SortMenu_Alphabetical_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void SortMenu_DateCreated_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void SortMenu_Bitrate_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void SortMenu_Status_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void SortMenu_Reset_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void SortMenu_Cancel_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void cmdSort_Click(object sender, RoutedEventArgs e) {
+            Button btn = (Button)sender;
+
+            if (btn.ContextMenu != null) {
+                btn.ContextMenu.PlacementTarget = btn;
+                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                btn.ContextMenu.IsOpen = true;
+            }
+        }
     }
 }

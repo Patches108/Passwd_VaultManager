@@ -41,6 +41,18 @@
             <MenuItem Click="FilterMenu_Cancel_Click" Header="Cancel" />
         </ContextMenu>
 
+        <!--  Context menu for Sort icon  -->
+        <ContextMenu x:Key="SortContextMenu" Style="{StaticResource ContextMenuStyle}">
+            <MenuItem Click="SortMenu_Alphabetical_Click" Header="Alphabetical" />
+            <MenuItem Click="SortMenu_DateCreated_Click" Header="Date Created" />
+            <MenuItem Click="SortMenu_Bitrate_Click" Header="Bit Rate" />
+            <MenuItem Click="SortMenu_Status_Click" Header="Status" />
+            <Separator Style="{StaticResource MenuSeparator}" />
+            <MenuItem Click="SortMenu_Reset_Click" Header="Reset" />
+            <Separator Style="{StaticResource MenuSeparator}" />
+            <MenuItem Click="SortMenu_Cancel_Click" Header="Cancel" />
+        </ContextMenu>
+
     </Window.Resources>
 
     <Window.DataContext>
@@ -152,7 +164,9 @@
                     Grid.Column="2"
                     Width="36"
                     Height="30"
-                    Style="{StaticResource ControlButton}">
+                    Click="cmdSort_Click"
+                    Style="{StaticResource ControlButton}"
+                    ContextMenu="{StaticResource SortContextMenu}">
                     <Image
                         Width="26"
                         Height="24"
