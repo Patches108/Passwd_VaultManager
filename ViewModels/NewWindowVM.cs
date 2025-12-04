@@ -2,10 +2,9 @@
 using Passwd_VaultManager.Views;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace Passwd_VaultManager.ViewModels {
-    internal sealed class NewWindowVM : ViewModelBase, INotifyDataErrorInfo {
+    internal sealed class NewWindowVM : ViewModelBase {
 
         private const int MinLength = 8;
         private const int MaxLength = 41;
@@ -54,10 +53,9 @@ namespace Passwd_VaultManager.ViewModels {
             get => _length;
             set {
                 if (value < MinLength || value > MaxLength) {
-                    AddError(nameof(Length), $"Length must be between {MinLength} and {MaxLength}.");
+                    new MessageWindow($"Length must be between {MinLength} and {MaxLength}.").Show();
                     return;
                 }
-                ClearErrors(nameof(Length));
                 if (_length != value) {
                     _length = value;
                     OnPropertyChanged();
@@ -85,19 +83,5 @@ namespace Passwd_VaultManager.ViewModels {
 
         public IEnumerable GetErrors(string? propertyName)
             => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
-
-        private void AddError(string prop, string message) {
-            if (!_errors.TryGetValue(prop, out var list))
-                _errors[prop] = list = new List<string>();
-            if (!list.Contains(message)) {
-                list.Add(message);
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(prop));
-            }
-        }
-
-        private void ClearErrors(string prop) {
-            if (_errors.Remove(prop))
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(prop));
-        }
     }
 }

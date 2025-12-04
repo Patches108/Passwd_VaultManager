@@ -162,9 +162,10 @@ namespace Passwd_VaultManager.Views {
 
         private void cmdCopyToClopboard(object sender, RoutedEventArgs e) {
             // Copy password text field data to clipboard
-            if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim()))
+            if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim())) {
                 Clipboard.SetText(txtPasswd.Text);
-            else {
+                new ToastNotification("Text copied to clipboard", true).Show();
+            } else {
                 new MessageWindow("ERROR: Password field is empty. Generate or manually").ShowDialog();
             }
         }

@@ -19,18 +19,17 @@
     <Border CornerRadius="8" Style="{StaticResource FormStyle}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="121*" />
-                <RowDefinition Height="121*" />
-                <RowDefinition Height="159*" />
-                <RowDefinition Height="82*" />
+                <RowDefinition Height="54*" />
+                <RowDefinition Height="44*" />
+                <RowDefinition Height="102*" />
+                <RowDefinition Height="41*" />
             </Grid.RowDefinitions>
 
 
             <!--  App Name  -->
             <StackPanel
                 Grid.Row="0"
-                Grid.RowSpan="2"
-                Margin="0,15,0,121"
+                Margin="0,15,0,6"
                 Orientation="Vertical">
                 <Label
                     x:Name="lblAppName"
@@ -68,9 +67,9 @@
 
             <!--  User Name  -->
             <StackPanel
-                Grid.RowSpan="3"
-                Margin="0,115,0,144"
-                Orientation="Vertical">
+                Grid.RowSpan="2"
+                Margin="0,3,0,144"
+                Orientation="Vertical" Grid.Row="1">
                 <Label
                     x:Name="lblUserName"
                     Width="300"
@@ -109,7 +108,7 @@
             <StackPanel
                 Grid.Row="2"
                 Grid.RowSpan="2"
-                Orientation="Vertical">
+                Orientation="Vertical" Margin="0,8,0,0">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -181,12 +180,14 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Width="300"
-                        Height="25"
+                        Height="34"
                         Margin="40,0,0,0"
                         IsReadOnly="True"
                         Style="{StaticResource WhiteTextField}"
                         Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
-                        TextChanged="txtPasswd_TextChanged" />
+                        TextChanged="txtPasswd_TextChanged"
+                        VerticalScrollBarVisibility="Disabled"
+                        HorizontalScrollBarVisibility="Auto"/>
                     <Button
                         x:Name="cmdCopyToClipboard"
                         Grid.Row="0"
@@ -339,7 +340,7 @@
             </StackPanel>
 
             <!--  Footer Buttons  -->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="3" Margin="0,2,0,-8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -352,7 +353,7 @@
                     Height="35"
                     Click="EditWin_cmdUpdateVault_Click"
                     Content="Update"
-                    Style="{StaticResource ControlButton}" />
+                    Style="{StaticResource ControlButton}" Margin="34,23,35,22" />
 
                 <Button
                     x:Name="EditWin_cmdClose"
@@ -361,7 +362,7 @@
                     Height="35"
                     Click="EditWin_cmdClose_Click"
                     Content="Close"
-                    Style="{StaticResource ControlButton}" />
+                    Style="{StaticResource ControlButton}" Margin="35,23,34,22" />
             </Grid>
         </Grid>
     </Border>
