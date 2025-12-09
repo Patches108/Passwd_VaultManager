@@ -296,7 +296,7 @@
                                 IsEnabled="False"
                                 LargeChange="6"
                                 Maximum="41"
-                                Minimum="21"
+                                Minimum="8"
                                 SmallChange="1"
                                 Style="{StaticResource Horizontal_Slider}"
                                 ValueChanged="sldPasswdLength_ValueChanged" />

@@ -37,6 +37,7 @@
             <MenuItem Click="FilterMenu_StatusBad_Click" Header="Status Bad" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="FilterMenu_Reset_Click" Header="Reset" />
+            <MenuItem Click="FilterMenu_RemoveFilter_Click" Header="Remove Filter" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="FilterMenu_Cancel_Click" Header="Cancel" />
         </ContextMenu>
@@ -49,6 +50,7 @@
             <MenuItem Click="SortMenu_Status_Click" Header="Status" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="SortMenu_Reset_Click" Header="Reset" />
+            <MenuItem Click="SortMenu_RemoveSort_Click" Header="Remove Sort" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="SortMenu_Cancel_Click" Header="Cancel" />
         </ContextMenu>

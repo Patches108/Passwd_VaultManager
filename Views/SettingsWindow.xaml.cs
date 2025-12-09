@@ -22,13 +22,17 @@ namespace Passwd_VaultManager.Views {
         
         private AppSettings _settings;
 
-        public SettingsWindow() {
+        private Func<Task> _refreshAction;
+
+        public SettingsWindow(Func<Task> _refreshAction) {
 
             InitializeComponent();
 
             DataContext = new SettingsWindowVM();
 
             _settings = SettingsService.Load();
+
+            this._refreshAction = _refreshAction;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e) {
@@ -275,6 +279,8 @@ namespace Passwd_VaultManager.Views {
                 }
 
                 lblDbSize.Text = $"Database Size: {FormatSize(new FileInfo(AppPaths.DatabaseFile).Length)}";
+
+                await _refreshAction();
             } else {
                 lblRecordCount.Text = "Number of Records: (DB missing)";
                 lblDbSize.Text = "Database Size: (N/A)";

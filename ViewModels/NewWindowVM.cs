@@ -52,10 +52,10 @@ namespace Passwd_VaultManager.ViewModels {
         public int Length {
             get => _length;
             set {
-                if (value < MinLength || value > MaxLength) {
-                    new MessageWindow($"Length must be between {MinLength} and {MaxLength}.").Show();
-                    return;
-                }
+                //if (value < MinLength || value > MaxLength) {
+                //    new MessageWindow($"Length must be between {MinLength} and {MaxLength}.").Show();
+                //    return;
+                //}
                 if (_length != value) {
                     _length = value;
                     OnPropertyChanged();

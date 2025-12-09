@@ -24,6 +24,9 @@ namespace Passwd_VaultManager.ViewModels
         public ICommand OpenAboutCommand { get; }
 
         public ObservableCollection<AppVault> Vaults { get; } = new();
+        
+        private ObservableCollection<AppVault> _beforeSortedVaults;
+        private ObservableCollection<AppVault> _beforeFilteredVaults;
 
         public MainWindowVM() {
 
@@ -64,6 +67,25 @@ namespace Passwd_VaultManager.ViewModels
 
                 // Notify delete button
                 (DeleteVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public ObservableCollection<AppVault> PreSortedVaults {
+            get => _beforeSortedVaults;
+            set {
+                _beforeSortedVaults = value;
+                if (_beforeSortedVaults == null)
+                    _beforeSortedVaults = new ObservableCollection<AppVault>(value);
+                OnPropertyChanged();
+            }
+        }
+        public ObservableCollection<AppVault> PreFilteredVaults {
+            get => _beforeFilteredVaults;
+            set {
+                _beforeFilteredVaults = value;
+                if (_beforeFilteredVaults == null)
+                    _beforeFilteredVaults = new ObservableCollection<AppVault>(value);
+                OnPropertyChanged();
             }
         }
 
@@ -118,7 +140,7 @@ namespace Passwd_VaultManager.ViewModels
         }
 
         private void OpenSettings() {
-            var win = new SettingsWindow();
+            var win = new SettingsWindow(_refreshAction);
             win.Show();
         }
 

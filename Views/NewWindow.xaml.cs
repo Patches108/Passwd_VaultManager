@@ -20,6 +20,7 @@ namespace Passwd_VaultManager.Views {
 
         private bool _updating;
         private bool _showPlain;   // false = masked, true = reveal
+        private bool _ignoreSliderChange;
 
         private string _passwdWhole = String.Empty;     // the generated full password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
@@ -95,15 +96,19 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 128;
-            sldPasswdLength.Value = (double)21;
+            //sldPasswdLength.Value = (double)21;
             sldPasswdLength.IsEnabled = false;
+            _ignoreSliderChange = false;
         }
 
         private void rad_256_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 256;
             sldPasswdLength.IsEnabled = true;
-            sldPasswdLength.Value = (double)41;
+            //sldPasswdLength.Value = (double)41;
+            _ignoreSliderChange = false;
         }
 
         private void txtAppName_GotFocus(object sender, RoutedEventArgs e) {
@@ -155,9 +160,11 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void rad_192_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 192;
             sldPasswdLength.IsEnabled = true;
-            sldPasswdLength.Value = (double)31;
+            //sldPasswdLength.Value = (double)31;
+            _ignoreSliderChange = false;
         }
 
         private void cmdCopyToClopboard(object sender, RoutedEventArgs e) {
@@ -183,6 +190,9 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+
+            if (_ignoreSliderChange) return;
+
             if (_updating) return;
 
             _targetLength = (int)Math.Round(e.NewValue);
@@ -266,6 +276,32 @@ namespace Passwd_VaultManager.Views {
                 !txtPasswd.Text.Equals("Passwd", StringComparison.Ordinal) &&
                 !txtUserName.Text.Equals("User Name / Email", StringComparison.Ordinal)) {
 
+                int s = txtPasswd.Text.Trim().Length;
+                if (s < 8 || s > 41) {
+                    new MessageWindow("Length must be between 8 and 41.").Show();
+                    return; 
+                }
+
+                // if mask enabled. 1. toggle it off THEN save.
+                if (!_showPlain) {
+                    _showPlain = !_showPlain;       // flip reveal state
+                    UpdateDisplayedPassword(force: true);
+                }
+
+                switch (_bitRate) {
+                    case 128:
+                        sldPasswdLength.Value = (double)21;
+                        break;
+                    case 192:
+                        sldPasswdLength.Value = (double)31;
+                        break;
+                    case 256:
+                        sldPasswdLength.Value = (double)41;
+                        break;
+                }
+
+                sldPasswdLength.Value = (double)41;
+
                 AppVault v = new AppVault();
                 v.AppName = txtAppName.Text.Trim();
                 v.UserName = txtUserName.Text.Trim();
@@ -285,7 +321,7 @@ namespace Passwd_VaultManager.Views {
                         toast.Show();
                     });
 
-                    _refreshAction();
+                    await _refreshAction();
 
                 } catch (Exception ex) {
                     new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.").ShowDialog();

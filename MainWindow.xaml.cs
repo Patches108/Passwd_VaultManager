@@ -5,6 +5,7 @@ using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
@@ -24,6 +25,11 @@ namespace Passwd_VaultManager
         private readonly MainWindowVM _vm = new();
 
         private static readonly string PlaceholderText = "Search by App Name";
+
+        private bool _sortedFlag = false;
+        private bool _filteredFlag = false;
+
+        private Func<Task> _refreshAction;
 
         private static readonly Brush PlaceholderBrush = new SolidColorBrush(Color.FromRgb(140, 140, 140));
         private static readonly Brush InputBrush = (Brush)new BrushConverter().ConvertFromString("#FF2BA33B");
@@ -67,6 +73,7 @@ namespace Passwd_VaultManager
             }
 
             await _vm.RefreshVaultsAsync();
+            _refreshAction = _vm.RefreshVaultsAsync;  //set delegate to refresh vaults on main window.
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {
@@ -156,15 +163,15 @@ namespace Passwd_VaultManager
 
 
         public void OpenNewVaultWindow() {
-            Func<Task> _refreshAction;
-            _refreshAction = _vm.RefreshVaultsAsync;
+            //Func<Task> _refreshAction;
+            //_refreshAction = _vm.RefreshVaultsAsync;
             var win = new NewWindow(_refreshAction);
             win.Show();
         }
 
 
         public void OpenSettingsWindow() {
-            var win = new SettingsWindow();
+            var win = new SettingsWindow(_refreshAction);
             win.Show();
         }
 
@@ -226,6 +233,9 @@ namespace Passwd_VaultManager
         private void FilterMenu_StatusBad_Click(object sender, RoutedEventArgs e) {
             FilterHandler("StatusBad");
         }
+        private void FilterMenu_RemoveFilter_Click(object sender, RoutedEventArgs e) {
+            FilterHandler("RemoveFilter");
+        }
         private void FilterMenu_Reset_Click(object sender, RoutedEventArgs e) {
             FilterHandler("Reset");
         }
@@ -286,50 +296,73 @@ namespace Passwd_VaultManager
 
         private async void FilterHandler(string s) {
             // get all vaults
-            await _vm.RefreshVaultsAsync();
+            //await _vm.RefreshVaultsAsync();
 
-            var allVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
-            ObservableCollection<AppVault> searchedList = allVaults;
+            var searchedList = new ObservableCollection<AppVault>();
+
+            foreach (AppVault v in lstVaultList.Items) {
+                searchedList.Add(v);
+            }
+
+            if(_filteredFlag) {
+                _vm.PreFilteredVaults = searchedList;         // set state.
+                _filteredFlag = true;
+            }
+            //var allVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
+            //ObservableCollection<AppVault> searchedList = allVaults;
 
             switch (s) {
                 case "IsPasswdSet":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.IsPasswdSet));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsPasswdSet));
                     break;
 
                 case "IsUserNameSet":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.IsUserNameSet));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsUserNameSet));
                     break;
 
                 case "BitRate265":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.BitRate == 256));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 256));
                     break;
 
                 case "BitRate192":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.BitRate == 192));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 192));
                     break;
 
                 case "BitRate128":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.BitRate == 128));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 128));
                     break;
 
                 case "StatusGood":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => v.IsStatusGood));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsStatusGood));
                     break;
 
                 case "StatusBad":
-                    searchedList = new ObservableCollection<AppVault>(
-                        allVaults.Where(v => !v.IsStatusGood));
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => !v.IsStatusGood));
+                    break;
+
+                case "RemoveFilter":
+
+                    if(_vm.PreFilteredVaults != null) {
+                        searchedList = new ObservableCollection<AppVault>(_vm.PreFilteredVaults);
+                        _filteredFlag = false;
+                    }
+
                     break;
 
                 case "Reset":
                     await _vm.RefreshVaultsAsync();
-                    lstVaultList.ItemsSource = _vm.Vaults;
+                    searchedList = _vm.Vaults;
+                    //lstVaultList.ItemsSource = _vm.Vaults;
+                    //searchedList.Clear();
+                    _filteredFlag = false;
+
+                    // if search field contains something, reset it.
+                    if (txtSearch.Text.Trim() == PlaceholderText || !string.IsNullOrWhiteSpace(txtSearch.Text.Trim())) {
+                        string txt = txtSearch.Text.Trim();
+                        txtSearch.Text = string.Empty;
+                        txtSearch.Text = txt;
+                    }
+
                     return;
 
                 default:
@@ -337,30 +370,94 @@ namespace Passwd_VaultManager
                     return;
             }
 
-            lstVaultList.ItemsSource = searchedList;
+            SearchedVaults = searchedList;
+            lstVaultList.ItemsSource = SearchedVaults;
         }
 
         private void SortMenu_Alphabetical_Click(object sender, RoutedEventArgs e) {
-
+            SortFunc("Alphabetical");
         }
 
         private void SortMenu_DateCreated_Click(object sender, RoutedEventArgs e) {
-
+            SortFunc("DateCreated");
         }
 
         private void SortMenu_Bitrate_Click(object sender, RoutedEventArgs e) {
-
+            SortFunc("Bitrate");
         }
 
         private void SortMenu_Status_Click(object sender, RoutedEventArgs e) {
-
+            SortFunc("Status");
         }
 
         private void SortMenu_Reset_Click(object sender, RoutedEventArgs e) {
+            SortFunc("Reset");
+        }
 
+        private void SortMenu_RemoveSort_Click(object sender, RoutedEventArgs e) {
+            SortFunc("RemoveSort");
         }
 
         private void SortMenu_Cancel_Click(object sender, RoutedEventArgs e) {
+            SortFunc("Cancel");
+        }
+
+        private async void SortFunc(String s) {
+
+            var searchedList = new ObservableCollection<AppVault>();
+
+            foreach (AppVault v in lstVaultList.Items) {
+                searchedList.Add(v);
+            }
+
+            if (!_sortedFlag) {
+                _vm.PreSortedVaults = searchedList;         // set state.
+                _sortedFlag = true;
+            }
+
+            switch (s) {
+                case "Alphabetical":
+                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.AppName));
+                    break;
+                case "DateCreated":
+                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.DateCreated));
+                    break;
+                case "Bitrate":
+                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.BitRate));
+                    break;
+                case "Status":
+                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.IsStatusGood));
+                    break;
+                case "Reset":
+                    await _vm.RefreshVaultsAsync();
+                    searchedList = _vm.Vaults;
+                    //lstVaultList.ItemsSource = _vm.Vaults;
+                    //searchedList.Clear();
+                    _sortedFlag = false;
+
+                    // if search field contains something, reset it.
+                    if(txtSearch.Text.Trim() == PlaceholderText || !string.IsNullOrWhiteSpace(txtSearch.Text.Trim())) {
+                        string txt = txtSearch.Text.Trim();
+                        txtSearch.Text = string.Empty;
+                        txtSearch.Text = txt;
+                    }
+
+                    return;
+                case "RemoveSort":
+                    if(_vm.PreSortedVaults != null) {
+                        searchedList = new ObservableCollection<AppVault>(_vm.PreSortedVaults);
+                        _sortedFlag = false;
+                    }
+                    break;
+                case "Cancel":
+                    return;
+                default:
+                    new MessageWindow("INTERNAL ERROR: Unknown Option");
+                    return;
+            }
+
+            SearchedVaults = searchedList;
+            lstVaultList.ItemsSource = SearchedVaults;
 
         }
 
@@ -372,6 +469,6 @@ namespace Passwd_VaultManager
                 btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 btn.ContextMenu.IsOpen = true;
             }
-        }
+        }        
     }
 }

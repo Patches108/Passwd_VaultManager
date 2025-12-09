@@ -27,6 +27,7 @@ namespace Passwd_VaultManager.Views
 
         private bool _updating;
         private bool _showPlain = false;   // false = masked, true = reveal
+        private bool _ignoreSliderChange;
 
         private string _passwdWhole = String.Empty;     // password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
@@ -98,6 +99,13 @@ namespace Passwd_VaultManager.Views
                     // error msg
                 }
                     _updating = false; // allow UpdateDisplayedPassword to run later
+
+                // Reflect bitrate value.
+                switch (_vm?.BitRate) {
+                    case <= 128: rdo_128.IsChecked = true; break;
+                    case 192: rdo_192.IsChecked = true; break;
+                    case 256: rdo_256.IsChecked = true; break;
+                }
             };
 
             lblPasswdStatus.IsEnabled = false;
@@ -109,21 +117,27 @@ namespace Passwd_VaultManager.Views
         }
 
         private void rad_128_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 128;
             sldPasswdLength.IsEnabled = true;
-            sldPasswdLength.Value = (double)21;
+            //sldPasswdLength.Value = (double)21;
+            _ignoreSliderChange = false;
         }
 
         private void rad_256_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 256;
             sldPasswdLength.IsEnabled = true;
-            sldPasswdLength.Value = (double)41;
+            //sldPasswdLength.Value = (double)41;
+            _ignoreSliderChange = false;
         }
 
         private void rad_192_Click(object sender, RoutedEventArgs e) {
+            _ignoreSliderChange = true;
             _bitRate = 192;
             sldPasswdLength.IsEnabled = true;
-            sldPasswdLength.Value = (double)31;
+            //sldPasswdLength.Value = (double)31;
+            _ignoreSliderChange = false;
         }
 
         private void RunCleanup(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -139,6 +153,8 @@ namespace Passwd_VaultManager.Views
         }
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            
+            if (_ignoreSliderChange) return;
             if (_updating) return;
 
             _targetLength = (int)Math.Round(e.NewValue);
@@ -334,9 +350,9 @@ namespace Passwd_VaultManager.Views
                 _passwdWhole = pw;
 
                 switch (_bitRate) {
-                    case 128: _len = 21; sldPasswdLength.IsEnabled = false; break;
-                    case 192: _len = 31; sldPasswdLength.IsEnabled = true; break;
-                    case 256: _len = 41; sldPasswdLength.IsEnabled = true; break;
+                    case 128: _len = 21; sldPasswdLength.Value = _len; break;
+                    case 192: _len = 31; sldPasswdLength.Value = _len; break;
+                    case 256: _len = 41; sldPasswdLength.Value = _len; break;
                 }
 
                 _vm.BitRate = _bitRate;

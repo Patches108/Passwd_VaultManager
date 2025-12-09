@@ -5,8 +5,6 @@
     <Style x:Key="HorizontalScrollBar" TargetType="ScrollBar">
         <Setter Property="Background" Value="SlateGray" />
         <Setter Property="Foreground" Value="YellowGreen" />
-        <Setter Property="Maximum" Value="100" />
-        <Setter Property="Minimum" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
@@ -22,27 +20,23 @@
                             Maximum="{TemplateBinding Maximum}"
                             Minimum="{TemplateBinding Minimum}"
                             Orientation="Horizontal"
-                            ViewportSize="38"
+                            ViewportSize="45"
                             Value="{TemplateBinding Value}">
                             <Track.Thumb>
                                 <Thumb
-                                    Width="100"
                                     Height="7"
-                                    HorizontalAlignment="Left"
+                                    MinWidth="10"
                                     Background="{TemplateBinding Foreground}" />
                             </Track.Thumb>
                         </Track>
                     </Border>
 
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="brdBack" Property="Background" Value="Gray" />
                             <Setter TargetName="brdBack" Property="BorderBrush" Value="Gray" />
                         </Trigger>
-
                     </ControlTemplate.Triggers>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
