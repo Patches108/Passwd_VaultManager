@@ -47,7 +47,7 @@ namespace Passwd_VaultManager.Views {
 
             SettingsService.Load();
 
-            new ToastNotification("Settings updated.", true).Show();
+            new ToastNotification("Settings updated.", true, SoundController.SuccessSound).Show();
 
             SetDialogResultSafe(true);
             Close();
@@ -98,9 +98,9 @@ namespace Passwd_VaultManager.Views {
 
                 LoadStats();
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
-                new ToastNotification("Backup completed successfully.", true).Show(); // Place at end (hogs UI)
+                new ToastNotification("Backup completed successfully.", true, SoundController.SuccessSound).Show(); // Place at end (hogs UI)
             } catch (Exception ex) {
-                new MessageWindow("Backup failed: " + ex.Message).ShowDialog();
+                new MessageWindow("Backup failed: " + ex.Message, SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -124,10 +124,10 @@ namespace Passwd_VaultManager.Views {
                     // Reload context and UI
                     LoadStats();
 
-                    new ToastNotification("Backup completed successfully.", true).Show(); // Place at end (hogs UI)
+                    new ToastNotification("Backup completed successfully.", true, SoundController.SuccessSound).Show(); // Place at end (hogs UI)
 
                 } catch (Exception ex) {
-                    new MessageWindow("Restore failed: " + ex.Message).ShowDialog();
+                    new MessageWindow("Restore failed: " + ex.Message, SoundController.ErrorSound).ShowDialog();
                 }
             }
         }
@@ -168,15 +168,15 @@ namespace Passwd_VaultManager.Views {
                     }
 
                     if (!deleted) {
-                        new ToastNotification($"Failed to delete backup: {file}", false).Show();
-                        new MessageWindow($"Failed to delete backup: {file}\n\nRestart the app to fully break all file handles and try again.").ShowDialog();
+                        new ToastNotification($"Failed to delete backup: {file}", false, SoundController.ErrorSound).Show();
+                        new MessageWindow($"Failed to delete backup: {file}\n\nRestart the app to fully break all file handles and try again.", SoundController.ErrorSound).ShowDialog();
                     }
                 }
 
-                new ToastNotification("All backups deleted.", true).Show();
+                new ToastNotification("All backups deleted.", true, SoundController.SuccessSound).Show();
                 LoadStats();
             } catch (Exception ex) {
-                new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
+                new MessageWindow("Failed to delete backups: " + ex.Message, SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -210,7 +210,13 @@ namespace Passwd_VaultManager.Views {
             if (Directory.Exists(AppPaths.BackupFolder)) {
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
             } else {
-                new MessageWindow("No backups folder exists.").ShowDialog();
+                // try creaste folder and do it again.
+                try {
+                    AppPaths.EnsureAppDataFolder();
+                    Process.Start("explorer.exe", AppPaths.BackupFolder);
+                } catch (Exception ex) {
+                    new MessageWindow("Failed to create and open Backups folder.", SoundController.ErrorSound).ShowDialog();
+                }
             }
         }
 
@@ -224,7 +230,7 @@ namespace Passwd_VaultManager.Views {
             bool inputConfirmed = inputDialog.ShowDialog() == true && inputDialog.UserInput == "DELETE";
 
             if (!inputConfirmed) {
-                new MessageWindow("Wipe cancelled. You must type DELETE exactly.").ShowDialog();
+                new MessageWindow("Wipe cancelled. You must type DELETE exactly.", SoundController.ErrorSound).ShowDialog();
                 return;
             }
 
@@ -239,19 +245,19 @@ namespace Passwd_VaultManager.Views {
                         Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
                         File.Delete(AppPaths.DatabaseFile);
                     } catch (Exception ex) {
-                        new MessageWindow("WOOPS: " + ex.Message).ShowDialog();
+                        new MessageWindow("Could not delete Database:\n\n" + ex.Message, SoundController.ErrorSound).ShowDialog();
                     }
 
                     File.Delete(AppPaths.DatabaseFile);     // Delete DB file
                     DatabaseHandler.initDatabase();         // remake the DB file anew.
 
-                    new ToastNotification("Database wiped and recreated.", true).Show();
+                    new ToastNotification("Database wiped and recreated.", true, SoundController.SuccessSound).Show();
                     LoadStats();
                 } else {
-                    new MessageWindow("Database file not found.").ShowDialog();
+                    new MessageWindow("Database file not found.", SoundController.ErrorSound).ShowDialog();
                 }
             } catch (Exception ex) {
-                new MessageWindow("Failed to wipe database: " + ex.Message).ShowDialog();
+                new MessageWindow("Failed to wipe database:\n\n" + ex.Message, SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -263,7 +269,7 @@ namespace Passwd_VaultManager.Views {
 
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
             } catch (Exception ex) {
-                new MessageWindow($"Failed to open folder:\n{ex.Message}").ShowDialog();
+                new MessageWindow($"Failed to open folder:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -275,7 +281,7 @@ namespace Passwd_VaultManager.Views {
                     lblRecordCount.Text = $"Number of Records: {recordCount}";
                 } catch (Exception ex) {
                     lblRecordCount.Text = "Number of Records: (error)";
-                    new ToastNotification($"ERROR: {ex.Message}", false).Show();
+                    new ToastNotification($"ERROR: {ex.Message}", false, SoundController.ErrorSound).Show();
                 }
 
                 lblDbSize.Text = $"Database Size: {FormatSize(new FileInfo(AppPaths.DatabaseFile).Length)}";
@@ -359,7 +365,7 @@ namespace Passwd_VaultManager.Views {
 
             SettingsService.Load();
 
-            new ToastNotification("Settings Restored.", true).Show();
+            new ToastNotification("Settings Restored.", true, SoundController.SuccessSound).Show();
         }
 
         private void EnablePin_Click(object sender, RoutedEventArgs e) {
@@ -370,7 +376,7 @@ namespace Passwd_VaultManager.Views {
                 var reg = new PinRegisterWindow();
                 if (reg.ShowDialog() == true) {
                     // PIN saved inside PinStorage.SetPin()
-                    new ToastNotification("Pin Created Successfully.", true).Show();
+                    new ToastNotification("Pin Created Successfully.", true, SoundController.SuccessSound).Show();
                 } else {
                     // user canceled → don't leave toggle on
                     tgl.IsChecked = false;
@@ -384,7 +390,7 @@ namespace Passwd_VaultManager.Views {
 
                     if (confirmed) {
                         PinStorage.RemovePin();
-                        new ToastNotification("Pin Removed Successfully.", true).Show();
+                        new ToastNotification("Pin Removed Successfully.", true, SoundController.SuccessSound).Show();
                     } else {
                         tgl.IsChecked = true; // keep enabled
                     }
@@ -399,7 +405,7 @@ namespace Passwd_VaultManager.Views {
                 //new ToastNotification("Thanks for resetting me!", true).Show();
                 new Helper("Thanks for resetting me!").Show();
             } else {
-                new MessageWindow($"ERROR: Opps! There was an error updating the systems:\n\n{res}").Show();
+                new MessageWindow($"ERROR: Opps! There was an error updating the helper system:\n\n{res}", SoundController.ErrorSound).Show();
             }
         }
     }

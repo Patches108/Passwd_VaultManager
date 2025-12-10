@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Passwd_VaultManager.Funcs;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -13,10 +14,12 @@ namespace Passwd_VaultManager.Views {
     public partial class ToastNotification : Window {
 
         private DispatcherTimer _closeTimer;
+        private string _soundPath = String.Empty;
 
-        public ToastNotification(string message, bool state) {
+        public ToastNotification(string message, bool state, string sPath) {
             InitializeComponent();
             txtMessage.Text = message;
+            _soundPath = sPath;
 
             Loaded += (s, e) =>
             {
@@ -56,6 +59,8 @@ namespace Passwd_VaultManager.Views {
                     PlayExitAndClose(targetLeft, offscreenRight);
                 };
                 _closeTimer.Start();
+
+                SoundController.Play(_soundPath);
             };
         }
 

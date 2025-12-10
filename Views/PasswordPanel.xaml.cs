@@ -1,4 +1,5 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
 using Passwd_VaultManager.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +16,7 @@ namespace Passwd_VaultManager.Views {
         private void Edit_OnClick(object sender, System.Windows.RoutedEventArgs e) {
             
             if(mainVM is null) {
-                new MessageWindow("ERROR: Failed to get view model instance.").ShowDialog();
+                new MessageWindow("ERROR: Failed to get view model instance.", SoundController.ErrorSound).ShowDialog();
                 return; 
             }
             
@@ -36,7 +37,7 @@ namespace Passwd_VaultManager.Views {
 
         private void Delete_OnClick(object sender, System.Windows.RoutedEventArgs e, MainWindowVM mainVM) {
             if (mainVM is null) {
-                new MessageWindow("ERROR: Failed to get view model instance.").ShowDialog();
+                new MessageWindow("ERROR: Failed to get view model instance.", SoundController.ErrorSound).ShowDialog();
                 return;
             }
 

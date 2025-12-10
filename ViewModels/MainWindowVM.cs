@@ -116,7 +116,7 @@ namespace Passwd_VaultManager.ViewModels
 
         private async void DeleteVaultEntry(AppVault vault) {
             if(vault is null) {
-                new MessageWindow("ERROR: No Vault unit detected").ShowDialog();
+                new MessageWindow("ERROR: No Vault unit detected", SoundController.ErrorSound).ShowDialog();
             } else {
                 
                 // confirm with yes/no dialog
@@ -132,7 +132,7 @@ namespace Passwd_VaultManager.ViewModels
                     await RefreshVaultsAsync();
 
                     System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                        var toast = new ToastNotification($"Vault entry - ({s_VaultName}) - has been successfully deleted.", true);
+                        var toast = new ToastNotification($"Vault entry - ({s_VaultName}) - has been successfully deleted.", true, SoundController.SuccessSound);
                         toast.Show();
                     });
                 }                

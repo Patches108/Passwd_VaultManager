@@ -171,9 +171,9 @@ namespace Passwd_VaultManager.Views {
             // Copy password text field data to clipboard
             if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim())) {
                 Clipboard.SetText(txtPasswd.Text);
-                new ToastNotification("Text copied to clipboard", true).Show();
+                new ToastNotification("Text copied to clipboard", true, SoundController.SuccessSound).Show();
             } else {
-                new MessageWindow("ERROR: Password field is empty. Generate or manually").ShowDialog();
+                new MessageWindow("ERROR: Password field is empty. Generate or manually", SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -278,7 +278,7 @@ namespace Passwd_VaultManager.Views {
 
                 int s = txtPasswd.Text.Trim().Length;
                 if (s < 8 || s > 41) {
-                    new MessageWindow("Length must be between 8 and 41.").Show();
+                    new MessageWindow("Length must be between 8 and 41.", SoundController.ErrorSound).Show();
                     return; 
                 }
 
@@ -317,14 +317,14 @@ namespace Passwd_VaultManager.Views {
                     long id = await DatabaseHandler.WriteRecordToDatabaseAsync(v);
                     
                     System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                        var toast = new ToastNotification($"Vault entry - ({v.AppName}) - created successfully.", true);
+                        var toast = new ToastNotification($"Vault entry - ({v.AppName}) - created successfully.", true, SoundController.SuccessSound);
                         toast.Show();
                     });
 
                     await _refreshAction();
 
                 } catch (Exception ex) {
-                    new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.").ShowDialog();
+                    new MessageWindow($"Failed to create vault entry - ({v.AppName}) \n\n {ex.Message}.", SoundController.ErrorSound).ShowDialog();
                 }
 
                 App.Settings.FirstTimeNewAppName_NewWin = false;
@@ -336,7 +336,7 @@ namespace Passwd_VaultManager.Views {
                 this.Close();       // Close window after creating vault record.
 
             } else {
-                new MessageWindow("App name, User name/Email, and Password fields cannot be empty.").ShowDialog();
+                new MessageWindow("App name, User name/Email, and Password fields cannot be empty.", SoundController.ErrorSound).ShowDialog();
             }
         }
 

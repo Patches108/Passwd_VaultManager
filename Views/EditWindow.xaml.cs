@@ -267,9 +267,9 @@ namespace Passwd_VaultManager.Views
             // Copy password text field data to clipboard
             if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim())) {
                 Clipboard.SetText(txtPasswd.Text);
-                new ToastNotification("Text copied to clipboard", true).Show();
+                new ToastNotification("Text copied to clipboard", true, SoundController.SuccessSound).Show();
             } else {
-                new MessageWindow("ERROR: Password field is empty. Generate or manually create a password first").ShowDialog();
+                new MessageWindow("ERROR: Password field is empty. Generate or manually create a password first", SoundController.ErrorSound).ShowDialog();
             }
         }
 
@@ -310,12 +310,12 @@ namespace Passwd_VaultManager.Views
                 await _vm?.SaveAsync();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                    var toast = new ToastNotification($"Vault entry - ({_vm?.AppName}) - updated successfully.", true);
+                    var toast = new ToastNotification($"Vault entry - ({_vm?.AppName}) - updated successfully.", true, SoundController.SuccessSound);
                     toast.Show();
                 });
 
             } catch (Exception ex) {
-                new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.");
+                new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.", SoundController.ErrorSound);
             }
 
             App.Settings.FirstTimeOpeningEditWin = false;

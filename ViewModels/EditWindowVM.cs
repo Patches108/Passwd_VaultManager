@@ -56,7 +56,7 @@ namespace Passwd_VaultManager.ViewModels
                     _bitRate = value;
                     OnPropertyChanged();
                 } else {
-                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
                 }
 
                 //if (value != 128 && value != 192 && value != 256) {
@@ -107,7 +107,7 @@ namespace Passwd_VaultManager.ViewModels
                     _appName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             } 
         }        
@@ -121,7 +121,7 @@ namespace Passwd_VaultManager.ViewModels
                     _userName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }
@@ -135,7 +135,7 @@ namespace Passwd_VaultManager.ViewModels
                     _appPasswd = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }

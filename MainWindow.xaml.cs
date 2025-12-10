@@ -366,7 +366,7 @@ namespace Passwd_VaultManager
                     return;
 
                 default:
-                    new MessageWindow("INTERNAL ERROR: Unknown Option");
+                    new MessageWindow("INTERNAL ERROR: Unknown Option", SoundController.ErrorSound);
                     return;
             }
 
@@ -452,7 +452,7 @@ namespace Passwd_VaultManager
                 case "Cancel":
                     return;
                 default:
-                    new MessageWindow("INTERNAL ERROR: Unknown Option");
+                    new MessageWindow("INTERNAL ERROR: Unknown Option", SoundController.ErrorSound);
                     return;
             }
 

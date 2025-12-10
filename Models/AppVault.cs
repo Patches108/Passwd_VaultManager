@@ -51,7 +51,7 @@ namespace Passwd_VaultManager.Models
                     _excludes = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound ).ShowDialog();
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace Passwd_VaultManager.Models
                     _bitRate = value;
                     OnPropertyChanged();
                 } else {
-                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace Passwd_VaultManager.Models
                     _appName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace Passwd_VaultManager.Models
                     _password = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }
@@ -113,7 +113,7 @@ namespace Passwd_VaultManager.Models
                     _userName = validated;
                     OnPropertyChanged();
                 } catch (Exception ex) {
-                    new MessageWindow($"ERROR: {ex.Message}").ShowDialog();
+                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }

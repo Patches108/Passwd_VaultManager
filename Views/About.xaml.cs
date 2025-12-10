@@ -1,9 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using Passwd_VaultManager.Funcs;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Passwd_VaultManager.Views {
     /// <summary>
@@ -116,7 +117,7 @@ namespace Passwd_VaultManager.Views {
 
         private void cmdCopyToClipboard_Click(object sender, RoutedEventArgs e) {
             Clipboard.SetText(msg.Text);
-            new ToastNotification("Text copied to clipboard!", true).Show();
+            new ToastNotification("Text copied to clipboard!", true, SoundController.SuccessSound).Show();
         }
 
         private void cmdOkayClose_Click(object sender, RoutedEventArgs e) {

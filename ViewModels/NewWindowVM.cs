@@ -1,4 +1,5 @@
-﻿using Passwd_VaultManager.Models;
+﻿using Passwd_VaultManager.Funcs;
+using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
 using System.Collections;
 using System.ComponentModel;
@@ -33,7 +34,7 @@ namespace Passwd_VaultManager.ViewModels {
                     _bitRate = value;
                     OnPropertyChanged();
                 } else {
-                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256");
+                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
                 }
                 //if (value != 128 && value != 192 && value != 256) {
                 //    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");

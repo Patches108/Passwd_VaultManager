@@ -1,12 +1,17 @@
-﻿using System.Windows;
+﻿using Passwd_VaultManager.Funcs;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.Views {
     public partial class MessageWindow : Window {
-        public MessageWindow(string txt) {
+
+        private string _soundPath = String.Empty;
+
+        public MessageWindow(string txt, string soundPath) {
             InitializeComponent();
             msg.Text = txt;
+            _soundPath = soundPath;
         }
 
         private void cmdOkayClose_Click(object sender, RoutedEventArgs e) {
@@ -17,6 +22,8 @@ namespace Passwd_VaultManager.Views {
             // Handle ESC to close
             this.PreviewKeyDown += InputDialog_PreviewKeyDown;
             this.Focus();
+
+            SoundController.Play(_soundPath);
         }
 
         private void InputDialog_PreviewKeyDown(object sender, KeyEventArgs e) {
