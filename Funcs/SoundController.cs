@@ -7,8 +7,8 @@ namespace Passwd_VaultManager.Funcs {
         public static string AudioFolder => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Audio");
 
         public static string SuccessSound => Path.Combine(AudioFolder, "positive_sound.mp3");
-        public static string ErrorSound => Path.Combine(AudioFolder, "error_sound.mp3");
-        public static string InfoSound => Path.Combine(AudioFolder, "info_sound.mp3");
+        public static string ErrorSound => Path.Combine(AudioFolder, "error.mp3");
+        public static string InfoSound => Path.Combine(AudioFolder, "info.mp3");
         public static string WarningSound => Path.Combine(AudioFolder, "warning_sound.mp3");
         public static string HelpSound => Path.Combine(AudioFolder, "help_sound.mp3");
 

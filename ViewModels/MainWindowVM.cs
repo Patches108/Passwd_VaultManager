@@ -67,6 +67,7 @@ namespace Passwd_VaultManager.ViewModels
 
                 // Notify delete button
                 (DeleteVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (EditVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();  // changes to make edit buttoin enabled onlt when vault selected.
             }
         }
 

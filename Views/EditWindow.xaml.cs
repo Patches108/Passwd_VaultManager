@@ -3,6 +3,7 @@ using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -153,14 +154,26 @@ namespace Passwd_VaultManager.Views
         }
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            
+
+            if (sldPasswdLength.Value <= (int)8)
+                txtCharactersToExclude.IsEnabled = false;
+
             if (_ignoreSliderChange) return;
             if (_updating) return;
 
             _targetLength = (int)Math.Round(e.NewValue);
             _vm?.SliderValue = _targetLength.ToString();
-            //_vm?.Length = _targetLength;
             _vm?.Length = txtPasswd.Text.Trim().Length;
+            _vm?.BitRate = _targetLength;
+
+            // ASCII table of debug data
+            if (_vm != null) {
+                Debug.WriteLine("********************************************");
+                Debug.WriteLine("| _targetLength | vm.Length | _vm.BitRate |");
+                Debug.WriteLine("********************************************");
+                Debug.WriteLine($"| {_targetLength,9} | {_vm.Length,6} | {_vm.BitRate,14} |");
+                Debug.WriteLine("********************************************");
+            }
 
             // Update bitrate dynamically
             //switch (_vm?.Length) {
@@ -176,19 +189,19 @@ namespace Passwd_VaultManager.Views
             //}
 
             // Update bitrate
-            switch (_vm?.Length) {
-                case >= 41:
-                    _vm?.BitRate = 256;
-                    break;
+            //switch (_vm?.Length) {
+            //    case >= 41:
+            //        _vm?.BitRate = 256;
+            //        break;
 
-                case >= 31 and < 41:
-                    _vm?.BitRate = 192;
-                    break;
+            //    case >= 31 and < 41:
+            //        _vm?.BitRate = 192;
+            //        break;
 
-                case >= 21 and < 31:
-                    _vm?.BitRate = 128;
-                    break;
-            }
+            //    case >= 21 and < 31:
+            //        _vm?.BitRate = 128;
+            //        break;
+            //}
 
             UpdateDisplayedPassword();
         }
@@ -225,7 +238,15 @@ namespace Passwd_VaultManager.Views
                 }
             }
 
-            _vm?.Length = txtPasswd.Text.Trim().Length;
+            int len = txtPasswd.Text.Trim().Length;
+            _vm?.Length = len;
+
+            _targetLength = len;
+            _vm?.SliderValue = len.ToString();
+            sldPasswdLength.Maximum = len;
+            sldPasswdLength.Value = (double)len;
+
+            //sldPasswdLength.Value = (double)_vm?.Length;
 
             UpdateDisplayedPassword();
         }

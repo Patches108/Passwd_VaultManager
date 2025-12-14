@@ -191,8 +191,10 @@ namespace Passwd_VaultManager.Views {
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
 
-            if (_ignoreSliderChange) return;
+            if (sldPasswdLength.Value <= (int)8)
+                txtCharactersToExclude.IsEnabled = false;
 
+            if (_ignoreSliderChange) return;
             if (_updating) return;
 
             _targetLength = (int)Math.Round(e.NewValue);
@@ -288,19 +290,26 @@ namespace Passwd_VaultManager.Views {
                     UpdateDisplayedPassword(force: true);
                 }
 
-                switch (_bitRate) {
-                    case 128:
-                        sldPasswdLength.Value = (double)21;
-                        break;
-                    case 192:
-                        sldPasswdLength.Value = (double)31;
-                        break;
-                    case 256:
-                        sldPasswdLength.Value = (double)41;
-                        break;
-                }
+                int sld = (int)sldPasswdLength.Value;
+                _bitRate = sld;
+                
+                //if (sld != 128 || sld != 192 || sld != 256) {
+                //    _bitRate = sld;
+                //} else {
+                //    switch (_bitRate) {
+                //        case 128:
+                //            sldPasswdLength.Value = (double)21;
+                //            break;
+                //        case 192:
+                //            sldPasswdLength.Value = (double)31;
+                //            break;
+                //        case 256:
+                //            sldPasswdLength.Value = (double)41;
+                //            break;
+                //    }
+                //}
 
-                sldPasswdLength.Value = (double)41;
+                //sldPasswdLength.Value = (double)41;
 
                 AppVault v = new AppVault();
                 v.AppName = txtAppName.Text.Trim();
@@ -310,7 +319,8 @@ namespace Passwd_VaultManager.Views {
 
                 v.IsPasswdSet = true;
                 v.IsUserNameSet = true;
-                
+
+                //v.BitRate = _bitRate;
                 v.BitRate = _bitRate;
 
                 try {

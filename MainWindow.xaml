@@ -167,8 +167,8 @@
                     Width="36"
                     Height="30"
                     Click="cmdSort_Click"
-                    Style="{StaticResource ControlButton}"
-                    ContextMenu="{StaticResource SortContextMenu}">
+                    ContextMenu="{StaticResource SortContextMenu}"
+                    Style="{StaticResource ControlButton}">
                     <Image
                         Width="26"
                         Height="24"
