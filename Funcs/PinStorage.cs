@@ -39,7 +39,6 @@ namespace Passwd_VaultManager.Funcs {
         }
 
         private static byte[] HashPin(string pin, byte[] salt) {
-            // SHA256(salt || pin). For even stronger: use PBKDF2 with iterations.
             using var sha = SHA256.Create();
             byte[] pinBytes = Encoding.UTF8.GetBytes(pin);
             byte[] input = new byte[salt.Length + pinBytes.Length];

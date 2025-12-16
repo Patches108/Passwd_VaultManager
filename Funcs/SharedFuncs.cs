@@ -1,6 +1,7 @@
 ﻿namespace Passwd_VaultManager.Funcs {
     using System;
     using System.Buffers;
+    using System.Diagnostics;
 
     public static class SharedFuncs {
         /// <summary>
@@ -43,14 +44,13 @@
                 }
 
                 // Length step
-                //int outLen = (targetLength > 0 && w > targetLength) ? targetLength : w;
-                int outLen = w;
+                int outLen = (targetLength > 0 && w > targetLength) ? targetLength : w;
 
                 if (outLen <= 0) return string.Empty;
 
                 if (mask) {
                     // Return masked view with bullets
-                    return new string('•', outLen);
+                    return new string('•', targetLength);
                 }
 
                 // Materialize final string (single unavoidable allocation here)

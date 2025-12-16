@@ -32,16 +32,20 @@ namespace Passwd_VaultManager.ViewModels
 
             _refreshAction = RefreshVaultsAsync;
 
-            EditVaultEntryCommand = new RelayCommand(param => OpenEditWindow((AppVault)param));
+            //EditVaultEntryCommand = new RelayCommand(param => OpenEditWindow((AppVault)param));
+            EditVaultEntryCommand = new RelayCommand(
+                p => OpenEditWindow(p as AppVault),
+                p => p is AppVault);
+
             NewVaultEntryCommand = new RelayCommand(_ => OpenNewVaultEntry(_refreshAction));
             OpenSettingsCommand = new RelayCommand(_ => OpenSettings());
-            OpenAboutCommand = new RelayCommand(_ => OpenABoutWin());
+            OpenAboutCommand = new RelayCommand(_ => OpenAboutWin());
 
             DeleteVaultEntryCommand = new RelayCommand(
                 p => DeleteVaultEntry(p as AppVault),
                 p => p is AppVault);
 
-            _isStartupEnabled = IsAppSetToRunOnStartup();
+            //_isStartupEnabled = IsAppSetToRunOnStartup();
             IsStartupEnabled = IsAppSetToRunOnStartup();
         }
 
@@ -145,7 +149,7 @@ namespace Passwd_VaultManager.ViewModels
             win.Show();
         }
 
-        private void OpenABoutWin() {
+        private void OpenAboutWin() {
             var win = new About();
             win.Show();
         }

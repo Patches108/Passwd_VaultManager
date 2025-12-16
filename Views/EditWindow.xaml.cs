@@ -102,6 +102,7 @@ namespace Passwd_VaultManager.Views
                     _updating = false; // allow UpdateDisplayedPassword to run later
 
                 // Reflect bitrate value.
+                // if neither, nothing should be selected.
                 switch (_vm?.BitRate) {
                     case <= 128: rdo_128.IsChecked = true; break;
                     case 192: rdo_192.IsChecked = true; break;
@@ -163,47 +164,11 @@ namespace Passwd_VaultManager.Views
 
             _targetLength = (int)Math.Round(e.NewValue);
             _vm?.SliderValue = _targetLength.ToString();
-            _vm?.Length = txtPasswd.Text.Trim().Length;
-            _vm?.BitRate = _targetLength;
-
-            // ASCII table of debug data
-            if (_vm != null) {
-                Debug.WriteLine("********************************************");
-                Debug.WriteLine("| _targetLength | vm.Length | _vm.BitRate |");
-                Debug.WriteLine("********************************************");
-                Debug.WriteLine($"| {_targetLength,9} | {_vm.Length,6} | {_vm.BitRate,14} |");
-                Debug.WriteLine("********************************************");
-            }
-
-            // Update bitrate dynamically
-            //switch (_vm?.Length) {
-            //    case >= 41:
-            //        _vm?.BitRate = 256;
-            //        break;
-            //    case >= 31:
-            //        _vm?.BitRate = 192;
-            //        break;
-            //    case >= 21:
-            //        _vm?.BitRate = 128;
-            //        break;
-            //}
-
-            // Update bitrate
-            //switch (_vm?.Length) {
-            //    case >= 41:
-            //        _vm?.BitRate = 256;
-            //        break;
-
-            //    case >= 31 and < 41:
-            //        _vm?.BitRate = 192;
-            //        break;
-
-            //    case >= 21 and < 31:
-            //        _vm?.BitRate = 128;
-            //        break;
-            //}
+            _vm?.BitRate = _targetLength;            
 
             UpdateDisplayedPassword();
+
+            _vm?.Length = txtPasswd.Text.Trim().Length; // update after display updated
         }
 
 
@@ -226,14 +191,15 @@ namespace Passwd_VaultManager.Views
             if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
                 _excludedChars = string.Empty;
 
-            // add chars back in if erased from txtbox
-            // 1. Get diff, add it to passwd.
-            if(_exclOriginalChars != _excludedChars) {
-                for (int i = 0; i < _exclOriginalChars.Length; i++) {
-                    if (!_excludedChars.Contains(_exclOriginalChars[i])) {
-                        txtPasswd.Text += _exclOriginalChars[i];
-                        _passwdWhole = txtPasswd.Text.Trim();
-                        _exclOriginalChars = _excludedChars.Trim();
+            // BUG: 1. Open 1st record. 2. Slider down to anything. 3. erase charstoexclude 4. slider down again. 5. not chars to exclude do not reflect properly.
+            if ((txtCharactersToExclude.Text.Trim() != "" || !string.IsNullOrEmpty(_exclOriginalChars)) && _exclOriginalChars != "Chars to Exclude") {
+                if (_exclOriginalChars != _excludedChars) {
+                    for (int i = 0; i < _exclOriginalChars.Length; i++) {
+                        if (!_excludedChars.Contains(_exclOriginalChars[i])) {
+                            txtPasswd.Text += _exclOriginalChars[i];
+                            _passwdWhole = txtPasswd.Text.Trim();
+                            _exclOriginalChars = _excludedChars.Trim();
+                        }
                     }
                 }
             }
@@ -241,6 +207,9 @@ namespace Passwd_VaultManager.Views
             int len = txtPasswd.Text.Trim().Length;
             _vm?.Length = len;
 
+            // BUG: _targetLength seems to be causing an issue here.
+            //      _targetLength not updating when chars erased from txtexcludechars
+            //      try adding chars back THEN recalc len.
             _targetLength = len;
             _vm?.SliderValue = len.ToString();
             sldPasswdLength.Maximum = len;
@@ -249,6 +218,13 @@ namespace Passwd_VaultManager.Views
             //sldPasswdLength.Value = (double)_vm?.Length;
 
             UpdateDisplayedPassword();
+
+            Debug.WriteLine("");
+            Debug.WriteLine("*************txtCharactersToExclude*******************");
+            Debug.WriteLine("_excludedChars / \ttxtCharactersToExclude / \t\ttxtPasswd.Text / \t\t_passwdWhole / \t\t_targetLength");
+            Debug.WriteLine($"{_excludedChars} \t\t\t/ \t\t\t\t{txtCharactersToExclude.Text.Trim()} / \t\t\t\t\t{txtPasswd.Text} / \t{_passwdWhole} / \t{_targetLength}");
+            Debug.WriteLine("******************************************************");
+            Debug.WriteLine("");
         }
 
         private void UpdateDisplayedPassword(bool force = false) {
@@ -360,6 +336,13 @@ namespace Passwd_VaultManager.Views
         private void cmdGenPasswd_Click(object sender, RoutedEventArgs e) {
             if (_vm is null) return;
 
+            if (rdo_128.IsChecked == true)
+                _bitRate = 128;
+            else if (rdo_192.IsChecked == true)
+                _bitRate = 192;
+            if (rdo_256.IsChecked == true)
+                _bitRate = 256;
+
             _updating = true;
             try {
                 txtCharactersToExclude.IsEnabled = true;
@@ -409,6 +392,9 @@ namespace Passwd_VaultManager.Views
                 c.IsEnabled = true;
 
             _enableCharsExcludeSwitch = true;
+
+            if (sldPasswdLength.Value == 8)
+                txtCharactersToExclude.IsEnabled = false;
         }
 
         private void EditPassword_Unchecked(object sender, RoutedEventArgs e) {

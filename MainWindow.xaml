@@ -226,7 +226,7 @@
                     Height="35"
                     Margin="0,5,0,5"
                     Command="{Binding EditVaultEntryCommand}"
-                    CommandParameter="{Binding SelectedAppVault, Source={StaticResource PasswdPanelVM}}"
+                    CommandParameter="{Binding SelectedAppVault}"
                     IsChecked="False"
                     Style="{StaticResource SideCmdStyle}">
                     <Grid Margin="-10,0,0,0">
