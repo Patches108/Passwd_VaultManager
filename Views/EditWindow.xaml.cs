@@ -64,7 +64,7 @@ namespace Passwd_VaultManager.Views
 
                     // 4. Configure slider range
                     sldPasswdLength.Minimum = 8;
-                    sldPasswdLength.Maximum = _passwdWhole.Length;
+                    sldPasswdLength.Maximum = _passwdWhole.Length+ _vm.ExcludedChars.Length;
                     sldPasswdLength.Value = _passwdWhole.Length;
 
                     // Optional: disable slider if password has fixed length (e.g. 128-bit)
@@ -91,7 +91,8 @@ namespace Passwd_VaultManager.Views
 
                     txtPasswd.IsEnabled = true;
                     _showPlain = !_showPlain;       // flip reveal state
-                    UpdateDisplayedPassword(force: true);
+                    //UpdateDisplayedPassword(force: true);
+                    RefreshPasswordUI();
                     txtPasswd.IsEnabled = false;
 
                     ChangesMade = false;
@@ -154,22 +155,77 @@ namespace Passwd_VaultManager.Views
             GC.WaitForPendingFinalizers();
         }
 
+        private void RefreshPasswordUI() {
+            if (_updating) return;
+
+            _updating = true;
+            try {
+                // clamp target to valid range but DON'T overwrite it from txtPasswd.Text length
+                int maxLen = _passwdWhole?.Length ?? 0;
+                if (_targetLength < 0) _targetLength = 0;
+                if (_targetLength > maxLen) _targetLength = maxLen;
+
+                // rebuild display strictly from the full password
+                txtPasswd.Text = SharedFuncs.BuildDisplay(
+                    fullPassword: (_passwdWhole ?? string.Empty).AsSpan(),
+                    excludedChars: (_excludedChars ?? string.Empty).AsSpan(),
+                    targetLength: _targetLength,
+                    currentText: txtPasswd.Text.AsSpan(),
+                    force: false,
+                    placeholder: "Passwd".AsSpan(),
+                    mask: !_showPlain);
+
+                int shownLen = txtPasswd.Text.Trim().Length;
+
+                // Update VM from the derived display
+                _vm?.Length = shownLen;
+                _vm?.SliderValue = _targetLength.ToString();
+                _vm?.BitRate = shownLen;
+                // BitRate should NOT be set to length unless that's intentional
+                // (your current code does this, but it's likely wrong)
+                // _vm?.BitRate = ???; // leave to your radio buttons
+
+                // Keep slider range stable: based on the whole password, not current display
+                sldPasswdLength.Maximum = maxLen;
+
+                // Update slider without causing binding issues
+                _ignoreSliderChange = true;
+                sldPasswdLength.Value = _targetLength;
+                _ignoreSliderChange = false;
+
+                // enable/disable exclude based on slider value if you want
+                txtCharactersToExclude.IsEnabled = _targetLength > 8;
+            } finally {
+                _updating = false;
+            }
+        }
+
+
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-
-            if (sldPasswdLength.Value <= (int)8)
-                txtCharactersToExclude.IsEnabled = false;
-
             if (_ignoreSliderChange) return;
             if (_updating) return;
 
             _targetLength = (int)Math.Round(e.NewValue);
-            _vm?.SliderValue = _targetLength.ToString();
-            _vm?.BitRate = _targetLength;            
-
-            UpdateDisplayedPassword();
-
-            _vm?.Length = txtPasswd.Text.Trim().Length; // update after display updated
+            RefreshPasswordUI();
         }
+
+
+        //private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+
+        //    if (sldPasswdLength.Value <= (int)8)
+        //        txtCharactersToExclude.IsEnabled = false;
+
+        //    if (_ignoreSliderChange) return;
+        //    if (_updating) return;
+
+        //    _targetLength = (int)Math.Round(e.NewValue);
+        //    _vm?.SliderValue = _targetLength.ToString();
+        //    _vm?.BitRate = _targetLength;            
+
+        //    UpdateDisplayedPassword();
+
+        //    _vm?.Length = txtPasswd.Text.Trim().Length; // update after display updated
+        //}
 
 
         private void txtCharactersToExclude_GotFocus(object sender, RoutedEventArgs e) {
@@ -182,71 +238,92 @@ namespace Passwd_VaultManager.Views
                 txtCharactersToExclude.Text = "Chars to Exclude";
         }
 
-        private void txtCharactersToExclude_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+        private void txtCharactersToExclude_TextChanged(object sender, TextChangedEventArgs e) {
             if (_updating) return;
 
-            _excludedChars = txtCharactersToExclude.Text ?? string.Empty;
+            _excludedChars = (txtCharactersToExclude.Text ?? string.Empty).Trim();
 
-            // Ignore placeholder text
-            if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
+            if (_excludedChars.Equals("Chars to Exclude", StringComparison.Ordinal))
                 _excludedChars = string.Empty;
 
-            // BUG: 1. Open 1st record. 2. Slider down to anything. 3. erase charstoexclude 4. slider down again. 5. not chars to exclude do not reflect properly.
-            if ((txtCharactersToExclude.Text.Trim() != "" || !string.IsNullOrEmpty(_exclOriginalChars)) && _exclOriginalChars != "Chars to Exclude") {
-                if (_exclOriginalChars != _excludedChars) {
-                    for (int i = 0; i < _exclOriginalChars.Length; i++) {
-                        if (!_excludedChars.Contains(_exclOriginalChars[i])) {
-                            txtPasswd.Text += _exclOriginalChars[i];
-                            _passwdWhole = txtPasswd.Text.Trim();
-                            _exclOriginalChars = _excludedChars.Trim();
-                        }
-                    }
-                }
+            if(_excludedChars.Length < _exclOriginalChars.Length) { // true if chars erased from excluded textfield.
+                string removed = new string(_exclOriginalChars.Except(_excludedChars).ToArray());
+                
+                Debug.WriteLine(removed);
+                Debug.WriteLine(_passwdWhole);
+                _targetLength++;
+                _exclOriginalChars = _excludedChars;
+                _passwdWhole += removed;
+                Debug.WriteLine(_passwdWhole);
             }
-
-            int len = txtPasswd.Text.Trim().Length;
-            _vm?.Length = len;
-
-            // BUG: _targetLength seems to be causing an issue here.
-            //      _targetLength not updating when chars erased from txtexcludechars
-            //      try adding chars back THEN recalc len.
-            _targetLength = len;
-            _vm?.SliderValue = len.ToString();
-            sldPasswdLength.Maximum = len;
-            sldPasswdLength.Value = (double)len;
-
-            //sldPasswdLength.Value = (double)_vm?.Length;
-
-            UpdateDisplayedPassword();
-
-            Debug.WriteLine("");
-            Debug.WriteLine("*************txtCharactersToExclude*******************");
-            Debug.WriteLine("_excludedChars / \ttxtCharactersToExclude / \t\ttxtPasswd.Text / \t\t_passwdWhole / \t\t_targetLength");
-            Debug.WriteLine($"{_excludedChars} \t\t\t/ \t\t\t\t{txtCharactersToExclude.Text.Trim()} / \t\t\t\t\t{txtPasswd.Text} / \t{_passwdWhole} / \t{_targetLength}");
-            Debug.WriteLine("******************************************************");
-            Debug.WriteLine("");
+            RefreshPasswordUI();
         }
 
-        private void UpdateDisplayedPassword(bool force = false) {
-            if (_updating) return;
+        //private void txtCharactersToExclude_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
+        //    if (_updating) return;
 
-            _updating = true;
+        //    _excludedChars = txtCharactersToExclude.Text ?? string.Empty;
 
-            //_targetLength = _passwdWhole.Length;
+        //    // Ignore placeholder text
+        //    if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
+        //        _excludedChars = string.Empty;
 
-            try {
-                txtPasswd.Text = SharedFuncs.BuildDisplay(
-                    fullPassword: _passwdWhole.AsSpan(),
-                    excludedChars: _excludedChars.AsSpan(),
-                    targetLength: _targetLength,
-                    currentText: txtPasswd.Text.AsSpan(),
-                    force: false,
-                    placeholder: "Passwd".AsSpan(),
-                    mask: !_showPlain);
-            } finally {
-                _updating = false;
-            }
-        }
+        //    // BUG: 1. Open 1st record. 2. Slider down to anything. 3. erase charstoexclude 4. slider down again. 5. not chars to exclude do not reflect properly.
+        //    if ((txtCharactersToExclude.Text.Trim() != "" || !string.IsNullOrEmpty(_exclOriginalChars)) && _exclOriginalChars != "Chars to Exclude") {
+        //        if (_exclOriginalChars != _excludedChars) {
+        //            for (int i = 0; i < _exclOriginalChars.Length; i++) {
+        //                if (!_excludedChars.Contains(_exclOriginalChars[i])) {
+        //                    txtPasswd.Text += _exclOriginalChars[i];
+        //                    _passwdWhole = txtPasswd.Text.Trim();
+        //                    _exclOriginalChars = _excludedChars.Trim();
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    int len = txtPasswd.Text.Trim().Length;
+        //    _vm?.Length = len;
+
+        //    // BUG: _targetLength seems to be causing an issue here.
+        //    //      _targetLength not updating when chars erased from txtexcludechars
+        //    //      try adding chars back THEN recalc len.
+        //    _targetLength = len;
+        //    _vm?.SliderValue = len.ToString();
+        //    sldPasswdLength.Maximum = len;
+        //    sldPasswdLength.Value = (double)len;
+
+        //    //sldPasswdLength.Value = (double)_vm?.Length;
+
+        //    UpdateDisplayedPassword();
+
+        //    Debug.WriteLine("");
+        //    Debug.WriteLine("*************txtCharactersToExclude*******************");
+        //    Debug.WriteLine("_excludedChars / \ttxtCharactersToExclude / \t\ttxtPasswd.Text / \t\t_passwdWhole / \t\t_targetLength");
+        //    Debug.WriteLine($"{_excludedChars} \t\t\t/ \t\t\t\t{txtCharactersToExclude.Text.Trim()} / \t\t\t\t\t{txtPasswd.Text} / \t{_passwdWhole} / \t{_targetLength}");
+        //    Debug.WriteLine("******************************************************");
+        //    Debug.WriteLine("");
+        //}
+
+        //private void UpdateDisplayedPassword(bool force = false) {
+        //    if (_updating) return;
+
+        //    _updating = true;
+
+        //    //_targetLength = _passwdWhole.Length;
+
+        //    try {
+        //        txtPasswd.Text = SharedFuncs.BuildDisplay(
+        //            fullPassword: _passwdWhole.AsSpan(),
+        //            excludedChars: _excludedChars.AsSpan(),
+        //            targetLength: _targetLength,
+        //            currentText: txtPasswd.Text.AsSpan(),
+        //            force: false,
+        //            placeholder: "Passwd".AsSpan(),
+        //            mask: !_showPlain);
+        //    } finally {
+        //        _updating = false;
+        //    }
+        //}
 
         private void txtPasswd_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
             if(_enableCharsExcludeSwitch)
@@ -299,7 +376,8 @@ namespace Passwd_VaultManager.Views
             // if mask enabled. 1. toggle it off THEN save.
             if (!_showPlain) {
                 _showPlain = !_showPlain;       // flip reveal state
-                UpdateDisplayedPassword(force: true);
+                //UpdateDisplayedPassword(force: true);
+                RefreshPasswordUI();
             }
 
             // Update vault in DB
@@ -369,7 +447,8 @@ namespace Passwd_VaultManager.Views
                 _updating = false; 
             }
 
-            UpdateDisplayedPassword(force: true);
+            //UpdateDisplayedPassword(force: true);
+            RefreshPasswordUI();
             lblPasswdStatus.Visibility = Visibility.Visible;
         }
 
@@ -380,7 +459,8 @@ namespace Passwd_VaultManager.Views
 
         private void ToggleReveal_Click(object sender, RoutedEventArgs e) {
             _showPlain = !_showPlain;       // flip reveal state
-            UpdateDisplayedPassword(force: true);
+            //UpdateDisplayedPassword(force: true);
+            RefreshPasswordUI();
 
             txtCharactersToExclude.IsEnabled = _showPlain;
             sldPasswdLength.IsEnabled = _showPlain;

@@ -76,13 +76,13 @@ namespace Passwd_VaultManager.ViewModels {
         public string PasswdStatus => $"{Length} chars : {BitRate}-bit.";
 
         // ----- INotifyDataErrorInfo (simple impl) -----
-        private readonly Dictionary<string, List<string>> _errors = new();
+        //private readonly Dictionary<string, List<string>> _errors = new();
 
-        public bool HasErrors => _errors.Count > 0;
+        //public bool HasErrors => _errors.Count > 0;
 
-        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        //public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
-        public IEnumerable GetErrors(string? propertyName)
-            => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
+        //public IEnumerable GetErrors(string? propertyName)
+        //    => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
     }
 }

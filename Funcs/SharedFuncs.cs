@@ -48,10 +48,7 @@
 
                 if (outLen <= 0) return string.Empty;
 
-                if (mask) {
-                    // Return masked view with bullets
-                    return new string('•', targetLength);
-                }
+                if (mask) return new string('•', outLen);
 
                 // Materialize final string (single unavoidable allocation here)
                 return new string(rented, 0, outLen);
