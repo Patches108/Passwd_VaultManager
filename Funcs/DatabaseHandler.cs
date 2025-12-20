@@ -322,7 +322,5 @@ namespace Passwd_VaultManager.Funcs {
             var result = await cmd.ExecuteScalarAsync(ct);
             return Convert.ToInt32(result);
         }
-
-
     }
 }

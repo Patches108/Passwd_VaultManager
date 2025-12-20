@@ -21,6 +21,7 @@ namespace Passwd_VaultManager.ViewModels
 
         private bool _isUserNameSet = false;
         private bool _isPasswdSet = false;
+        private bool _isAppNameSet = false;
 
         private int _bitRate = 256;  // secure default
         private int _length = 41;   // reasonable default
@@ -41,6 +42,7 @@ namespace Passwd_VaultManager.ViewModels
             _excludes = appVault?.ExcludedChars ?? string.Empty;
             _bitRate = appVault?.BitRate ?? 256;
             _isUserNameSet = appVault?.IsUserNameSet ?? false;
+            _isAppNameSet = appVault?.IsAppNameSet ?? false;
             _isPasswdSet = appVault?.IsPasswdSet ?? false;
         }
 
@@ -148,23 +150,23 @@ namespace Passwd_VaultManager.ViewModels
             }
         }
 
-        public bool UserNameSet {
-            get => _isUserNameSet; 
-            set {
-                if (_isUserNameSet == value) return;
-                _isUserNameSet = value;
-                OnPropertyChanged();
-            }
-        }
+        //public bool UserNameSet {
+        //    get => _isUserNameSet; 
+        //    set {
+        //        if (_isUserNameSet == value) return;
+        //        _isUserNameSet = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
 
-        public bool PasswdSet {
-            get => _isPasswdSet; 
-            set { 
-                if(_isPasswdSet == value) return;
-                _isPasswdSet = value;
-                OnPropertyChanged();
-            }
-        }
+        //public bool PasswdSet {
+        //    get => _isPasswdSet; 
+        //    set { 
+        //        if(_isPasswdSet == value) return;
+        //        _isPasswdSet = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
 
 
         /// <summary>
@@ -211,6 +213,9 @@ namespace Passwd_VaultManager.ViewModels
 
             _backingVault.IsUserNameSet = !string.IsNullOrWhiteSpace(Username);
             _backingVault.IsPasswdSet = !string.IsNullOrWhiteSpace(Password);
+            _backingVault.IsAppNameSet = !string.IsNullOrWhiteSpace(AppName);
+
+            _backingVault.IsStatusGood = _backingVault.IsUserNameSet && _backingVault.IsPasswdSet && _backingVault.IsAppNameSet;
 
             _backingVault.BitRate = BitRate;
 

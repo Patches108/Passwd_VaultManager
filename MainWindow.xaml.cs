@@ -74,6 +74,8 @@ namespace Passwd_VaultManager
 
             await _vm.RefreshVaultsAsync();
             _refreshAction = _vm.RefreshVaultsAsync;  //set delegate to refresh vaults on main window.
+
+            await _vm.ComposeStatusMSG();   // get num vaults for status msg
         }
 
         private void cmdClose_Click(object sender, RoutedEventArgs e) {
@@ -207,6 +209,9 @@ namespace Passwd_VaultManager
             }
         }
 
+        private void FilterMenu_IsAppNameSet_Click(object sender, RoutedEventArgs e) {
+            FilterHandler("IsAppNameSet");
+        }
         private void FilterMenu_IsPasswdSet_Click(object sender, RoutedEventArgs e) {
             FilterHandler("IsPasswdSet");
         }
@@ -318,6 +323,10 @@ namespace Passwd_VaultManager
 
                 case "IsUserNameSet":
                     searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsUserNameSet));
+                    break;
+
+                case "IsAppNameSet":
+                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsAppNameSet));
                     break;
 
                 case "BitRate265":
@@ -469,6 +478,6 @@ namespace Passwd_VaultManager
                 btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 btn.ContextMenu.IsOpen = true;
             }
-        }        
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace Passwd_VaultManager.Models
 
         private int _bitRate;
 
+        private bool _appNameSet;
         private bool _userNameSet;
         private bool _passwdSet;
         private bool _statusOkay;
@@ -40,6 +41,10 @@ namespace Passwd_VaultManager.Models
         public Guid getAppVaultInstanceGuid { get { return AppVaultGUID; } }
 
         public DateTime? DateCreated { get; set; }
+
+        public void SetNoNameError() {
+            AppName = "No App/Account Name";
+        }
 
         public string ExcludedChars {
             get => _excludes;
@@ -115,6 +120,15 @@ namespace Passwd_VaultManager.Models
                 } catch (Exception ex) {
                     new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
+            }
+        }
+
+        public bool IsAppNameSet {
+            get => _appNameSet;
+            set {
+                if (_appNameSet == value) return;
+                _appNameSet = value; 
+                OnPropertyChanged(); 
             }
         }
 

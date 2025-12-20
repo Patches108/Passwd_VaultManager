@@ -26,8 +26,9 @@
 
         <!--  Context menu for Filter icon  -->
         <ContextMenu x:Key="FilterContextMenu" Style="{StaticResource ContextMenuStyle}">
-            <MenuItem Click="FilterMenu_IsPasswdSet_Click" Header="Password Set?" />
+            <MenuItem Click="FilterMenu_IsAppNameSet_Click" Header="App Name Set?" />
             <MenuItem Click="FilterMenu_IsUserNameSet_Click" Header="UserName Set?" />
+            <MenuItem Click="FilterMenu_IsPasswdSet_Click" Header="Password Set?" />
             <Separator Style="{StaticResource MenuSeparator}" />
             <MenuItem Click="FilterMenu_BitRate265_Click" Header="BitRate (265)" />
             <MenuItem Click="FilterMenu_BitRate192_Click" Header="BitRate (192)" />
@@ -418,7 +419,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Style="{StaticResource StatusText}"
-                    Text="Status" />
+                    Text="{Binding StatusMSG}" />
 
                 <Button
                     x:Name="cmd_Close"

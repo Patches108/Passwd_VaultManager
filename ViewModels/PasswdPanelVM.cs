@@ -8,20 +8,17 @@ using System.Windows.Media;
 
 namespace Passwd_VaultManager.ViewModels {
     public sealed class PasswdPanelVM : ViewModelBase {
-        //public ObservableCollection<AppVault> AppVaults { get; } = new();
 
         private AppVault? _selectedAppVault;
 
-        private Brush _panelBorderBrush = Brushes.Transparent;
-        private Thickness _panelBorderThickness = new(0);
+        //private Brush _panelBorderBrush = Brushes.Transparent;
+
+        //private Thickness _panelBorderThickness = new(0);
 
         public ICommand DeleteSelectedCommand { get; }
         public ICommand SelectCommand { get; }
 
         public PasswdPanelVM() {
-            //DeleteSelectedCommand = new RelayCommand(
-            //    p => DeleteSelected(p as AppVault),
-            //    p => p is AppVault);
 
             SelectCommand = new RelayCommand(
                 p => SelectVault(p as AppVault),
@@ -37,21 +34,18 @@ namespace Passwd_VaultManager.ViewModels {
                 _selectedAppVault = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(AppName));
-
-                // Notify delete button
-                //(DeleteSelectedCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
         }
 
-        public Brush PanelBorderBrush {
-            get => _panelBorderBrush;
-            set { _panelBorderBrush = value; OnPropertyChanged(); }
-        }
+        //public Brush PanelBorderBrush {
+        //    get => _panelBorderBrush;
+        //    set { _panelBorderBrush = value; OnPropertyChanged(); }
+        //}
 
-        public Thickness PanelBorderThickness {
-            get => _panelBorderThickness;
-            set { _panelBorderThickness = value; OnPropertyChanged(); }
-        }
+        //public Thickness PanelBorderThickness {
+        //    get => _panelBorderThickness;
+        //    set { _panelBorderThickness = value; OnPropertyChanged(); }
+        //}
 
         public string AppName => SelectedAppVault?.AppName ?? string.Empty;
 
@@ -62,16 +56,8 @@ namespace Passwd_VaultManager.ViewModels {
             SelectedAppVault = vault;
 
             // NOT UPDATING STYLING.
-            PanelBorderBrush = (Brush)new BrushConverter().ConvertFromString("#27D644");
-            PanelBorderThickness = new Thickness(10);
+            //PanelBorderBrush = (Brush)new BrushConverter().ConvertFromString("#27D644");
+            //PanelBorderThickness = new Thickness(10);
         }
-
-        //private void DeleteSelected(AppVault? vault) {
-        //    if (vault == null) return;
-        //    if (!AppVaults.Contains(vault)) return;
-
-        //    AppVaults.Remove(vault);
-        //    SelectedAppVault = AppVaults.FirstOrDefault();
-        //}
     }
 }

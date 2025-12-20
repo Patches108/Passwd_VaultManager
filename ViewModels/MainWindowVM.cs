@@ -4,8 +4,10 @@ using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Passwd_VaultManager.ViewModels
 {
@@ -16,6 +18,8 @@ namespace Passwd_VaultManager.ViewModels
         private AppVault? _selectedAppVault;
 
         private bool _isStartupEnabled;
+
+        private string _statusMsg = string.Empty;
 
         public ICommand EditVaultEntryCommand { get; }
         public ICommand NewVaultEntryCommand { get; }
@@ -60,6 +64,15 @@ namespace Passwd_VaultManager.ViewModels
             }
         }
 
+        public string StatusMSG {
+            get => _statusMsg;
+            set {
+                if (_statusMsg == value) return;
+                _statusMsg = value;
+                OnPropertyChanged();
+            }
+        }
+
         public AppVault? SelectedAppVault {
             get => _selectedAppVault;
             set {
@@ -100,6 +113,23 @@ namespace Passwd_VaultManager.ViewModels
             Vaults.Clear();
             var list = await DatabaseHandler.GetVaults();
             foreach (var v in list) Vaults.Add(v);
+            foreach (var v in list) UpdateStatus(v);  // update status
+        }
+
+        private void UpdateStatus(AppVault v) {
+            v.IsUserNameSet = !string.IsNullOrWhiteSpace(v.UserName);
+            v.IsPasswdSet = !string.IsNullOrWhiteSpace(v.Password);
+            v.IsAppNameSet = !string.IsNullOrWhiteSpace(v.AppName);
+
+            v.IsStatusGood = v.IsUserNameSet && v.IsPasswdSet && v.IsAppNameSet;
+
+            //add placweholder name for no app name
+            if (!v.IsAppNameSet) v.SetNoNameError();
+        }
+
+        public async Task ComposeStatusMSG() {
+            int recCount = await DatabaseHandler.GetRecordCountAsync();
+            StatusMSG = $"{recCount} Vaults.";
         }
 
         private void OpenEditWindow(AppVault vault) {

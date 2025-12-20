@@ -3,6 +3,7 @@ using Passwd_VaultManager.Models;
 using Passwd_VaultManager.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Passwd_VaultManager.Views {
     public partial class PasswordPanel : UserControl {
@@ -48,6 +49,11 @@ namespace Passwd_VaultManager.Views {
             }
 
             mainVM.DeleteVaultEntryCommand.Execute(vault);
+        }
+
+        private void PP_Loaded(object sender, RoutedEventArgs e) {
+            //if (txtAppName_PP.Text.Equals("No App/Account Name"))
+            //    txtAppName_PP.Foreground = Brushes.IndianRed;
         }
     }
 }

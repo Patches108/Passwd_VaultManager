@@ -64,11 +64,16 @@ namespace Passwd_VaultManager.Views
 
                     // 4. Configure slider range
                     sldPasswdLength.Minimum = 8;
-                    sldPasswdLength.Maximum = _passwdWhole.Length+ _vm.ExcludedChars.Length;
+
+                    sldPasswdLength.Maximum = _vm.ExcludedChars != "Chars to Exclude" 
+                        ? _passwdWhole.Length + _vm.ExcludedChars.Length
+                        : _passwdWhole.Length;
+
+
                     sldPasswdLength.Value = _passwdWhole.Length;
 
-                    // Optional: disable slider if password has fixed length (e.g. 128-bit)
-                    sldPasswdLength.IsEnabled = _bitRate != 128;
+                        // Optional: disable slider if password has fixed length (e.g. 128-bit)
+                        sldPasswdLength.IsEnabled = _bitRate != 128;
 
                     _exclOriginalChars = _vm.ExcludedChars;
 
@@ -94,6 +99,9 @@ namespace Passwd_VaultManager.Views
                     //UpdateDisplayedPassword(force: true);
                     RefreshPasswordUI();
                     txtPasswd.IsEnabled = false;
+
+                    if (txtAppName.Text.Equals("No App/Account Name"))
+                        txtAppName.Text = String.Empty;
 
                     ChangesMade = false;
 
@@ -246,15 +254,15 @@ namespace Passwd_VaultManager.Views
             if (_excludedChars.Equals("Chars to Exclude", StringComparison.Ordinal))
                 _excludedChars = string.Empty;
 
-            if(_excludedChars.Length < _exclOriginalChars.Length) { // true if chars erased from excluded textfield.
+            if((_excludedChars.Length < _exclOriginalChars.Length) && _exclOriginalChars != "Chars to Exclude") { // true if chars erased from excluded textfield.
                 string removed = new string(_exclOriginalChars.Except(_excludedChars).ToArray());
                 
-                Debug.WriteLine(removed);
-                Debug.WriteLine(_passwdWhole);
+                //Debug.WriteLine(removed);
+                //Debug.WriteLine(_passwdWhole);
                 _targetLength++;
                 _exclOriginalChars = _excludedChars;
                 _passwdWhole += removed;
-                Debug.WriteLine(_passwdWhole);
+                //Debug.WriteLine(_passwdWhole);
             }
             RefreshPasswordUI();
         }
@@ -373,6 +381,11 @@ namespace Passwd_VaultManager.Views
 
         private async void EditWin_cmdUpdateVault_Click(object sender, RoutedEventArgs e) {
 
+            if(txtPasswd.Text.Trim().Length == 0) {
+                new MessageWindow("Password cannot be empty.", SoundController.ErrorSound).Show();
+                return;
+            }
+
             // if mask enabled. 1. toggle it off THEN save.
             if (!_showPlain) {
                 _showPlain = !_showPlain;       // flip reveal state
@@ -390,7 +403,7 @@ namespace Passwd_VaultManager.Views
                 });
 
             } catch (Exception ex) {
-                new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.", SoundController.ErrorSound);
+                new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.", SoundController.ErrorSound).Show(); ;
             }
 
             App.Settings.FirstTimeOpeningEditWin = false;
@@ -420,6 +433,11 @@ namespace Passwd_VaultManager.Views
                 _bitRate = 192;
             if (rdo_256.IsChecked == true)
                 _bitRate = 256;
+
+            // if excluded chars in txtCharactersToExclude...
+            if (txtCharactersToExclude.Text != "Chars to Exclude" || !string.IsNullOrWhiteSpace(txtCharactersToExclude.Text.Trim())){
+                txtCharactersToExclude.Text = "";
+            }
 
             _updating = true;
             try {
