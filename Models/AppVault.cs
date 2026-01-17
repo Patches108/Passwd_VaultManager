@@ -3,6 +3,11 @@ using System.Runtime.CompilerServices;
 using Passwd_VaultManager.Funcs;
 
 namespace Passwd_VaultManager.Models {
+
+    /// <summary>
+    /// Represents an application or account vault entry, storing metadata, credentials, and related status flags with
+    /// property change notification support.
+    /// </summary>
     public class AppVault : INotifyPropertyChanged {
         public const string DefaultNoName = "No App/Account Name";
 
@@ -20,6 +25,11 @@ namespace Passwd_VaultManager.Models {
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+
+
+        /// <summary>
+        /// Initializes a new instance of the AppVault class and assigns a unique identifier to InstanceGuid.
+        /// </summary>
         public AppVault() {
             InstanceGuid = Guid.NewGuid();
         }
@@ -89,6 +99,12 @@ namespace Passwd_VaultManager.Models {
         public void SetNoName() => AppName = DefaultNoName;
 
         // ---- Helpers ----
+        /// <summary>
+        /// Validates and sets a string field, raising a property change notification if the value changes.
+        /// </summary>
+        /// <param name="field">Reference to the backing string field to update.</param>
+        /// <param name="value">The new string value to validate and assign.</param>
+        /// <param name="propName">The name of the property associated with the field.</param>
         private void SetValidatedString(ref string field, string? value, [CallerMemberName] string? propName = null) {
             value ??= string.Empty;
             if (field == value) return;
@@ -98,176 +114,27 @@ namespace Passwd_VaultManager.Models {
             OnPropertyChanged(propName);
         }
 
+
+        /// <summary>
+        /// Sets the specified field to a new value and raises the PropertyChanged event if the value has changed.
+        /// </summary>
+        /// <typeparam name="T">The type of the field and value.</typeparam>
+        /// <param name="field">Reference to the field to be updated.</param>
+        /// <param name="value">The new value to assign to the field.</param>
+        /// <param name="propName">The name of the property that changed.</param>
         private void SetField<T>(ref T field, T value, [CallerMemberName] string? propName = null) {
             if (Equals(field, value)) return;
             field = value;
             OnPropertyChanged(propName);
         }
 
+
+
+        /// <summary>
+        /// Raises the PropertyChanged event to notify listeners of a property value change.
+        /// </summary>
+        /// <param name="name">The name of the property that changed.</param>
         private void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
-
-//using Passwd_VaultManager.Views;
-//using System.ComponentModel;
-//using System.Runtime.CompilerServices;
-//using Passwd_VaultManager.Funcs;
-
-//namespace Passwd_VaultManager.Models
-//{
-//    public class AppVault : INotifyPropertyChanged {
-
-//        private string _appName;
-//        private string _password;
-//        private string _userName;
-//        private string _excludes;
-
-//        private int _bitRate;
-
-//        private bool _appNameSet;
-//        private bool _userNameSet;
-//        private bool _passwdSet;
-//        private bool _statusOkay;
-
-//        private readonly Guid AppVaultGUID;  // To store class instance identifier.
-
-//        public event PropertyChangedEventHandler? PropertyChanged;
-
-//        private void OnPropertyChanged([CallerMemberName] string name = null)
-//            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-
-
-//        public AppVault() {
-//            AppVaultGUID = Guid.NewGuid();
-//        }
-
-//        /// <summary>
-//        /// Getters and setters
-//        /// </summary>
-//        /// 
-//        public long Id { get; set; }
-
-//        public Guid getAppVaultInstanceGuid { get { return AppVaultGUID; } }
-
-//        public DateTime? DateCreated { get; set; }
-
-//        public void SetNoNameError() {
-//            AppName = "No App/Account Name";
-//        }
-
-//        public string ExcludedChars {
-//            get => _excludes;
-//            set {
-//                if (_excludes == value) return;
-
-//                try {
-//                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-//                    _excludes = validated;
-//                    OnPropertyChanged();
-//                } catch (Exception ex) {
-//                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound ).ShowDialog();
-//                }
-//            }
-//        }
-
-//        public int BitRate {
-//            get => _bitRate;
-//            set {
-//                if (_bitRate == value) return;
-
-//                if (Funcs.SharedFuncs.ValidateNumeral(value))   // <-- validate value, not _bitRate
-//                {
-//                    _bitRate = value;
-//                    OnPropertyChanged();
-//                } else {
-//                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
-//                }
-//            }
-//        }
-
-//        public string AppName {
-//            get => _appName;
-//            set {
-//                if (_appName == value) return;
-
-//                try {
-//                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-//                    _appName = validated;
-//                    OnPropertyChanged();
-//                } catch (Exception ex) {
-//                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
-//                }
-//            }
-//        }
-
-
-//        public string Password {
-//            get => _password;
-//            set {
-//                if (_password == value) return;
-
-
-//                try {
-//                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-//                    _password = validated;
-//                    OnPropertyChanged();
-//                } catch (Exception ex) {
-//                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
-//                }
-//            }
-//        }
-
-//        public string UserName {
-//            get => _userName;
-//            set {
-//                if (_userName == value) return;
-
-//                try {
-//                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-//                    _userName = validated;
-//                    OnPropertyChanged();
-//                } catch (Exception ex) {
-//                    new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
-//                }
-//            }
-//        }
-
-//        public bool IsAppNameSet {
-//            get => _appNameSet;
-//            set {
-//                if (_appNameSet == value) return;
-//                _appNameSet = value; 
-//                OnPropertyChanged(); 
-//            }
-//        }
-
-//        public bool IsUserNameSet {
-//            get => _userNameSet;
-//            set {
-//                if (_userNameSet == value) return;
-//                _userNameSet = value; 
-//                OnPropertyChanged(); 
-//            }
-//        }
-
-//        public bool IsPasswdSet {
-//            get => _passwdSet;
-//            set {
-//                if (_passwdSet == value) return;
-//                _passwdSet = value; 
-//                OnPropertyChanged(); 
-//            }
-//        }
-
-//        public bool IsStatusGood {
-//            get => _statusOkay;
-//            set {
-//                if (_statusOkay == value) return;
-//                _statusOkay = value;
-//                OnPropertyChanged();
-//            }
-//        }
-//    }
-//}

@@ -1,18 +1,26 @@
 ﻿using Passwd_VaultManager.Models;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Passwd_VaultManager.ViewModels {
+
+
+    /// <summary>
+    /// ViewModel for the password panel.
+    /// 
+    /// Manages selection state for a vault entry and exposes commands
+    /// used by the password display/selection UI.
+    /// </summary>
     public sealed class PasswdPanelVM : ViewModelBase {
 
         private AppVault? _selectedAppVault;
         public ICommand DeleteSelectedCommand { get; }
         public ICommand SelectCommand { get; }
 
+
+
+        /// <summary>
+        /// Initializes commands used by the password panel.
+        /// </summary>
         public PasswdPanelVM() {
 
             SelectCommand = new RelayCommand(
@@ -20,6 +28,11 @@ namespace Passwd_VaultManager.ViewModels {
                 p => p is AppVault);
         }
 
+
+
+        /// <summary>
+        /// Gets or sets the currently selected vault entry.
+        /// </summary>
         public AppVault? SelectedAppVault {
             get => _selectedAppVault;
             set {
@@ -32,8 +45,20 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Gets the application/account name of the selected vault entry.
+        /// </summary>
         public string AppName => SelectedAppVault?.AppName ?? string.Empty;
 
+
+
+
+        /// <summary>
+        /// Sets the specified vault entry as the current selection.
+        /// </summary>
+        /// <param name="vault">The vault entry to select.</param>
         private void SelectVault(AppVault? vault) {
             if (vault == null)
                 return;

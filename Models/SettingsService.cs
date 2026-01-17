@@ -7,9 +7,22 @@ using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Passwd_VaultManager.Services {
+
+
+    /// <summary>
+    /// Provides loading, saving, and management of application settings
+    /// stored in a simple key–value configuration file.
+    /// 
+    /// This service handles parsing, serialization, default initialization,
+    /// and safe persistence of <see cref="AppSettings"/> data.
+    /// </summary>
     public static class SettingsService {
-        // Keep keys consistent with what Save() writes.
-        // Dictionary is case-insensitive, but using a single canonical style prevents future mistakes.
+
+
+        /// <summary>
+        /// Maps setting keys to actions that apply parsed values
+        /// to an <see cref="AppSettings"/> instance.
+        /// </summary>
         private static readonly Dictionary<string, Action<AppSettings, string>> _setters =
             new(StringComparer.OrdinalIgnoreCase) {
                 ["SoundEnabled"] = (s, v) => s.SoundEnabled = ParseBool(v, defaultValue: s.SoundEnabled),
@@ -33,6 +46,15 @@ namespace Passwd_VaultManager.Services {
                 ["FirstTimeNewPassword_EditWin"] = (s, v) => s.FirstTimeNewPassword_EditWin = ParseBool(v, s.FirstTimeNewPassword_EditWin),
             };
 
+
+
+        /// <summary>
+        /// Loads application settings from disk, creating a defaults file
+        /// if none exists.
+        /// </summary>
+        /// <returns>
+        /// A populated <see cref="AppSettings"/> instance.
+        /// </returns>
         public static AppSettings Load() {
             AppPaths.EnsureAppDataFolder();
             var path = AppPaths.SettingsFile;
@@ -68,6 +90,12 @@ namespace Passwd_VaultManager.Services {
             return settings;
         }
 
+
+
+        /// <summary>
+        /// Saves the provided application settings to disk.
+        /// </summary>
+        /// <param name="s">The settings instance to persist.</param>
         public static void Save(AppSettings s) {
             AppPaths.EnsureAppDataFolder();
             var path = AppPaths.SettingsFile;
@@ -76,10 +104,17 @@ namespace Passwd_VaultManager.Services {
             WriteAllLinesAtomic(path, lines);
         }
 
+
+
+
         /// <summary>
-        /// Resets "first time" helper flags and persists them.
-        /// Returns empty string on success, otherwise returns the error message.
+        /// Resets helper and first-time-use flags to their default state
+        /// and persists the changes.
         /// </summary>
+        /// <param name="s">The settings instance to modify.</param>
+        /// <returns>
+        /// An empty string on success; otherwise an error message.
+        /// </returns>
         public static string ResetHelperBot(AppSettings s) {
             try {
                 s.FirstTimeOpeningApp = true;
@@ -106,6 +141,13 @@ namespace Passwd_VaultManager.Services {
         // Helpers
         // -----------------------------
 
+
+        /// <summary>
+        /// Serializes application settings into key–value text lines
+        /// suitable for writing to the settings file.
+        /// </summary>
+        /// <param name="s">The settings instance to serialize.</param>
+        /// <returns>An array of serialized setting lines.</returns>
         private static string[] Serialize(AppSettings s) =>
         [
             $"FontFamily={s.FontFamily}",
@@ -126,6 +168,12 @@ namespace Passwd_VaultManager.Services {
             $"FirstTimeNewPassword_EditWin={(s.FirstTimeNewPassword_EditWin ? "true" : "false")}",
         ];
 
+
+
+        /// <summary>
+        /// Creates a new settings file populated with default values.
+        /// </summary>
+        /// <param name="path">The target settings file path.</param>
         private static void InitializeDefaultsFile(string path) {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
@@ -152,6 +200,14 @@ namespace Passwd_VaultManager.Services {
             WriteAllLinesAtomic(path, Serialize(defaults));
         }
 
+
+
+        /// <summary>
+        /// Writes all lines to a file using a temporary file to reduce
+        /// the risk of data corruption.
+        /// </summary>
+        /// <param name="path">The destination file path.</param>
+        /// <param name="lines">The lines to write.</param>
         private static void WriteAllLinesAtomic(string path, string[] lines) {
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrWhiteSpace(dir))
@@ -172,6 +228,15 @@ namespace Passwd_VaultManager.Services {
             }
         }
 
+
+
+        /// <summary>
+        /// Parses a boolean value from a string, supporting common
+        /// textual representations.
+        /// </summary>
+        /// <param name="v">The input string.</param>
+        /// <param name="defaultValue">Value to return on parse failure.</param>
+        /// <returns>The parsed boolean value or the default.</returns>
         private static bool ParseBool(string v, bool defaultValue) {
             if (string.IsNullOrWhiteSpace(v))
                 return defaultValue;
@@ -194,6 +259,13 @@ namespace Passwd_VaultManager.Services {
             return defaultValue;
         }
 
+
+
+        /// <summary>
+        /// Removes surrounding double quotes from a string if present.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <returns>The unwrapped string.</returns>
         private static string UnwrapQuotes(string s) {
             // Only unwrap if it’s a full wrap: "value"
             if (s.Length >= 2 && s[0] == '"' && s[^1] == '"')
@@ -202,6 +274,15 @@ namespace Passwd_VaultManager.Services {
             return s;
         }
 
+
+
+        /// <summary>
+        /// Attempts to parse a floating-point number using invariant,
+        /// current, or fallback culture formats.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="result">The parsed value if successful.</param>
+        /// <returns><c>true</c> if parsing succeeded; otherwise <c>false</c>.</returns>
         private static bool TryParseDoubleAny(string s, out double result) {
             // Prefer exact formats first
             if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result)) return true;

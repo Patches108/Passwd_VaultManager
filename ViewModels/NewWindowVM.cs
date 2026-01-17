@@ -1,13 +1,10 @@
-﻿using Passwd_VaultManager.Funcs;
-using Passwd_VaultManager.Models;
-using Passwd_VaultManager.Views;
+﻿using Passwd_VaultManager.Models;
 
 namespace Passwd_VaultManager.ViewModels {
     internal sealed class NewWindowVM : ViewModelBase {
         private const int MinLength = 8;
         private const int MaxLength = 41;
 
-        // Must match your generator alphabet (78 chars => ~6.285 bits/char)
         private const double BitsPerChar = 6.285;
         private const int BitsCap = 256;
 
@@ -16,8 +13,6 @@ namespace Passwd_VaultManager.ViewModels {
 
         private int _targetLength = 21;        // slider value: requested output length
         private int _sliderMaxLength = 41;     // slider maximum: available length after exclusions
-
-        // --- Slider state (NEW) ---
 
         /// <summary>Slider Value: requested output length.</summary>
         public int TargetLength {
@@ -84,17 +79,16 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+        /// <summary>
+        /// Gets a human-readable summary of the current password length
+        /// and estimated entropy strength.
+        /// </summary>
         public string PasswdStatus {
             get {
                 int bRate = Math.Min((int)Math.Ceiling(Length * BitsPerChar), BitsCap);
                 return $"{Length} chars : {bRate}-bit.";
             }
         }
-
-        //private static int CalculateBits(int length) {
-        //    int bits = (int)Math.Ceiling(length * BitsPerChar);
-        //    return Math.Min(bits, BitsCap);
-
-        //}
     }
 }

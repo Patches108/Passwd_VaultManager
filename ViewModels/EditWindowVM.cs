@@ -1,15 +1,22 @@
 ﻿using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
-using System.Collections;
-using System.ComponentModel;
 
 namespace Passwd_VaultManager.ViewModels {
+
+
+    /// <summary>
+    /// ViewModel for the Edit window.
+    /// 
+    /// Provides bindable fields for editing an existing <see cref="AppVault"/> entry
+    /// (app name, username, password, excluded characters) and exposes slider-related
+    /// properties for password length/strength display. Changes are validated and
+    /// persisted back to the underlying vault record.
+    /// </summary>
     internal sealed class EditWindowVM : ViewModelBase {
         private const int MinLength = 8;
         private const int MaxLength = 41;
 
-        // Must match your generator alphabet (78 => ~6.285)
         private const double BitsPerChar = 6.285;
         private const int BitsCap = 256;
 
@@ -28,6 +35,8 @@ namespace Passwd_VaultManager.ViewModels {
 
         public EditWindowVM() { }
 
+
+       
         public EditWindowVM(AppVault appVault) {
             _backingVault = appVault;
 
@@ -94,7 +103,7 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
-        // --- Slider plumbing (NEW) ---
+        // --- Slider plumbing ---
 
         /// <summary>Slider Value: the requested output length cap.</summary>
         public int TargetLength {
@@ -162,13 +171,15 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
-        // ----- INotifyDataErrorInfo (unchanged) -----
-        //private readonly Dictionary<string, List<string>> _errors = new();
-        //public bool HasErrors => _errors.Count > 0;
-        //public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-        //public IEnumerable GetErrors(string? propertyName)
-        //    => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
 
+        /// <summary>
+        /// Persists the current ViewModel values back to the underlying vault record
+        /// and updates the database.
+        /// 
+        /// This also refreshes derived status flags (e.g., whether required fields are set)
+        /// and stores the calculated bitrate/strength value.
+        /// </summary>
+        /// <returns>A task that completes when the database update finishes.</returns>
         public async Task SaveAsync() {
             _backingVault.AppName = AppName;
             _backingVault.UserName = Username;

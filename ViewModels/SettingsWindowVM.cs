@@ -6,6 +6,12 @@ using System.Windows.Media;
 
 namespace Passwd_VaultManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the Settings window.
+    /// 
+    /// Exposes application configuration options such as font selection,
+    /// font size, sound toggles, and Windows startup behavior.
+    /// </summary>
     class SettingsWindowVM : ViewModelBase {
 
         private bool _isStartupEnabled;
@@ -66,11 +72,23 @@ namespace Passwd_VaultManager.ViewModels
             }
         }
 
+
+        /// <summary>
+        /// Initializes the settings ViewModel and ensures the application
+        /// data directory exists.
+        /// </summary>
         public SettingsWindowVM() {
             AppPaths.EnsureAppDataFolder();
         }
 
 
+        /// <summary>
+        /// Registers or unregisters the application to run at Windows startup
+        /// by updating the current user's Run registry key.
+        /// </summary>
+        /// <param name="enable">
+        /// <c>true</c> to enable startup registration; <c>false</c> to disable it.
+        /// </param>
         public static void RegisterInStartup(bool enable) {
             string appName = "PasswordVaultManager";
             string exePath = Process.GetCurrentProcess().MainModule.FileName;

@@ -7,13 +7,20 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Passwd_VaultManager.Funcs {
+
+    /// <summary>
+    /// Provides static methods for initializing, reading, writing, updating, and deleting records in the application's
+    /// encrypted SQLite vault database.
+    /// </summary>
     public static class DatabaseHandler {
 
-        private static readonly string _connectionString =
-            $"Data Source={System.IO.Path.Combine(AppPaths.AppDataFolder, "Vault.db")};";
+        private static readonly string _connectionString = $"Data Source={System.IO.Path.Combine(AppPaths.AppDataFolder, "Vault.db")};";
 
         private static readonly string _dbLocation = AppPaths.AppDataFolder + "\\Vault.db";
 
+        /// <summary>
+        /// Initializes the database by creating the database file and the Vault table if they do not already exist.
+        /// </summary>
         public static void initDatabase() {
             if(!File.Exists(_dbLocation)) {
                 SQLiteConnection.CreateFile(@""+ _dbLocation);
@@ -43,6 +50,14 @@ namespace Passwd_VaultManager.Funcs {
             }
         }
 
+
+        /// <summary>
+        /// Asynchronously inserts a new record into the Vault table using the provided AppVault data and returns the
+        /// generated row ID.
+        /// </summary>
+        /// <param name="v">The AppVault instance containing the data to be stored.</param>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the ID of the newly inserted record.</returns>
         public static async Task<long> WriteRecordToDatabaseAsync(AppVault v, CancellationToken ct = default) {
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);
@@ -72,10 +87,13 @@ namespace Passwd_VaultManager.Funcs {
             };
         }
 
-        // extra salting.
-        //private static byte[] GetAppEntropy() =>
-        //    Encoding.UTF8.GetBytes("PasswdVaultManager-Entropy-Q9x2Tb7Lm4RjK8Vp-v1");
 
+        /// <summary>
+        /// Asynchronously retrieves all vault entries from the database and returns them as an observable collection.
+        /// </summary>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task representing the asynchronous operation, with a result of an observable collection of AppVault
+        /// objects.</returns>
         public static async Task<ObservableCollection<AppVault>> GetVaults(CancellationToken ct = default) {
             var vaults = new ObservableCollection<AppVault>();
 
@@ -110,16 +128,29 @@ namespace Passwd_VaultManager.Funcs {
             return vaults;
         }
 
+        /// <summary>
+        /// Asynchronously updates a vault entry by its ID with the specified values.
+        /// </summary>
+        /// <param name="id">The unique identifier of the vault entry to update.</param>
+        /// <param name="appName">The application name to store in the vault.</param>
+        /// <param name="userName">The user name to store in the vault, or null.</param>
+        /// <param name="password">The password to store in the vault, or null.</param>
+        /// <param name="isUserNameSet">Indicates whether the user name is set.</param>
+        /// <param name="isPasswdSet">Indicates whether the password is set.</param>
+        /// <param name="excluded">Characters to exclude from generated passwords.</param>
+        /// <param name="bitRate">The bit rate for password generation.</param>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>The number of rows affected; 0 if not found or nothing updated, 1 if successful.</returns>
         public static async Task<int> UpdateVaultByIdAsync(
-    long id,
-    string appName,
-    string? userName,
-    string? password,
-    bool isUserNameSet,
-    bool isPasswdSet,
-    string excluded,
-    int bitRate,
-    CancellationToken ct = default) {
+            long id,
+            string appName,
+            string? userName,
+            string? password,
+            bool isUserNameSet,
+            bool isPasswdSet,
+            string excluded,
+            int bitRate,
+            CancellationToken ct = default) {
 
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);
@@ -155,6 +186,13 @@ namespace Passwd_VaultManager.Funcs {
         }
 
 
+        /// <summary>
+        /// Safely retrieves and decrypts a BLOB or string value from a SqliteDataReader at the specified column
+        /// ordinal.
+        /// </summary>
+        /// <param name="reader">The SqliteDataReader instance to read data from.</param>
+        /// <param name="ordinal">The zero-based column ordinal to retrieve the value from.</param>
+        /// <returns>The decrypted string value, or an empty string if the value is null or empty.</returns>
         private static string DecryptBlobSafe(SqliteDataReader reader, int ordinal) {
             if (reader.IsDBNull(ordinal)) return string.Empty;
 
@@ -178,6 +216,13 @@ namespace Passwd_VaultManager.Funcs {
             return Convert.ToString(obj) ?? string.Empty;
         }
 
+        /// <summary>
+        /// Reads a boolean value from a SqliteDataReader at the specified column, interpreting various data types and
+        /// representations as boolean.
+        /// </summary>
+        /// <param name="reader">The SqliteDataReader instance to read from.</param>
+        /// <param name="ordinal">The zero-based column ordinal.</param>
+        /// <returns>True if the value is interpreted as true; otherwise, false.</returns>
         private static bool ReadBoolFlexible(SqliteDataReader reader, int ordinal) {
             if (reader.IsDBNull(ordinal)) return false;
 
@@ -212,11 +257,20 @@ namespace Passwd_VaultManager.Funcs {
             return false;
         }
 
+        /// <summary>
+        /// Asynchronously deletes entries from the Vault table that match the specified application name, user name,
+        /// and password.
+        /// </summary>
+        /// <param name="appName">The application name to match for deletion.</param>
+        /// <param name="userName">The user name to match for deletion.</param>
+        /// <param name="password">The password to match for deletion.</param>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>The number of entries deleted from the Vault.</returns>
         public static async Task<int> DeleteVaultAsync(
-    string appName,
-    string userName,
-    string password,
-    CancellationToken ct = default) 
+            string appName,
+            string userName,
+            string password,
+            CancellationToken ct = default) 
             {
 
             // Normalize inputs for exact, case-sensitive match. Adjust if you want OrdinalIgnoreCase.
@@ -277,7 +331,14 @@ namespace Passwd_VaultManager.Funcs {
                 return total;
             }
         }
-        // Convenience update overload
+        
+        /// <summary>
+        /// Updates an existing vault entry asynchronously using the provided AppVault object.
+        /// </summary>
+        /// <param name="v">The AppVault instance containing updated vault information.</param>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task representing the asynchronous operation, containing the number of affected rows.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the provided AppVault object is null.</exception>
         public static Task<int> UpdateVaultAsync(AppVault v, CancellationToken ct = default) {
             if (v == null)
                 throw new ArgumentNullException(nameof(v));
@@ -297,10 +358,16 @@ namespace Passwd_VaultManager.Funcs {
 
 
         // Convenience overload: delete using an AppVault instance (SelectedAppVault, etc.)
+        /// <summary>
+        /// Deletes a vault using the specified AppVault instance.
+        /// </summary>
+        /// <param name="v">The AppVault instance containing vault details.</param>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task representing the asynchronous operation, with the number of deleted records as the result.</returns>
         public static Task<int> DeleteVaultAsync(AppVault v, CancellationToken ct = default)
             => DeleteVaultAsync(v?.AppName ?? "", v?.UserName ?? "", v?.Password ?? "", ct);
 
-        // If have  row id, this is faster:
+        // If have row id, this is faster:
         public static async Task<int> DeleteVaultByIdAsync(long id, CancellationToken ct = default) {
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);
@@ -312,6 +379,11 @@ namespace Passwd_VaultManager.Funcs {
             return await cmd.ExecuteNonQueryAsync(ct);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves the total number of records in the Vault table.
+        /// </summary>
+        /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task representing the asynchronous operation, containing the record count.</returns>
         public static async Task<int> GetRecordCountAsync(CancellationToken ct = default) {
             await using var conn = new SqliteConnection(_connectionString);
             await conn.OpenAsync(ct);

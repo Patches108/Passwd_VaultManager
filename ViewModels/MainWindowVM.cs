@@ -11,6 +11,13 @@ using System.Windows;
 using System.Windows.Input;
 
 namespace Passwd_VaultManager.ViewModels {
+
+    /// <summary>
+    /// Main window ViewModel.
+    /// 
+    /// Manages the vault list, selection-dependent commands (new/edit/delete),
+    /// status text, and the “run on startup” option via the Windows registry.
+    /// </summary>
     internal sealed class MainWindowVM : ViewModelBase {
         private const string StartupAppName = "PasswordVaultManager";
         private const string RunKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
@@ -21,11 +28,9 @@ namespace Passwd_VaultManager.ViewModels {
 
         public ObservableCollection<AppVault> Vaults { get; } = new();
 
-        // If you actually use these, make them snapshots; otherwise delete them.
         public ObservableCollection<AppVault> PreSortedVaults { get; private set; } = new();
         public ObservableCollection<AppVault> PreFilteredVaults { get; private set; } = new();
 
-        // If this is required, initialize it; otherwise remove.
         public PasswdPanelVM PasswdPanelVM { get; } = new();
 
         public ICommand EditVaultEntryCommand { get; }
@@ -35,6 +40,11 @@ namespace Passwd_VaultManager.ViewModels {
         public ICommand OpenAboutCommand { get; }
         public ICommand RefreshCommand { get; }
 
+
+
+        /// <summary>
+        /// Initializes commands and loads the current “run on startup” setting.
+        /// </summary>
         public MainWindowVM() {
             EditVaultEntryCommand = new RelayCommand(
                 p => OpenEditWindow(p as AppVault ?? SelectedAppVault),
@@ -54,6 +64,12 @@ namespace Passwd_VaultManager.ViewModels {
             IsStartupEnabled = IsAppSetToRunOnStartup();
         }
 
+
+
+        /// <summary>
+        /// Gets or sets the currently selected vault entry in the UI.
+        /// Updating this value refreshes command availability.
+        /// </summary>
         public AppVault? SelectedAppVault {
             get => _selectedAppVault;
             set {
@@ -65,6 +81,12 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Gets or sets whether the application should run at Windows startup.
+        /// When changed, the corresponding registry value is updated.
+        /// </summary>
         public bool IsStartupEnabled {
             get => _isStartupEnabled;
             set {
@@ -83,6 +105,11 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Gets or sets the UI status message displayed in the main window.
+        /// </summary>
         public string StatusMSG {
             get => _statusMsg;
             set {
@@ -92,14 +119,21 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Forces WPF to re-evaluate whether selection-dependent commands can execute.
+        /// </summary>
         private void RaiseSelectionCommandsCanExecute() {
             (DeleteVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();
             (EditVaultEntryCommand as RelayCommand)?.RaiseCanExecuteChanged();
         }
 
-        // -----------------------
-        // Data refresh + status
-        // -----------------------
+        /// <summary>
+        /// Reloads vault entries from the database, updates derived status flags,
+        /// refreshes snapshot collections, and updates the status message.
+        /// </summary>
+        /// <returns>A task that completes when refresh is finished.</returns>
         public async Task RefreshVaultsAsync() {
             var list = await DatabaseHandler.GetVaults();
 
@@ -118,6 +152,13 @@ namespace Passwd_VaultManager.ViewModels {
             await ComposeStatusMSG();
         }
 
+
+
+        /// <summary>
+        /// Normalizes derived status flags for a vault entry (e.g., whether required
+        /// fields are set) and applies the default “no name” behavior when needed.
+        /// </summary>
+        /// <param name="v">The vault entry to normalize.</param>
         private static void NormalizeVaultStatus(AppVault v) {
             v.IsUserNameSet = !string.IsNullOrWhiteSpace(v.UserName);
             v.IsPasswdSet = !string.IsNullOrWhiteSpace(v.Password);
@@ -135,19 +176,35 @@ namespace Passwd_VaultManager.ViewModels {
                 v.SetNoName();
         }
 
+
+
+        /// <summary>
+        /// Rebuilds the status message (e.g., record count) from the database.
+        /// </summary>
+        /// <returns>A task that completes when the message has been updated.</returns>
         public async Task ComposeStatusMSG() {
             int recCount = await DatabaseHandler.GetRecordCountAsync();
             StatusMSG = $"{recCount} Vaults.";
         }
 
+
+
+        /// <summary>
+        /// Recomputes derived status flags for all vault entries currently loaded.
+        /// </summary>
         public void UpdateAllVaultStatus() {
             foreach (var v in Vaults)
                 NormalizeVaultStatus(v);
         }
 
-        // -----------------------
-        // Window actions
-        // -----------------------
+
+
+
+        /// <summary>
+        /// Opens the edit window for the specified vault entry.
+        /// If no entry is provided/selected, a helper message is shown.
+        /// </summary>
+        /// <param name="vault">The vault entry to edit.</param>
         private void OpenEditWindow(AppVault? vault) {
             if (vault is null) {
                 new Helper("Oops!\n\nFirst, select a vault to edit.", SoundController.ErrorSound).Show();
@@ -157,17 +214,27 @@ namespace Passwd_VaultManager.ViewModels {
             var vm = new EditWindowVM(vault);
             var win = new EditWindow { DataContext = vm };
             win.ShowDialog();
-
-            // After edit, refresh to reflect DB changes (if you want)
-            // _ = RefreshVaultsAsync();
         }
 
+
+
+        /// <summary>
+        /// Opens the window used to create a new vault entry.
+        /// </summary>
         private void OpenNewVaultEntry() {
             // Pass an action rather than holding a Func<Task> field in the VM
             var win = new NewWindow(RefreshVaultsAsync);
             win.Show();
         }
 
+
+
+        /// <summary>
+        /// Deletes the specified vault entry after user confirmation,
+        /// then refreshes the list to reflect database changes.
+        /// </summary>
+        /// <param name="vault">The vault entry to delete.</param>
+        /// <returns>A task that completes when deletion and refresh are finished.</returns>
         private async Task DeleteVaultEntryAsync(AppVault? vault) {
             if (vault is null) {
                 new MessageWindow("ERROR: No Vault selected.", SoundController.ErrorSound).ShowDialog();
@@ -203,18 +270,33 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Opens the settings window.
+        /// </summary>
         private void OpenSettings() {
             var win = new SettingsWindow(RefreshVaultsAsync);
             win.Show();
         }
 
+
+
+        /// <summary>
+        /// Opens the About window.
+        /// </summary>
         private void OpenAboutWin() {
             new About().Show();
         }
 
-        // -----------------------
-        // Startup registry
-        // -----------------------
+
+
+        /// <summary>
+        /// Checks whether the application is currently registered to run on Windows startup.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if a matching registry entry exists; otherwise <c>false</c>.
+        /// </returns>
         public static bool IsAppSetToRunOnStartup() {
             try {
                 using var rk = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: false);
@@ -230,6 +312,15 @@ namespace Passwd_VaultManager.ViewModels {
             }
         }
 
+
+
+        /// <summary>
+        /// Enables or disables running the application at Windows startup by updating
+        /// the current user's Run registry key.
+        /// </summary>
+        /// <param name="enable">Whether to register (true) or unregister (false).</param>
+        /// <param name="error">An error message when the operation fails.</param>
+        /// <returns><c>true</c> on success; otherwise <c>false</c>.</returns>
         public static bool TryRegisterInStartup(bool enable, out string error) {
             error = string.Empty;
 

@@ -1,4 +1,9 @@
 ﻿namespace Passwd_VaultManager.Models {
+
+    /// <summary>
+    /// Represents application settings including font preferences, sound and speech options, and flags for first-time
+    /// usage of various windows.
+    /// </summary>
     public class AppSettings {
         public string FontFamily { get; set; } = "Segoe UI";
         public double FontSize { get; set; } = 15;

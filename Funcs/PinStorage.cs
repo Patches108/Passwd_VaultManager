@@ -6,12 +6,20 @@ using Passwd_VaultManager.Models;
 namespace Passwd_VaultManager.Funcs {
     public static class PinStorage {
 
-        // Format stored in file: base64(salt) + ":" + base64(hash)
+        /// <summary>
+        /// Determines whether a PIN file exists in the application data folder.
+        /// </summary>
+        /// <returns>true if the PIN file exists; otherwise, false.</returns>
         public static bool HasPin() {
             AppPaths.EnsureAppDataFolder();
             return File.Exists(AppPaths.PinFile);
         }
 
+        /// <summary>
+        /// Stores a hashed and salted 4-digit PIN in the application data folder.
+        /// </summary>
+        /// <param name="pin">The 4-digit PIN to set.</param>
+        /// <exception cref="ArgumentException">Thrown if the provided PIN is null, empty, or not exactly 4 digits.</exception>
         public static void SetPin(string pin) {
             if (string.IsNullOrWhiteSpace(pin) || pin.Length != 4)
                 throw new ArgumentException("PIN must be 4 digits.", nameof(pin));
@@ -25,6 +33,11 @@ namespace Passwd_VaultManager.Funcs {
             File.WriteAllText(AppPaths.PinFile, line, Encoding.UTF8);
         }
 
+        /// <summary>
+        /// Verifies the provided PIN against the stored PIN hash.
+        /// </summary>
+        /// <param name="pin">The PIN code to verify.</param>
+        /// <returns>True if the PIN is correct or no PIN is set; otherwise, false.</returns>
         public static bool VerifyPin(string pin) {
             if (!HasPin()) return true; // if no PIN set, allow
             var line = File.ReadAllText(AppPaths.PinFile, Encoding.UTF8);
@@ -38,6 +51,12 @@ namespace Passwd_VaultManager.Funcs {
             return CryptographicOperations.FixedTimeEquals(expected, actual);
         }
 
+        /// <summary>
+        /// Computes a SHA-256 hash of the specified PIN combined with the provided salt.
+        /// </summary>
+        /// <param name="pin">The PIN value to hash.</param>
+        /// <param name="salt">The salt to combine with the PIN before hashing.</param>
+        /// <returns>A byte array containing the SHA-256 hash of the salted PIN.</returns>
         private static byte[] HashPin(string pin, byte[] salt) {
             using var sha = SHA256.Create();
             byte[] pinBytes = Encoding.UTF8.GetBytes(pin);
@@ -47,6 +66,9 @@ namespace Passwd_VaultManager.Funcs {
             return sha.ComputeHash(input);
         }
 
+        /// <summary>
+        /// Deletes the stored PIN file from the application's data folder if it exists.
+        /// </summary>
         public static void RemovePin() {
             AppPaths.EnsureAppDataFolder();
             if (File.Exists(AppPaths.PinFile))

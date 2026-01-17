@@ -13,12 +13,13 @@ namespace Passwd_VaultManager.Funcs {
 
         private static readonly char[] All = Upper.Concat(Lower).Concat(Digits).Concat(Symbols).ToArray();
 
-        //public static int TotalNumSymbols => All.Length;     
-
         /// <summary>
-        /// Generate a cryptographically-strong password that meets (at least) the requested entropy in bits.
+        /// Generates a random password containing at least one uppercase letter, one lowercase letter, one digit, and
+        /// one symbol, with entropy based on the specified bit rate.
         /// </summary>
-        /// <param name="bitRate">Target entropy in bits (e.g. 128, 192, 256). If null, defaults to 128.</param>
+        /// <param name="bitRate">The desired entropy in bits for the generated password. Defaults to 128 if not specified.</param>
+        /// <returns>A randomly generated password string meeting the specified entropy and character requirements.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the specified bitRate is less than or equal to zero.</exception>
         public string GenPassword(int? bitRate = null) {
             int targetBits = bitRate ?? 128;
             if (targetBits <= 0) throw new ArgumentOutOfRangeException(nameof(bitRate));
@@ -42,21 +43,28 @@ namespace Passwd_VaultManager.Funcs {
                 pwd[i++] = Pick(Symbols);
             }
 
-            // Fill the rest uniformly from the full set
             for (; i < finalLen; i++)
                 pwd[i] = Pick(All);
 
-            // Remove placement bias
             Shuffle(pwd);
 
             return new string(pwd);
         }
 
+        /// <summary>
+        /// Selects a random character from the specified set.
+        /// </summary>
+        /// <param name="set">The collection of characters to choose from.</param>
+        /// <returns>A randomly selected character from the set.</returns>
         private static char Pick(IReadOnlyList<char> set) {
             int idx = RandomNumberGenerator.GetInt32(set.Count);
             return set[idx];
         }
 
+        /// <summary>
+        /// Randomly shuffles the elements of the specified character array in place.
+        /// </summary>
+        /// <param name="a">The array of characters to shuffle.</param>
         private static void Shuffle(char[] a) {
             for (int n = a.Length - 1; n > 0; n--) {
                 int j = RandomNumberGenerator.GetInt32(n + 1);

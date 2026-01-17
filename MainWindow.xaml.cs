@@ -7,7 +7,6 @@ using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,7 +14,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Passwd_VaultManager {
+
+
+    /// <summary>
+    /// Main application window.
+    /// 
+    /// Hosts the vault list UI, search/filter/sort interactions, tray behavior,
+    /// and delegates data operations to <see cref="MainWindowVM"/>.
+    /// </summary>
     public partial class MainWindow : Window {
+
         private readonly MainWindowVM _vm = new();
 
         private const string PlaceholderText = "Search by App Name";
@@ -34,7 +42,7 @@ namespace Passwd_VaultManager {
         // View-only state: current list shown in ListBox
         private ObservableCollection<AppVault> _currentView = new();
 
-        // Snapshots for RemoveSort/RemoveFilter (should live in view, not VM)
+        // Snapshots for RemoveSort/RemoveFilter
         private List<AppVault>? _preSortSnapshot;
         private List<AppVault>? _preFilterSnapshot;
 
@@ -43,6 +51,12 @@ namespace Passwd_VaultManager {
         private readonly HashSet<string> _filters = new();
         private SortDescription? _sort;
 
+
+
+        /// <summary>
+        /// Initializes the main window, sets up the DataContext, placeholder UI,
+        /// and shows first-time help when applicable.
+        /// </summary>
         public MainWindow() {
             InitializeComponent();
 
@@ -65,6 +79,13 @@ namespace Passwd_VaultManager {
             }
         }
 
+
+
+        /// <summary>
+        /// Handles the window Loaded event.
+        /// Performs PIN verification (if enabled), loads vaults from the database,
+        /// initializes the collection view filter, and applies UI settings.
+        /// </summary>
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
             if (PinStorage.HasPin()) {
                 var dlg = new pin();
@@ -85,6 +106,11 @@ namespace Passwd_VaultManager {
             SharedFuncs.Apply(this, App.Settings);
         }
 
+
+
+        /// <summary>
+        /// Applies current font settings to the window (called after closing the settings window).
+        /// </summary>
         public void ApplyFontsFromSettingsWin() {
             SharedFuncs.Apply(this, App.Settings);
         }
@@ -96,6 +122,11 @@ namespace Passwd_VaultManager {
 
         private void ExitApp_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
 
+
+
+        /// <summary>
+        /// Hides the window to the system tray and optionally shows a one-time tray tip.
+        /// </summary>
         private void CloseWindowHandler() {
             Application.Current.MainWindow?.Hide();
 
@@ -111,6 +142,11 @@ namespace Passwd_VaultManager {
             }
         }
 
+
+
+        /// <summary>
+        /// Wires up template buttons (close/minimize) after the control template is applied.
+        /// </summary>
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
 
@@ -121,17 +157,29 @@ namespace Passwd_VaultManager {
                 minimizeBtn.Click += (_, __) => WindowState = WindowState.Minimized;
         }
 
-        // --------------------------
-        // New / Edit / Delete
-        // --------------------------
+        /// <summary>
+        /// Handles the New button click and opens the New Vault window.
+        /// </summary>
         private void NewVaultRecord_Click(object sender, RoutedEventArgs e) => OpenNewVaultWindow();
 
+
+
+        /// <summary>
+        /// Opens the window used to create a new vault record and provides a refresh callback.
+        /// </summary>
         public void OpenNewVaultWindow() {
             if (_refreshAction is null) _refreshAction = _vm.RefreshVaultsAsync;
             var win = new NewWindow(_refreshAction);
             win.Show();
         }
 
+
+
+        /// <summary>
+        /// Handles the Edit button click and opens the edit window for the selected vault.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditVaultRecord_Click(object sender, RoutedEventArgs e) {
             var vault = _vm.SelectedAppVault;
             if (vault is null) {
@@ -142,6 +190,13 @@ namespace Passwd_VaultManager {
             _vm.EditVaultEntryCommand.Execute(vault);
         }
 
+
+
+        /// <summary>
+        /// Handles the Delete button click and deletes the selected vault after confirmation.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteVaultRecord_Click(object sender, RoutedEventArgs e) {
             var vault = _vm.SelectedAppVault;
             if (vault is null) {
@@ -152,6 +207,13 @@ namespace Passwd_VaultManager {
             _vm.DeleteVaultEntryCommand.Execute(vault);
         }
 
+
+
+        /// <summary>
+        /// Handles the Settings button click and opens the settings window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenSettings_Click(object sender, RoutedEventArgs e) {
             var win = new SettingsWindow(_vm.RefreshVaultsAsync);
             win.Show();
@@ -167,6 +229,13 @@ namespace Passwd_VaultManager {
             }
         }
 
+
+
+        /// <summary>
+        /// Ensures a ListBoxItem becomes selected and focused on left click.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (sender is ListBoxItem item && !item.IsSelected) {
                 item.IsSelected = true;
@@ -174,9 +243,13 @@ namespace Passwd_VaultManager {
             }
         }
 
-        // --------------------------
-        // Search box
-        // --------------------------
+
+
+        /// <summary>
+        /// Clears the search placeholder text when the search box receives focus.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSearch_GotFocus(object sender, RoutedEventArgs e) {
             if (txtSearch.Text == PlaceholderText) {
                 txtSearch.Text = string.Empty;
@@ -184,6 +257,13 @@ namespace Passwd_VaultManager {
             }
         }
 
+
+
+        /// <summary>
+        /// Restores the search placeholder text when the search box loses focus and is empty.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSearch_LostFocus(object sender, RoutedEventArgs e) {
             if (string.IsNullOrWhiteSpace(txtSearch.Text)) {
                 txtSearch.Text = PlaceholderText;
@@ -191,11 +271,26 @@ namespace Passwd_VaultManager {
             }
         }
 
+
+
+        /// <summary>
+        /// Handles Escape in the search box to quickly clear the current search text.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSearch_PreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Escape)
                 txtSearch.Text = string.Empty;
         }
 
+
+
+        /// <summary>
+        /// Updates the active search term and refreshes the vault view when the search text changes.
+        /// Also updates the search box border color to indicate match/no-match state.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e) {
             if (!IsLoaded) return;
 
@@ -257,6 +352,12 @@ namespace Passwd_VaultManager {
             Status
         }
 
+
+
+        /// <summary>
+        /// Applies a sort option to the vault list view.
+        /// </summary>
+        /// <param name="kind">The sort mode identifier (e.g. Alphabetical, DateCreated, Bitrate, Status, RemoveSort).</param>
         private void ApplySort(string kind) {
             if (_vaultsView is null) return;
 
@@ -281,6 +382,12 @@ namespace Passwd_VaultManager {
         }
 
 
+
+
+        /// <summary>
+        /// Applies a single filter to the vault view (replacing any existing filters).
+        /// </summary>
+        /// <param name="filterKey">The filter identifier, or "RemoveFilter" to clear filters.</param>
         private void SetSingleFilter(string filterKey) {
             _filters.Clear();
             if (filterKey != "RemoveFilter")
@@ -289,9 +396,13 @@ namespace Passwd_VaultManager {
             _vaultsView.Refresh();
         }
 
-        // --------------------------
-        // Reset (refresh from DB + keep search text refresh behavior)
-        // --------------------------
+
+
+
+        /// <summary>
+        /// Resets search, filters, and sorting to their default states and reloads vaults from the database.
+        /// </summary>
+        /// <returns>A task that completes when refresh and UI reset are finished.</returns>
         private async Task ResetListsAsync() {
             txtSearch.BorderBrush = DefaultBorderBrush;
 
@@ -323,6 +434,12 @@ namespace Passwd_VaultManager {
             _vaultsView.Refresh();
         }
 
+
+
+        /// <summary>
+        /// Opens the context menu for a button, positioning it directly below the button.
+        /// </summary>
+        /// <param name="btn">The button whose context menu should be opened.</param>
         private static void OpenContextMenu(Button? btn) {
             if (btn?.ContextMenu is null) return;
 
@@ -343,11 +460,23 @@ namespace Passwd_VaultManager {
             // Intentionally empty - closing the menu is enough.
         }
 
+
+        /// <summary>
+        /// Opens the settings window.
+        /// </summary>
         public void OpenSettingsWindow() {
             var win = new SettingsWindow(_vm.RefreshVaultsAsync);
             win.Show();
         }
 
+
+
+        /// <summary>
+        /// Filter predicate used by the vault collection view.
+        /// Applies search text and any active filter flags.
+        /// </summary>
+        /// <param name="obj">The item to test.</param>
+        /// <returns><c>true</c> if the item matches the current search/filter criteria.</returns>
         private bool VaultFilter(object obj) {
             if (obj is not AppVault v) return false;
 
@@ -374,6 +503,13 @@ namespace Passwd_VaultManager {
             return true;
         }
 
+
+
+        /// <summary>
+        /// Restarts the application and shuts down the current process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RestartApp_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.Application.Restart();
             System.Windows.Application.Current.Shutdown();
