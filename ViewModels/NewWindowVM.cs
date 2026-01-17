@@ -1,88 +1,100 @@
 ﻿using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
-using System.Collections;
-using System.ComponentModel;
 
 namespace Passwd_VaultManager.ViewModels {
     internal sealed class NewWindowVM : ViewModelBase {
-
         private const int MinLength = 8;
         private const int MaxLength = 41;
 
-        private const double BitsPerChar = 6.27; // log2(78) ≈ 6.27 (recompute if alphabet changes)
+        // Must match your generator alphabet (78 chars => ~6.285 bits/char)
+        private const double BitsPerChar = 6.285;
+        private const int BitsCap = 256;
 
-        private int _bitRate = 128;  // secure default
-        private int _length = 21;   // reasonable default
+        private int _length = 21;              // actual displayed/saved length
+        private int _bitRate = 128;            // derived from length by default
 
-        private string _sliderValue = String.Empty;
+        private int _targetLength = 21;        // slider value: requested output length
+        private int _sliderMaxLength = 41;     // slider maximum: available length after exclusions
 
-        public string SliderValue { get => _sliderValue;
+        // --- Slider state (NEW) ---
+
+        /// <summary>Slider Value: requested output length.</summary>
+        public int TargetLength {
+            get => _targetLength;
             set {
-                if (value == _sliderValue) return;
-                _sliderValue = value;
+                int clamped = Math.Clamp(value, MinLength, SliderMaxLength);
+                if (_targetLength == clamped) return;
+                _targetLength = clamped;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(SliderValueText));
             }
         }
 
-        public int BitRate {
-            get => _bitRate;
+        /// <summary>Slider Maximum: available length after exclusions (clamped to [MinLength..MaxLength]).</summary>
+        public int SliderMaxLength {
+            get => _sliderMaxLength;
             set {
-                if (_bitRate == value) return;
+                int clamped = Math.Clamp(value, MinLength, MaxLength);
+                if (_sliderMaxLength == clamped) return;
 
-                if (Funcs.SharedFuncs.ValidateNumeral(value)) {
-                    _bitRate = value;
-                    OnPropertyChanged();
-                } else {
-                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
-                }
-                //if (value != 128 && value != 192 && value != 256) {
-                //    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
-                //    return;
-                //}
-                //ClearErrors(nameof(BitRate));
-                //if (_bitRate != value) {
-                //    _bitRate = value;
-                //    OnPropertyChanged();
-                //    OnPropertyChanged(nameof(RequiredLength));
-                //    OnPropertyChanged(nameof(PasswdStatus));
-                //}
+                _sliderMaxLength = clamped;
+                OnPropertyChanged();
+
+                // if max shrinks, ensure target stays valid
+                if (_targetLength > _sliderMaxLength)
+                    TargetLength = _sliderMaxLength;
+
+                OnPropertyChanged(nameof(SliderValueText));
             }
         }
 
+        /// <summary>If you want to bind a label to show the slider value as text.</summary>
+        public string SliderValueText => TargetLength.ToString();
+
+        // --- Outputs ---
+
+        /// <summary>Actual current password length (displayed/saved).</summary>
         public int Length {
             get => _length;
             set {
-                //if (value < MinLength || value > MaxLength) {
-                //    new MessageWindow($"Length must be between {MinLength} and {MaxLength}.").Show();
-                //    return;
-                //}
-                if (_length != value) {
-                    _length = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(PasswdStatus));
-                }
+                int clamped = Math.Clamp(value, MinLength, MaxLength);
+                if (_length == clamped) return;
+
+                _length = clamped;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PasswdStatus));
+
+                // keep bitrate consistent with length
+                //BitRate = CalculateBits(_length);
+                BitRate = Math.Min((int)Math.Ceiling(_length * BitsPerChar), BitsCap);
             }
         }
 
-        /// <summary>
-        /// Length needed to meet the selected BitRate with the current alphabet.
-        /// </summary>
-        public int RequiredLength => (int)Math.Ceiling(BitRate / BitsPerChar);
+        /// <summary>Entropy estimate derived from Length.</summary>
+        public int BitRate {
+            get => _bitRate;
+            private set {
+                int clamped = Math.Clamp(value, 0, BitsCap);
+                if (_bitRate == clamped) return;
 
-        /// <summary>
-        /// UI-friendly status; never includes the password itself.
-        /// </summary>
-        public string PasswdStatus => $"{Length} chars : {BitRate}-bit.";
+                _bitRate = clamped;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PasswdStatus));
+            }
+        }
 
-        // ----- INotifyDataErrorInfo (simple impl) -----
-        //private readonly Dictionary<string, List<string>> _errors = new();
+        public string PasswdStatus {
+            get {
+                int bRate = Math.Min((int)Math.Ceiling(Length * BitsPerChar), BitsCap);
+                return $"{Length} chars : {bRate}-bit.";
+            }
+        }
 
-        //public bool HasErrors => _errors.Count > 0;
+        //private static int CalculateBits(int length) {
+        //    int bits = (int)Math.Ceiling(length * BitsPerChar);
+        //    return Math.Min(bits, BitsCap);
 
-        //public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-
-        //public IEnumerable GetErrors(string? propertyName)
-        //    => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
+        //}
     }
 }

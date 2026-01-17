@@ -1,13 +1,7 @@
 ﻿using Microsoft.Win32;
 using Passwd_VaultManager.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Passwd_VaultManager.ViewModels
@@ -37,7 +31,7 @@ namespace Passwd_VaultManager.ViewModels
                 if (_isStartupEnabled != value) {
                     _isStartupEnabled = value;
                     OnPropertyChanged();
-                    RegisterInStartup(value); // call your registry method
+                    RegisterInStartup(value);
                 }
             }
         }
@@ -74,37 +68,8 @@ namespace Passwd_VaultManager.ViewModels
 
         public SettingsWindowVM() {
             AppPaths.EnsureAppDataFolder();
-
-            // Font family: prefer "FontFamily", fall back to legacy "Font"
-            //if (AppPaths.TryGetSetting("FontFamily", out string fontFamily) ||
-            //    AppPaths.TryGetSetting("Font", out fontFamily))           // legacy key
-            //{
-            //    SelectedFont = fontFamily;
-            //} else {
-            //    // use what's currently applied app-wide if available, else default
-            //    SelectedFont = AppSettings.FontFamily ?? "Segoe UI";
-            //}
-
-            //// Font size (parse invariant so "16.5" works regardless of locale)
-            //if (AppPaths.TryGetSetting("FontSize", out string fontSize) &&
-            //    double.TryParse(fontSize, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedSize)) {
-            //    SelectedFontSize = parsedSize;
-            //} else {
-            //    SelectedFontSize = AppSettings.FontSize; // your global default
-            //}
-
-            //// Sound
-            //if (AppPaths.TryGetSetting("SoundEnabled", out string sound))
-            //    SoundEnabled = sound.Equals("true", StringComparison.OrdinalIgnoreCase);
-            //else
-            //    SoundEnabled = AppSettings.SoundEnabled;
         }
 
-        public void SaveSettings() {
-            //AppPaths.SaveSetting("FontFamily", SelectedFont);
-            //AppPaths.SaveSetting("FontSize", SelectedFontSize.ToString(CultureInfo.InvariantCulture));
-            //AppPaths.SaveSetting("SoundEnabled", SoundEnabled ? "true" : "false");
-        }
 
         public static void RegisterInStartup(bool enable) {
             string appName = "PasswordVaultManager";

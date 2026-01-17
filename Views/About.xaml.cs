@@ -21,7 +21,7 @@ namespace Passwd_VaultManager.Views {
 
             // Load license data from file.
             string licenseFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Licenses");
-            string[] fileList = Directory.GetFiles(licenseFolder);
+            string[] fileList = Directory.GetFiles(licenseFolder);  
 
             var sb = new StringBuilder();
 
@@ -94,7 +94,7 @@ namespace Passwd_VaultManager.Views {
 
             msg.Text = sb.ToString();
 
-
+            SharedFuncs.Apply(this, App.Settings);
         }
 
         private void BetweenFiles(StringBuilder sb) {

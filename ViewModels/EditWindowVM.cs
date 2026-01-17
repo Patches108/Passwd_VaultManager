@@ -3,124 +3,67 @@ using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Views;
 using System.Collections;
 using System.ComponentModel;
-using System.Windows.Input;
 
-namespace Passwd_VaultManager.ViewModels
-{
+namespace Passwd_VaultManager.ViewModels {
     internal sealed class EditWindowVM : ViewModelBase {
-
         private const int MinLength = 8;
         private const int MaxLength = 41;
 
-        private const double BitsPerChar = 6.27; // log2(78) ≈ 6.27 (recompute if alphabet changes)
+        // Must match your generator alphabet (78 => ~6.285)
+        private const double BitsPerChar = 6.285;
+        private const int BitsCap = 256;
 
-        private string _appName = String.Empty;
-        private string _userName = String.Empty;
-        private string _appPasswd = String.Empty;
-        private string _excludes = String.Empty;
+        private string _appName = string.Empty;
+        private string _userName = string.Empty;
+        private string _password = string.Empty;        // what you save (displayed/revealed when saving)
+        private string _excludedChars = string.Empty;
 
-        private bool _isUserNameSet = false;
-        private bool _isPasswdSet = false;
-        private bool _isAppNameSet = false;
+        private int _length = 41;                       // actual displayed/saved length
+        private int _targetLength = 41;                 // slider value (requested length cap)
+        private int _sliderMaxLength = 41;              // available length after exclusions
 
-        private int _bitRate = 256;  // secure default
-        private int _length = 41;   // reasonable default
-
-        private string _sliderValue = String.Empty;
+        private int _bitRate = 256;
 
         private readonly AppVault _backingVault;
 
-        public EditWindowVM() {
-            
-        }
+        public EditWindowVM() { }
 
         public EditWindowVM(AppVault appVault) {
-            _backingVault = appVault; // keep original (has Id)
+            _backingVault = appVault;
+
             _appName = appVault?.AppName ?? string.Empty;
             _userName = appVault?.UserName ?? string.Empty;
-            _appPasswd = appVault?.Password ?? string.Empty;
-            _excludes = appVault?.ExcludedChars ?? string.Empty;
+            _password = appVault?.Password ?? string.Empty;
+            _excludedChars = appVault?.ExcludedChars ?? string.Empty;
+
             _bitRate = appVault?.BitRate ?? 256;
-            _isUserNameSet = appVault?.IsUserNameSet ?? false;
-            _isAppNameSet = appVault?.IsAppNameSet ?? false;
-            _isPasswdSet = appVault?.IsPasswdSet ?? false;
+
+            // Seed lengths
+            _length = Math.Clamp(_password?.Length ?? 0, MinLength, MaxLength);
+            _targetLength = _length;
+            _sliderMaxLength = _length;
         }
 
-
-        // GETTERS AND SETTERS
-        public int BitRate {
-            get => _bitRate;
-            set {
-                if (_bitRate == value) return;
-
-                if (Funcs.SharedFuncs.ValidateNumeral(value))
-                {
-                    _bitRate = value;
-                    OnPropertyChanged();
-                } else {
-                    new MessageWindow("ERROR: Bit Rate must be between 8 and 256", SoundController.ErrorSound);
-                }
-
-                //if (value != 128 && value != 192 && value != 256) {
-                //    AddError(nameof(BitRate), "Bit rate must be 128, 192, or 256.");
-                //    return;
-                //}
-                //ClearErrors(nameof(BitRate));
-                //if (_bitRate != value) {
-                //    _bitRate = value;
-                //    OnPropertyChanged();
-                //    OnPropertyChanged(nameof(RequiredLength));
-                //    OnPropertyChanged(nameof(PasswdStatus));
-                //}
-            }
-        }
-
-        public int Length {
-            get => _length;
-            set {
-                if (value < MinLength || value > MaxLength) {
-                    AddError(nameof(Length), $"Length must be between {MinLength} and {MaxLength}.");
-                    return;
-                }
-                ClearErrors(nameof(Length));
-                if (_length != value) {
-                    _length = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(PasswdStatus));
-                }
-            }
-        }
-
-        public string SliderValue {
-            get => _sliderValue;
-            set {
-                if (value == _sliderValue) return;
-                _sliderValue = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string AppName { 
-            get => _appName; 
+        // --- Core fields ---
+        public string AppName {
+            get => _appName;
             set {
                 if (_appName == value) return;
                 try {
-                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-                    _appName = validated;
+                    _appName = SharedFuncs.ValidateString(value, nameof(value));
                     OnPropertyChanged();
                 } catch (Exception ex) {
                     new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
-            } 
-        }        
+            }
+        }
 
         public string Username {
-            get => _userName; 
+            get => _userName;
             set {
                 if (_userName == value) return;
                 try {
-                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-                    _userName = validated;
+                    _userName = SharedFuncs.ValidateString(value, nameof(value));
                     OnPropertyChanged();
                 } catch (Exception ex) {
                     new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
@@ -129,83 +72,104 @@ namespace Passwd_VaultManager.ViewModels
         }
 
         public string Password {
-            get => _appPasswd; 
+            get => _password;
             set {
-                if (_appPasswd == value) return;
+                if (_password == value) return;
                 try {
-                    string validated = Funcs.SharedFuncs.ValidateString(value, nameof(value));
-                    _appPasswd = validated;
+                    _password = SharedFuncs.ValidateString(value, nameof(value));
                     OnPropertyChanged();
                 } catch (Exception ex) {
                     new MessageWindow($"ERROR:\n\n{ex.Message}", SoundController.ErrorSound).ShowDialog();
                 }
             }
         }
+
         public string ExcludedChars {
-            get => _excludes;
+            get => _excludedChars;
             set {
-                if (_excludes == value) return;
-                _excludes = value;
+                value ??= string.Empty;
+                if (_excludedChars == value) return;
+                _excludedChars = value;
                 OnPropertyChanged();
             }
         }
 
-        //public bool UserNameSet {
-        //    get => _isUserNameSet; 
-        //    set {
-        //        if (_isUserNameSet == value) return;
-        //        _isUserNameSet = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
+        // --- Slider plumbing (NEW) ---
 
-        //public bool PasswdSet {
-        //    get => _isPasswdSet; 
-        //    set { 
-        //        if(_isPasswdSet == value) return;
-        //        _isPasswdSet = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
-
-
-        /// <summary>
-        /// Length needed to meet the selected BitRate with the current alphabet.
-        /// </summary>
-        public int RequiredLength => (int)Math.Ceiling(BitRate / BitsPerChar);
-
-        /// <summary>
-        /// UI-friendly status; never includes the password itself.
-        /// </summary>
-        public string PasswdStatus => $"{Length} chars : {BitRate}-bit.";
-
-        // ----- INotifyDataErrorInfo (simple impl) -----
-        private readonly Dictionary<string, List<string>> _errors = new();
-
-        public bool HasErrors => _errors.Count > 0;
-
-        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-
-        public IEnumerable GetErrors(string? propertyName)
-            => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
-
-        private void AddError(string prop, string message) {
-            if (!_errors.TryGetValue(prop, out var list))
-                _errors[prop] = list = new List<string>();
-            if (!list.Contains(message)) {
-                list.Add(message);
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(prop));
+        /// <summary>Slider Value: the requested output length cap.</summary>
+        public int TargetLength {
+            get => _targetLength;
+            set {
+                int clamped = Math.Clamp(value, MinLength, SliderMaxLength);
+                if (_targetLength == clamped) return;
+                _targetLength = clamped;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SliderValueText));
             }
         }
 
-        private void ClearErrors(string prop) {
-            if (_errors.Remove(prop))
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(prop));
+        /// <summary>Slider Maximum: the available length after exclusions.</summary>
+        public int SliderMaxLength {
+            get => _sliderMaxLength;
+            set {
+                int clamped = Math.Clamp(value, MinLength, MaxLength);
+                if (_sliderMaxLength == clamped) return;
+                _sliderMaxLength = clamped;
+                OnPropertyChanged();
+
+                // If max shrinks, force target to stay valid
+                if (_targetLength > _sliderMaxLength)
+                    TargetLength = _sliderMaxLength;
+
+                OnPropertyChanged(nameof(SliderValueText));
+            }
         }
 
+        /// <summary>If you still want a string for labels.</summary>
+        public string SliderValueText => TargetLength.ToString();
+
+        // --- Derived outputs ---
+
+        /// <summary>Actual displayed/saved length.</summary>
+        public int Length {
+            get => _length;
+            set {
+                int clamped = Math.Clamp(value, MinLength, MaxLength);
+                if (_length == clamped) return;
+                _length = clamped;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PasswdStatus));
+
+                // keep bitrate consistent with length if that's your rule
+                BitRate = Math.Min((int)Math.Ceiling(_length * BitsPerChar), BitsCap);
+            }
+        }
+
+        public int BitRate {
+            get => _bitRate;
+            set {
+                if (_bitRate == value) return;
+                _bitRate = Math.Clamp(value, 0, BitsCap);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PasswdStatus));
+            }
+        }
+
+        public string PasswdStatus {
+            get {
+                int bRate = Math.Min((int)Math.Ceiling(Length * BitsPerChar), BitsCap);
+                return $"{Length} chars : {bRate}-bit.";
+            }
+        }
+
+        // ----- INotifyDataErrorInfo (unchanged) -----
+        //private readonly Dictionary<string, List<string>> _errors = new();
+        //public bool HasErrors => _errors.Count > 0;
+        //public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        //public IEnumerable GetErrors(string? propertyName)
+        //    => propertyName != null && _errors.TryGetValue(propertyName, out var list) ? list : Array.Empty<string>();
 
         public async Task SaveAsync() {
-            // push edited values back into the source AppVault model (the one with Id)
             _backingVault.AppName = AppName;
             _backingVault.UserName = Username;
             _backingVault.Password = Password;
@@ -213,13 +177,11 @@ namespace Passwd_VaultManager.ViewModels
 
             _backingVault.IsUserNameSet = !string.IsNullOrWhiteSpace(Username);
             _backingVault.IsPasswdSet = !string.IsNullOrWhiteSpace(Password);
-            _backingVault.IsAppNameSet = !string.IsNullOrWhiteSpace(AppName);
+            _backingVault.IsAppNameSet = !string.IsNullOrWhiteSpace(AppName) && !AppName.Equals("No App/Account Name");
 
             _backingVault.IsStatusGood = _backingVault.IsUserNameSet && _backingVault.IsPasswdSet && _backingVault.IsAppNameSet;
-
             _backingVault.BitRate = BitRate;
 
-            // write changes to DB
             await DatabaseHandler.UpdateVaultAsync(_backingVault);
         }
     }

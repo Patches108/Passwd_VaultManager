@@ -1,16 +1,15 @@
-﻿using Microsoft.Win32; 
+﻿using Microsoft.Win32;
 using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
-using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace Passwd_VaultManager.Views {
     /// <summary>
@@ -20,7 +19,9 @@ namespace Passwd_VaultManager.Views {
 
         private bool _changesMadeSettingsForm = false;
         
-        private AppSettings _settings;
+        private readonly SettingsWindowVM _vm = new();
+
+        //private AppSettings _settings;
 
         private Func<Task> _refreshAction;
 
@@ -28,15 +29,15 @@ namespace Passwd_VaultManager.Views {
 
             InitializeComponent();
 
-            DataContext = new SettingsWindowVM();
+            DataContext = _vm;
 
-            _settings = SettingsService.Load();
+            //_settings = SettingsService.Load();
 
             this._refreshAction = _refreshAction;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e) {
-            SettingsService.Save(_settings);
+            SettingsService.Save(App.Settings);
 
             // Reload Settings
             string settingsPath = System.IO.Path.Combine(
@@ -181,31 +182,6 @@ namespace Passwd_VaultManager.Views {
         }
 
 
-
-
-        //private void DeleteBackups_Click(object sender, RoutedEventArgs e) {
-        //    if (!Directory.Exists(AppPaths.BackupFolder)) return;
-
-        //    var confirm = new YesNoWindow("Are you sure you want to delete all backup files?");
-        //    bool confirmed = confirm.ShowDialog() == true && confirm.YesNoWin_Result;
-
-        //    if (confirmed) {
-        //        try {
-
-        //            GC.Collect();
-        //            GC.WaitForPendingFinalizers();
-
-        //            foreach (var file in Directory.GetFiles(AppPaths.BackupFolder))
-        //                File.Delete(file);
-
-        //            new ToastNotification("All backups deleted.", true).Show();
-        //            LoadStats();
-        //        } catch (Exception ex) {
-        //            new MessageWindow("Failed to delete backups: " + ex.Message).ShowDialog();
-        //        }
-        //    }
-        //}
-
         private void OpenBackupsFolder_Click(object sender, RoutedEventArgs e) {
             if (Directory.Exists(AppPaths.BackupFolder)) {
                 Process.Start("explorer.exe", AppPaths.BackupFolder);
@@ -320,22 +296,38 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void frmSettingsLoaded(object sender, RoutedEventArgs e) {
-            chkIsSoundEnabled.IsChecked = _settings.SoundEnabled;
+            chkIsSoundEnabled.IsChecked = App.Settings.SoundEnabled;
             _changesMadeSettingsForm = false;
 
             tglEnablePin.IsChecked = PinStorage.HasPin();  // reflect current state
+
+            // set font family and size to whats in settings.
+            //comFontList.SelectedItem = App.Settings.FontFamily; // WHATS IN SETTINGS.
+            //comFontSizeList.SelectedItem = App.Settings.FontSize;// WHATS IN SETTINGS.
+
+            _vm.SelectedFont = App.Settings.FontFamily;
+            _vm.SelectedFontSize = App.Settings.FontSize;
+            _vm.SoundEnabled = App.Settings.SoundEnabled;
+
+            SharedFuncs.Apply(this, App.Settings);
+
+            _changesMadeSettingsForm = false;
         }
 
         private void chkIsSoundEnabled_Checked(object sender, RoutedEventArgs e) {
             _changesMadeSettingsForm = true;
+            App.Settings.SoundEnabled = true;
         }
 
         private void chkIsSoundEnabled_Unchecked(object sender, RoutedEventArgs e) {
             _changesMadeSettingsForm = true;
+            App.Settings.SoundEnabled = false;
         }
 
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
             _changesMadeSettingsForm = true;
+            App.Settings.FontFamily = comFontList.SelectedItem.ToString();
+            SharedFuncs.Apply(this, App.Settings);
         }
 
         private void DragWindow(object sender, MouseButtonEventArgs e) {
@@ -346,7 +338,7 @@ namespace Passwd_VaultManager.Views {
 
         private void RestoreDefaults_Click(object sender, RoutedEventArgs e) {
             comFontList.SelectedItem = "Segoe UI";
-            comFontSizeList.SelectedItem = "16.5";
+            comFontSizeList.SelectedItem = "15";
 
             if(File.Exists(AppPaths.SettingsFile)) {
                 File.Delete(AppPaths.SettingsFile);
@@ -399,14 +391,31 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void cmdResetHelperBot_Click(object sender, RoutedEventArgs e) {
-            string res = SettingsService.ResetHelperBot(_settings).Trim();
+            string res = SettingsService.ResetHelperBot(App.Settings).Trim();
 
             if (res == String.Empty) {
                 //new ToastNotification("Thanks for resetting me!", true).Show();
-                new Helper("Thanks for resetting me!").Show();
+                new Helper("Thanks for resetting me!", SoundController.SuccessSound).Show();
             } else {
                 new MessageWindow($"ERROR: Opps! There was an error updating the helper system:\n\n{res}", SoundController.ErrorSound).Show();
             }
+        }
+
+        private void Settings_Closing(object sender, CancelEventArgs e) {
+            if (Application.Current.MainWindow is MainWindow main) {
+                main.ApplyFontsFromSettingsWin();
+            } else {
+                new MessageWindow("Could not set fonts to mainwindow", SoundController.ErrorSound);
+            }
+        }
+
+        private void com_FontSizeChanged(object sender, SelectionChangedEventArgs e) {
+            if (!IsLoaded) return;
+
+            if (comFontSizeList.SelectedItem is not double size) return;
+
+            App.Settings.FontSize = size;
+            SharedFuncs.Apply(this, App.Settings);
         }
     }
 }

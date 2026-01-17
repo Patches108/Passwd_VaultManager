@@ -50,6 +50,7 @@
                         Margin="37,0,0,0"
                         GotFocus="txtAppName_GotFocus"
                         Style="{StaticResource WhiteTextField}"
+                        TabIndex="0"
                         Text="{Binding AppName}"
                         TextChanged="txtAppName_TextChanged" />
 
@@ -61,7 +62,8 @@
                         Click="AppNameHelpMe_Click"
                         Content="?"
                         FontSize="13.5"
-                        Style="{StaticResource InfoButtons}" />
+                        Style="{StaticResource InfoButtons}"
+                        TabIndex="1" />
                 </Grid>
             </StackPanel>
 
@@ -90,6 +92,7 @@
                         Margin="37,0,0,0"
                         GotFocus="txtUserName_GotFocus"
                         Style="{StaticResource WhiteTextField}"
+                        TabIndex="2"
                         Text="{Binding Username}"
                         TextChanged="txtUserName_TextChanged" />
 
@@ -101,7 +104,8 @@
                         Click="UsernameHelpMe_Click"
                         Content="?"
                         FontSize="13.5"
-                        Style="{StaticResource InfoButtons}" />
+                        Style="{StaticResource InfoButtons}"
+                        TabIndex="3" />
                 </Grid>
             </StackPanel>
 
@@ -124,6 +128,7 @@
                         Checked="chk_EditPassword_Checked"
                         Content="Edit Password"
                         Style="{StaticResource CheckControl}"
+                        TabIndex="4"
                         Unchecked="EditPassword_Unchecked" />
 
                     <Button
@@ -135,7 +140,8 @@
                         Click="EditHelpMe_Click"
                         Content="?"
                         FontSize="13.5"
-                        Style="{StaticResource InfoButtons}" />
+                        Style="{StaticResource InfoButtons}"
+                        TabIndex="5" />
 
                 </Grid>
 
@@ -182,11 +188,12 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Width="300"
-                        Height="34"
+                        Height="38"
                         Margin="40,0,0,0"
                         HorizontalScrollBarVisibility="Auto"
                         IsReadOnly="True"
                         Style="{StaticResource WhiteTextField}"
+                        TabIndex="6"
                         Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                         TextChanged="txtPasswd_TextChanged"
                         VerticalScrollBarVisibility="Disabled" />
@@ -198,7 +205,8 @@
                         Height="25"
                         Click="cmdCopyToClopboard"
                         FontSize="10"
-                        Style="{StaticResource ControlButton}">
+                        Style="{StaticResource ControlButton}"
+                        TabIndex="7">
                         <Image
                             Width="20"
                             Height="20"
@@ -224,14 +232,16 @@
                             Click="rad_128_Click"
                             Content="128"
                             GroupName="BitRate"
-                            IsEnabled="False" />
+                            IsEnabled="False"
+                            TabIndex="8" />
                         <RadioButton
                             x:Name="rdo_192"
                             Margin="0,2,10,0"
                             Click="rad_192_Click"
                             Content="192"
                             GroupName="BitRate"
-                            IsEnabled="False" />
+                            IsEnabled="False"
+                            TabIndex="9" />
                         <RadioButton
                             x:Name="rdo_256"
                             Margin="0,2,10,0"
@@ -239,7 +249,8 @@
                             Content="256"
                             GroupName="BitRate"
                             IsChecked="True"
-                            IsEnabled="False" />
+                            IsEnabled="False"
+                            TabIndex="10" />
                     </StackPanel>
 
                     <!--  Reveal button  -->
@@ -253,7 +264,8 @@
                         VerticalAlignment="Top"
                         Click="ToggleReveal_Click"
                         FontSize="10"
-                        Style="{StaticResource ControlButton}">
+                        Style="{StaticResource ControlButton}"
+                        TabIndex="11">
                         <Image
                             x:Name="Img_TogglePasswdMask"
                             Width="23"
@@ -278,9 +290,10 @@
                             Margin="5,0,0,0"
                             GotFocus="txtCharactersToExclude_GotFocus"
                             IsEnabled="False"
-                            MaxLength="8"
                             LostFocus="txtCharactersToExclude_LostFocus"
+                            MaxLength="8"
                             Style="{StaticResource WhiteTextField}"
+                            TabIndex="12"
                             Text="{Binding ExcludedChars}"
                             TextChanged="txtCharactersToExclude_TextChanged" />
 
@@ -300,6 +313,7 @@
                                 Minimum="8"
                                 SmallChange="1"
                                 Style="{StaticResource Horizontal_Slider}"
+                                TabIndex="13"
                                 ValueChanged="sldPasswdLength_ValueChanged" />
                             <TextBlock
                                 x:Name="lblPasswdSliderValue"
@@ -321,22 +335,28 @@
                         x:Name="cmdGenPasswd"
                         Grid.Column="0"
                         Width="150"
+                        Height="25"
                         Margin="20,0,19,0"
+                        VerticalAlignment="Top"
                         Click="cmdGenPasswd_Click"
                         Content="Generate Password"
                         FontSize="13"
                         IsEnabled="False"
-                        Style="{StaticResource ControlButton}" Height="25" VerticalAlignment="Top" />
+                        Style="{StaticResource ControlButton}"
+                        TabIndex="14" />
                     <Button
                         x:Name="cmdManuallyEnterPasswd"
                         Grid.Column="1"
                         Width="150"
                         Height="25"
+                        Margin="19,0,20,0"
+                        VerticalAlignment="Top"
                         Click="cmdManuallyEnterPasswd_Click"
                         Content="Manual Password"
                         FontSize="13"
                         IsEnabled="False"
-                        Style="{StaticResource ControlButton}" />
+                        Style="{StaticResource ControlButton}"
+                        TabIndex="15" />
 
                 </Grid>
 

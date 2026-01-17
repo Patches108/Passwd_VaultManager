@@ -4,6 +4,7 @@ using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Windows;
 using System.Windows.Controls;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -30,6 +31,7 @@ namespace Passwd_VaultManager.Views
         private bool _showPlain = false;   // false = masked, true = reveal
         private bool _ignoreSliderChange;
 
+        //private string _ExChars1 = "";
         private string _passwdWhole = String.Empty;     // password
         private string _excludedChars = String.Empty;   // current exclusions from textbox
         private string _exclOriginalChars = String.Empty;   // original exclusions for comparison
@@ -56,7 +58,7 @@ namespace Passwd_VaultManager.Views
                     _len = _passwdWhole.Length;
                     _targetLength = _len;
                     _vm.Length = _len;
-                    _vm.SliderValue = _len.ToString();
+                    _vm.TargetLength = _len;
 
                     // Optional: if BitRate is already set from generation logic, skip overwrite
                     if (_vm.BitRate <= 0)
@@ -64,18 +66,16 @@ namespace Passwd_VaultManager.Views
 
                     // 4. Configure slider range
                     sldPasswdLength.Minimum = 8;
-
-                    sldPasswdLength.Maximum = _vm.ExcludedChars != "Chars to Exclude" 
-                        ? _passwdWhole.Length + _vm.ExcludedChars.Length
-                        : _passwdWhole.Length;
-
-
                     sldPasswdLength.Value = _passwdWhole.Length;
+                    sldPasswdLength.Maximum = _passwdWhole.Length;
 
-                        // Optional: disable slider if password has fixed length (e.g. 128-bit)
-                        sldPasswdLength.IsEnabled = _bitRate != 128;
+                    // Optional: disable slider if password has fixed length (e.g. 128-bit)
+                    sldPasswdLength.IsEnabled = _bitRate != 128;
 
                     _exclOriginalChars = _vm.ExcludedChars;
+
+                    //if(_vm.ExcludedChars.Length > 0)
+                    //    _excludeCharCount = _vm.ExcludedChars.Length;
 
                     // Add password controls to list for later iteration as per checkbox
                     _PasswdControls.Add(txtPasswd);
@@ -96,12 +96,14 @@ namespace Passwd_VaultManager.Views
 
                     txtPasswd.IsEnabled = true;
                     _showPlain = !_showPlain;       // flip reveal state
-                    //UpdateDisplayedPassword(force: true);
                     RefreshPasswordUI();
                     txtPasswd.IsEnabled = false;
 
                     if (txtAppName.Text.Equals("No App/Account Name"))
                         txtAppName.Text = String.Empty;
+
+                    foreach (var c in _PasswdControls)
+                        c.IsEnabled = false;
 
                     ChangesMade = false;
 
@@ -122,8 +124,10 @@ namespace Passwd_VaultManager.Views
             lblPasswdStatus.IsEnabled = false;
 
             if (App.Settings.FirstTimeOpeningEditWin) {
-                var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.");
+                var helpWin = new Helper("Here, you can adjust the Vault name, User Name/Email, and Password.\n\nClick \'Edit\' checkbox to edit the password value.", SoundController.InfoSound);
                 helpWin.Show();
+                App.Settings.FirstTimeOpeningEditWin = false;
+                SettingsService.Save(App.Settings);
             }
         }
 
@@ -131,7 +135,6 @@ namespace Passwd_VaultManager.Views
             _ignoreSliderChange = true;
             _bitRate = 128;
             sldPasswdLength.IsEnabled = true;
-            //sldPasswdLength.Value = (double)21;
             _ignoreSliderChange = false;
         }
 
@@ -139,7 +142,6 @@ namespace Passwd_VaultManager.Views
             _ignoreSliderChange = true;
             _bitRate = 256;
             sldPasswdLength.IsEnabled = true;
-            //sldPasswdLength.Value = (double)41;
             _ignoreSliderChange = false;
         }
 
@@ -147,7 +149,6 @@ namespace Passwd_VaultManager.Views
             _ignoreSliderChange = true;
             _bitRate = 192;
             sldPasswdLength.IsEnabled = true;
-            //sldPasswdLength.Value = (double)31;
             _ignoreSliderChange = false;
         }
 
@@ -165,48 +166,43 @@ namespace Passwd_VaultManager.Views
 
         private void RefreshPasswordUI() {
             if (_updating) return;
+            if (_vm is null) return;
 
             _updating = true;
             try {
-                // clamp target to valid range but DON'T overwrite it from txtPasswd.Text length
-                int maxLen = _passwdWhole?.Length ?? 0;
-                if (_targetLength < 0) _targetLength = 0;
-                if (_targetLength > maxLen) _targetLength = maxLen;
+                int availableLen;
 
-                // rebuild display strictly from the full password
+                // Clamp target BEFORE writing to UI
                 txtPasswd.Text = SharedFuncs.BuildDisplay(
                     fullPassword: (_passwdWhole ?? string.Empty).AsSpan(),
                     excludedChars: (_excludedChars ?? string.Empty).AsSpan(),
                     targetLength: _targetLength,
-                    currentText: txtPasswd.Text.AsSpan(),
-                    force: false,
-                    placeholder: "Passwd".AsSpan(),
+                    availableLen: out availableLen,
                     mask: !_showPlain);
 
-                int shownLen = txtPasswd.Text.Trim().Length;
-
-                // Update VM from the derived display
-                _vm?.Length = shownLen;
-                _vm?.SliderValue = _targetLength.ToString();
-                _vm?.BitRate = shownLen;
-                // BitRate should NOT be set to length unless that's intentional
-                // (your current code does this, but it's likely wrong)
-                // _vm?.BitRate = ???; // leave to your radio buttons
-
-                // Keep slider range stable: based on the whole password, not current display
-                sldPasswdLength.Maximum = maxLen;
-
-                // Update slider without causing binding issues
+                // Update slider max & value to match new reality
                 _ignoreSliderChange = true;
+                sldPasswdLength.Maximum = Math.Max(sldPasswdLength.Minimum, availableLen);
+
+                if (_targetLength > sldPasswdLength.Maximum)
+                    _targetLength = (int)sldPasswdLength.Maximum;
+
                 sldPasswdLength.Value = _targetLength;
                 _ignoreSliderChange = false;
 
-                // enable/disable exclude based on slider value if you want
-                txtCharactersToExclude.IsEnabled = _targetLength > 8;
+                int shownLen = txtPasswd.Text.Length;
+
+                // VM outputs
+                _vm.Length = shownLen;
+                _vm.TargetLength = _targetLength;
+
+                int bits = (int)Math.Ceiling(shownLen * 6.285);
+                _vm.BitRate = Math.Min(bits, 256);
             } finally {
                 _updating = false;
             }
         }
+
 
 
         private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
@@ -216,25 +212,6 @@ namespace Passwd_VaultManager.Views
             _targetLength = (int)Math.Round(e.NewValue);
             RefreshPasswordUI();
         }
-
-
-        //private void sldPasswdLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-
-        //    if (sldPasswdLength.Value <= (int)8)
-        //        txtCharactersToExclude.IsEnabled = false;
-
-        //    if (_ignoreSliderChange) return;
-        //    if (_updating) return;
-
-        //    _targetLength = (int)Math.Round(e.NewValue);
-        //    _vm?.SliderValue = _targetLength.ToString();
-        //    _vm?.BitRate = _targetLength;            
-
-        //    UpdateDisplayedPassword();
-
-        //    _vm?.Length = txtPasswd.Text.Trim().Length; // update after display updated
-        //}
-
 
         private void txtCharactersToExclude_GotFocus(object sender, RoutedEventArgs e) {
             if (String.IsNullOrWhiteSpace(txtCharactersToExclude.Text) || txtCharactersToExclude.Text.Equals("Chars to Exclude"))
@@ -249,89 +226,54 @@ namespace Passwd_VaultManager.Views
         private void txtCharactersToExclude_TextChanged(object sender, TextChangedEventArgs e) {
             if (_updating) return;
 
-            _excludedChars = (txtCharactersToExclude.Text ?? string.Empty).Trim();
+            _excludedChars = NormalizeExcluded(txtCharactersToExclude.Text);
+            
+            // keep VM in sync for saving
+            if (_vm != null)
+                _vm.ExcludedChars = _excludedChars;
 
-            if (_excludedChars.Equals("Chars to Exclude", StringComparison.Ordinal))
-                _excludedChars = string.Empty;
+            if ((_exclOriginalChars.Length > _excludedChars.Length) && (!_exclOriginalChars.Equals("Chars to Exclude"))) {
+                var removed = _exclOriginalChars.Except(_excludedChars).ToArray();
 
-            if((_excludedChars.Length < _exclOriginalChars.Length) && _exclOriginalChars != "Chars to Exclude") { // true if chars erased from excluded textfield.
-                string removed = new string(_exclOriginalChars.Except(_excludedChars).ToArray());
-                
-                //Debug.WriteLine(removed);
-                //Debug.WriteLine(_passwdWhole);
-                _targetLength++;
+                if (removed.Length > 0) {
+                    string newStr = new string(removed);
+                    txtPasswd.Text += newStr;
+
+                    if(!_passwdWhole.Contains(newStr))
+                        _passwdWhole += newStr;
+
+                    int n = CountOccurrences(_passwdWhole, newStr);
+                    if (n == 0)
+                        _targetLength++;
+                    else
+                        _targetLength += n;
+                }
+
                 _exclOriginalChars = _excludedChars;
-                _passwdWhole += removed;
-                //Debug.WriteLine(_passwdWhole);
+            } else {
+                if(!txtCharactersToExclude.Text.Trim().Equals("Chars to Exclude"))
+                    _exclOriginalChars = txtCharactersToExclude.Text.Trim();
             }
+
+
             RefreshPasswordUI();
         }
 
-        //private void txtCharactersToExclude_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-        //    if (_updating) return;
+        private static int CountOccurrences(string source, string value) {
+            if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(value))
+                return 0;
 
-        //    _excludedChars = txtCharactersToExclude.Text ?? string.Empty;
+            int count = 0;
+            int index = 0;
 
-        //    // Ignore placeholder text
-        //    if (_excludedChars.Trim().Equals("Chars to Exclude", StringComparison.Ordinal))
-        //        _excludedChars = string.Empty;
+            while ((index = source.IndexOf(value, index, StringComparison.Ordinal)) != -1) {
+                count++;
+                index += value.Length;
+            }
 
-        //    // BUG: 1. Open 1st record. 2. Slider down to anything. 3. erase charstoexclude 4. slider down again. 5. not chars to exclude do not reflect properly.
-        //    if ((txtCharactersToExclude.Text.Trim() != "" || !string.IsNullOrEmpty(_exclOriginalChars)) && _exclOriginalChars != "Chars to Exclude") {
-        //        if (_exclOriginalChars != _excludedChars) {
-        //            for (int i = 0; i < _exclOriginalChars.Length; i++) {
-        //                if (!_excludedChars.Contains(_exclOriginalChars[i])) {
-        //                    txtPasswd.Text += _exclOriginalChars[i];
-        //                    _passwdWhole = txtPasswd.Text.Trim();
-        //                    _exclOriginalChars = _excludedChars.Trim();
-        //                }
-        //            }
-        //        }
-        //    }
+            return count;
+        }
 
-        //    int len = txtPasswd.Text.Trim().Length;
-        //    _vm?.Length = len;
-
-        //    // BUG: _targetLength seems to be causing an issue here.
-        //    //      _targetLength not updating when chars erased from txtexcludechars
-        //    //      try adding chars back THEN recalc len.
-        //    _targetLength = len;
-        //    _vm?.SliderValue = len.ToString();
-        //    sldPasswdLength.Maximum = len;
-        //    sldPasswdLength.Value = (double)len;
-
-        //    //sldPasswdLength.Value = (double)_vm?.Length;
-
-        //    UpdateDisplayedPassword();
-
-        //    Debug.WriteLine("");
-        //    Debug.WriteLine("*************txtCharactersToExclude*******************");
-        //    Debug.WriteLine("_excludedChars / \ttxtCharactersToExclude / \t\ttxtPasswd.Text / \t\t_passwdWhole / \t\t_targetLength");
-        //    Debug.WriteLine($"{_excludedChars} \t\t\t/ \t\t\t\t{txtCharactersToExclude.Text.Trim()} / \t\t\t\t\t{txtPasswd.Text} / \t{_passwdWhole} / \t{_targetLength}");
-        //    Debug.WriteLine("******************************************************");
-        //    Debug.WriteLine("");
-        //}
-
-        //private void UpdateDisplayedPassword(bool force = false) {
-        //    if (_updating) return;
-
-        //    _updating = true;
-
-        //    //_targetLength = _passwdWhole.Length;
-
-        //    try {
-        //        txtPasswd.Text = SharedFuncs.BuildDisplay(
-        //            fullPassword: _passwdWhole.AsSpan(),
-        //            excludedChars: _excludedChars.AsSpan(),
-        //            targetLength: _targetLength,
-        //            currentText: txtPasswd.Text.AsSpan(),
-        //            force: false,
-        //            placeholder: "Passwd".AsSpan(),
-        //            mask: !_showPlain);
-        //    } finally {
-        //        _updating = false;
-        //    }
-        //}
 
         private void txtPasswd_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
             if(_enableCharsExcludeSwitch)
@@ -358,10 +300,20 @@ namespace Passwd_VaultManager.Views
         private void cmdManuallyEnterPasswd_Click(object sender, RoutedEventArgs e) {
             sldPasswdLength.IsEnabled = false;
 
+            txtPasswd.IsReadOnly = false;
             lblPasswdStatus.Visibility = Visibility.Hidden;
 
             txtPasswd.Text = String.Empty;
             txtPasswd.Focus();
+
+            // In manual mode, we no longer use _passwdWhole pipeline.
+            _passwdWhole = string.Empty;
+            _excludedChars = string.Empty;
+            _targetLength = 0;
+
+            _vm.Length = 0;
+            _vm.TargetLength = 8;        // or 0 if you allow it, but your slider Min is 8
+            _vm.SliderMaxLength = 41;    // default
         }
 
         private void EditWin_cmdClose_Click(object sender, RoutedEventArgs e) {
@@ -386,15 +338,30 @@ namespace Passwd_VaultManager.Views
                 return;
             }
 
+            if (txtPasswd.Text.Trim().Length < 8) {
+                new MessageWindow("Password cannot be less than 8 characters.", SoundController.ErrorSound).Show();
+                return;
+            }
+
             // if mask enabled. 1. toggle it off THEN save.
             if (!_showPlain) {
                 _showPlain = !_showPlain;       // flip reveal state
-                //UpdateDisplayedPassword(force: true);
                 RefreshPasswordUI();
             }
 
             // Update vault in DB
             try {
+                if (String.IsNullOrWhiteSpace(txtAppName.Text))
+                    _vm?.AppName = "No App/Account Name";
+
+                int calcBitRate = (int)Math.Ceiling((int)sldPasswdLength.Value * 6.285);
+
+                if (calcBitRate > 256)
+                    calcBitRate = 256;
+
+                _vm?.BitRate = calcBitRate;
+
+
                 await _vm?.SaveAsync();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() => {
@@ -406,10 +373,10 @@ namespace Passwd_VaultManager.Views
                 new MessageWindow($"Failed to create vault entry - ({_vm?.AppName}) \n\n {ex.Message}.", SoundController.ErrorSound).Show(); ;
             }
 
-            App.Settings.FirstTimeOpeningEditWin = false;
-            App.Settings.FirstTimeNewAppName_EditWin = false;
-            App.Settings.FirstTimeNewUserName_EditWin = false;
-            SettingsService.Save(App.Settings);
+            //App.Settings.FirstTimeOpeningEditWin = false;
+            //App.Settings.FirstTimeNewAppName_EditWin = false;
+            //App.Settings.FirstTimeNewUserName_EditWin = false;
+            //SettingsService.Save(App.Settings);
 
             ChangesMade = false;
 
@@ -459,7 +426,7 @@ namespace Passwd_VaultManager.Views
                 _vm.Length = _len;
                 _targetLength = _len;
                 sldPasswdLength.Value = _len;
-                _vm.SliderValue = _len.ToString();
+                _vm.TargetLength = _len;
 
             } finally { 
                 _updating = false; 
@@ -473,6 +440,8 @@ namespace Passwd_VaultManager.Views
         private void NewWindow_Loaded(object sender, RoutedEventArgs e) {
             sldPasswdLength.IsEnabled = false;
             txtCharactersToExclude.IsEnabled = false;
+
+            SharedFuncs.Apply(this, App.Settings);
         }
 
         private void ToggleReveal_Click(object sender, RoutedEventArgs e) {
@@ -491,7 +460,7 @@ namespace Passwd_VaultManager.Views
 
             _enableCharsExcludeSwitch = true;
 
-            if (sldPasswdLength.Value == 8)
+            if (sldPasswdLength.Value <= 8)
                 txtCharactersToExclude.IsEnabled = false;
         }
 
@@ -504,33 +473,36 @@ namespace Passwd_VaultManager.Views
         }
 
         private void txtAppName_GotFocus(object sender, RoutedEventArgs e) {
+            
             if (App.Settings.FirstTimeNewAppName_EditWin) {
-                // FIX THIS MESSAGE
-                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                var helpWin = new Helper("Here, you can adjust the website/app name.", SoundController.InfoSound);
                 helpWin.Show();
+                App.Settings.FirstTimeNewAppName_EditWin = false;
+                SettingsService.Save(App.Settings);
             }
         }
 
         private void txtUserName_GotFocus(object sender, RoutedEventArgs e) {
             if (App.Settings.FirstTimeNewUserName_EditWin) {
-                // FIX THIS MESSAGE
-                var helpWin = new Helper("To make a Vault, enter the website/app name.\n\nThen enter the username/email you will use to log into the website/app.\n\nFinally, click generate password (Recommended) or enter a strong password manually.\n\nYou can adjust password length with the slider and by entering characters to exclude. When you're finished, click the \'Create\' button");
+                var helpWin = new Helper("Here, you can adjust the username/email you will use to log into the website/app.", SoundController.InfoSound);
                 helpWin.Show();
+                App.Settings.FirstTimeNewUserName_EditWin = false;
+                SettingsService.Save(App.Settings);
             }
         }
 
         private void AppNameHelpMe_Click(object sender, RoutedEventArgs e) {
-            var helpWin = new Helper("This is where you edit the Application/website name.");
+            var helpWin = new Helper("This is where you edit the Application/website name.", SoundController.InfoSound);
             helpWin.Show();
         }
 
         private void UsernameHelpMe_Click(object sender, RoutedEventArgs e) {
-            var helpWin = new Helper("This is where you edit the User Name/Login/Email for the account.");
+            var helpWin = new Helper("This is where you edit the User Name/Login/Email for the account.", SoundController.InfoSound);
             helpWin.Show();
         }
 
         private void EditHelpMe_Click(object sender, RoutedEventArgs e) {
-            var helpWin = new Helper("Enable this checkbox to edit the password.\n\nYou can also regenerate a new password.");
+            var helpWin = new Helper("Enable this checkbox to edit the password.\n\nYou can also regenerate a new password.", SoundController.InfoSound);
             helpWin.Show();
         }
 
@@ -547,5 +519,11 @@ namespace Passwd_VaultManager.Views
                 closeBtn.Click += (s, e) => this.Close();
             }
         }
+
+        private static string NormalizeExcluded(string? raw) {
+            var s = (raw ?? string.Empty).Trim();
+            return s.Equals("Chars to Exclude", StringComparison.Ordinal) ? string.Empty : s;
+        }
+
     }
 }

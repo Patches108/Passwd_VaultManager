@@ -2,6 +2,7 @@
 using Passwd_VaultManager.Funcs;
 using Passwd_VaultManager.Models;
 using Passwd_VaultManager.Services;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 

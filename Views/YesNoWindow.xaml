@@ -16,8 +16,8 @@
     <Border CornerRadius="8" Style="{StaticResource FormStyle}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="12" />
+                <RowDefinition />
+                <RowDefinition Height="16.04" />
                 <RowDefinition Height="70" />
             </Grid.RowDefinitions>
 
@@ -25,14 +25,14 @@
             <ScrollViewer
                 Grid.Row="0"
                 Padding="10"
-                VerticalScrollBarVisibility="Auto">
+                VerticalScrollBarVisibility="Auto" Height="191" VerticalAlignment="Top">
                 <Border Style="{StaticResource BorderedTextContainer}">
                     <TextBlock
                         x:Name="msg"
                         Margin="10"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Style="{StaticResource TextStyle}"
+                        Style="{StaticResource TextStyleNonExpanding}"
                         Text=""
                         TextWrapping="Wrap" />
                 </Border>
@@ -42,12 +42,12 @@
                 Grid.Row="1"
                 Margin="10,0,0,0"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
+                VerticalAlignment="Center"
                 Style="{StaticResource StatusText}"
-                Text="Press ESC to cancel" />
+                Text="Press ESC to cancel" Height="16" Width="415" />
 
             <!--  Buttons grid  -->
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1" Margin="0,13,0,0" Grid.RowSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />

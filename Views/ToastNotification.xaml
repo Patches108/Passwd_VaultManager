@@ -6,6 +6,7 @@
     Height="60"
     AllowsTransparency="True"
     Background="Transparent"
+    Loaded="frmToast_Loaded"
     ResizeMode="NoResize"
     ShowActivated="False"
     ShowInTaskbar="False"

@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Media;
+
 
 namespace Passwd_VaultManager.Funcs {
     public static class SoundController {
@@ -10,22 +11,23 @@ namespace Passwd_VaultManager.Funcs {
         public static string SuccessSound => Path.Combine(AudioFolder, "success.mp3");
         public static string ErrorSound => Path.Combine(AudioFolder, "error.mp3");
         public static string InfoSound => Path.Combine(AudioFolder, "info.mp3");
-        //public static string WarningSound => Path.Combine(AudioFolder, "warning_sound.mp3");
-        //public static string HelpSound => Path.Combine(AudioFolder, "help_sound.mp3");
 
         public static void Play(string path) {
 
-            bool a = !App.Settings.SoundEnabled;
-            bool b = string.IsNullOrWhiteSpace(path);
-            bool c = !File.Exists(path);
+            //bool a = !App.Settings.SoundEnabled;
+            //bool b = string.IsNullOrWhiteSpace(path);
+            //bool c = !File.Exists(path);
+
             if (!App.Settings.SoundEnabled || string.IsNullOrWhiteSpace(path) || !File.Exists(path))
                 return;
 
-            var player = new MediaPlayer();
-            player.Open(new Uri(path, UriKind.Absolute));
-            player.Volume = 1.0;
-            Thread.Sleep(100);  // Thread timing issue - sometimes a little pause is needed to make it play the mp3.
-            player.Play();
+            Application.Current.Dispatcher.BeginInvoke(() => {
+                var player = new MediaPlayer();
+                player.Open(new Uri(path, UriKind.Absolute));
+                player.Volume = 1.0;
+                Thread.Sleep(100);  // Thread timing issue - sometimes a little pause is needed to make it play the mp3.
+                player.Play();
+            });
         }
 
     }

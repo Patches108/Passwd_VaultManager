@@ -19,6 +19,10 @@
 
     <!--  Animations  -->
     <Window.Resources>
+
+        <BitmapImage x:Key="speech_on" UriSource="/Passwd_VaultManager;component/Images/speech_on.png" />
+        <BitmapImage x:Key="speech_off" UriSource="/Passwd_VaultManager;component/Images/speech_off.png" />
+
         <!--  Fade + slide in from right  -->
         <Storyboard x:Key="EnterStoryboard">
             <DoubleAnimation
@@ -66,22 +70,93 @@
             </Grid.ColumnDefinitions>
 
             <!--  Close Button (top-right)  -->
-            <Button
-                x:Name="btnClose"
+            <StackPanel
                 Grid.Row="0"
                 Grid.Column="1"
-                Width="28"
-                Height="28"
-                Margin="0,0,0,5"
+                Height="25"
+                Margin="5,0,5,0"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Background="Transparent"
-                BorderBrush="Transparent"
-                Click="cmdX_Click"
-                Content="X"
-                Cursor="Hand"
-                FontWeight="Bold"
-                Foreground="White" />
+                Orientation="Horizontal">
+                <ToggleButton
+    x:Name="toggleSpeech"
+    Width="25"
+    Height="25"
+    Background="Transparent"
+    BorderBrush="Transparent"
+    Focusable="False"
+    FocusVisualStyle="{x:Null}"
+    Checked="Sound_On"
+    Unchecked="Sound_Off">
+
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <!-- default icon -->
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <Image Width="16" Height="16" Source="{StaticResource speech_off}" />
+                                </Setter.Value>
+                            </Setter>
+
+                            <!-- IMPORTANT: real clickable surface + no default chrome -->
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <!-- Optional hover feedback -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.85"/>
+                                            </Trigger>
+
+                                            <!-- Optional press feedback -->
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Opacity" Value="0.7"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                            <!-- checked icon -->
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Image Width="16" Height="16" Source="{StaticResource speech_on}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
+
+                <Button
+                    x:Name="btnClose"
+                    Width="28"
+                    Height="28"
+                    Margin="0,0,0,5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Click="cmdX_Click"
+                    Content="X"
+                    Cursor="Hand"
+                    FontWeight="Bold"
+                    Foreground="White" />
+
+            </StackPanel>
+
 
             <!--  Helper image/avatar  -->
             <Image

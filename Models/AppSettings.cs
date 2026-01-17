@@ -1,8 +1,9 @@
 ﻿namespace Passwd_VaultManager.Models {
     public class AppSettings {
         public string FontFamily { get; set; } = "Segoe UI";
-        public double FontSize { get; set; } = 16.5;
+        public double FontSize { get; set; } = 15;
         public bool SoundEnabled { get; set; } = true;
+        public bool SpeechEnabled { get; set; } = true;
         public bool FirstTimeOpeningApp { get; set; } = true;
         public bool FirstTimeOpeningNewWin { get; set; } = true;
         public bool FirstTimeOpeningEditWin { get; set; } = true;

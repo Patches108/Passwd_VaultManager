@@ -103,6 +103,8 @@
                     <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="DeleteVaultRecord_Click" Header="Delete" />
                     <Separator Style="{StaticResource MenuSeparator}" />
+                    <MenuItem Click="RestartApp_Click" Header="Restart" />
+                    <Separator Style="{StaticResource MenuSeparator}" />
                     <MenuItem Click="ExitApp_Click" Header="Hard Exit" />
                 </MenuItem>
             </Menu>
@@ -124,7 +126,9 @@
                     Margin="0,8,5,10"
                     GotFocus="txtSearch_GotFocus"
                     LostFocus="txtSearch_LostFocus"
+                    PreviewKeyDown="txtSearch_PreviewKeyDown"
                     Style="{StaticResource SearchTextField}"
+                    TabIndex="0"
                     TextChanged="txtSearch_TextChanged" />
 
                 <!--  SEARCH BUTTON  -->
@@ -151,7 +155,8 @@
                     Height="30"
                     Click="cmdFilter_Click"
                     ContextMenu="{StaticResource FilterContextMenu}"
-                    Style="{StaticResource ControlButton}">
+                    Style="{StaticResource ControlButton}"
+                    TabIndex="1">
 
                     <Image
                         Width="26"
@@ -169,7 +174,8 @@
                     Height="30"
                     Click="cmdSort_Click"
                     ContextMenu="{StaticResource SortContextMenu}"
-                    Style="{StaticResource ControlButton}">
+                    Style="{StaticResource ControlButton}"
+                    TabIndex="2">
                     <Image
                         Width="26"
                         Height="24"
@@ -193,7 +199,8 @@
                     Margin="0,5,0,5"
                     Command="{Binding NewVaultEntryCommand}"
                     IsChecked="False"
-                    Style="{StaticResource SideCmdStyle}">
+                    Style="{StaticResource SideCmdStyle}"
+                    TabIndex="3">
                     <!--  NEW BUTTON  -->
                     <Grid Margin="-10,0,0,0">
                         <Grid.ColumnDefinitions>
@@ -229,7 +236,8 @@
                     Command="{Binding EditVaultEntryCommand}"
                     CommandParameter="{Binding SelectedAppVault}"
                     IsChecked="False"
-                    Style="{StaticResource SideCmdStyle}">
+                    Style="{StaticResource SideCmdStyle}"
+                    TabIndex="4">
                     <Grid Margin="-10,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -264,7 +272,8 @@
                     Margin="0,5,0,5"
                     Command="{Binding OpenSettingsCommand}"
                     IsChecked="False"
-                    Style="{StaticResource SideCmdStyle}">
+                    Style="{StaticResource SideCmdStyle}"
+                    TabIndex="5">
                     <Grid Margin="-10,0,-8,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -298,7 +307,8 @@
                     Margin="0,5,0,5"
                     Command="{Binding OpenAboutCommand}"
                     IsChecked="False"
-                    Style="{StaticResource SideCmdStyle}">
+                    Style="{StaticResource SideCmdStyle}"
+                    TabIndex="6">
                     <Grid Margin="-10,0,-8,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -333,7 +343,8 @@
                     Command="{Binding DeleteVaultEntryCommand}"
                     CommandParameter="{Binding SelectedAppVault}"
                     IsChecked="False"
-                    Style="{StaticResource SideCmdStyle}">
+                    Style="{StaticResource SideCmdStyle}"
+                    TabIndex="7">
                     <Grid Margin="-10,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -362,6 +373,9 @@
             </StackPanel>
 
             <ScrollViewer Grid.Row="2" Grid.Column="1">
+                <ScrollViewer.Resources>
+                    <Style BasedOn="{StaticResource SlimScrollBarStyleVertical}" TargetType="ScrollBar" />
+                </ScrollViewer.Resources>
                 <ListBox
                     x:Name="lstVaultList"
                     Background="Transparent"
@@ -389,6 +403,9 @@
                             <Setter Property="Padding" Value="0" />
                             <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="Background" Value="Transparent" />
+
+                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="BorderBrush" Value="#FF27D644" />
@@ -428,7 +445,8 @@
                     VerticalAlignment="Center"
                     Click="cmdClose_Click"
                     Content="Close"
-                    Style="{StaticResource ControlButton}" />
+                    Style="{StaticResource ControlButton}"
+                    TabIndex="8" />
             </Grid>
         </Grid>
     </Border>

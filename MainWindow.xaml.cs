@@ -5,157 +5,161 @@ using Passwd_VaultManager.Properties;
 using Passwd_VaultManager.Services;
 using Passwd_VaultManager.ViewModels;
 using Passwd_VaultManager.Views;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Ribbon;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Passwd_VaultManager
-{
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
+namespace Passwd_VaultManager {
+    public partial class MainWindow : Window {
         private readonly MainWindowVM _vm = new();
 
-        private static readonly string PlaceholderText = "Search by App Name";
+        private const string PlaceholderText = "Search by App Name";
 
-        private bool _sortedFlag = false;
-        private bool _filteredFlag = false;
+        private bool _sortedActive;
+        private bool _filteredActive;
 
-        private Func<Task> _refreshAction;
+        private Func<Task>? _refreshAction;
 
         private static readonly Brush PlaceholderBrush = new SolidColorBrush(Color.FromRgb(140, 140, 140));
         private static readonly Brush InputBrush = (Brush)new BrushConverter().ConvertFromString("#FF2BA33B");
-        private static readonly Brush DefaultBorderBrush = (Brush)new BrushConverter().ConvertFrom("#FF1F89F6");   // default blue
+        private static readonly Brush DefaultBorderBrush = (Brush)new BrushConverter().ConvertFrom("#FF1F89F6");
         private static readonly Brush MatchBorderBrush = Brushes.LimeGreen;
         private static readonly Brush NoResultBorderBrush = Brushes.Red;
 
-        private ObservableCollection<AppVault> SearchedVaults = new ObservableCollection<AppVault>();
+        // View-only state: current list shown in ListBox
+        private ObservableCollection<AppVault> _currentView = new();
 
-        internal MainWindowVM ViewModel { get; set; }
+        // Snapshots for RemoveSort/RemoveFilter (should live in view, not VM)
+        private List<AppVault>? _preSortSnapshot;
+        private List<AppVault>? _preFilterSnapshot;
 
-        internal MainWindowVM MainVM => this.DataContext as MainWindowVM;
+        private ICollectionView _vaultsView = null!;
+        private string _searchText = "";
+        private readonly HashSet<string> _filters = new();
+        private SortDescription? _sort;
 
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
+
             DataContext = _vm;
 
-            txtSearch.Text = "Search by App Name";
-            txtSearch.Foreground = new SolidColorBrush(Color.FromRgb(140, 140, 140));
+            // Placeholder init
+            txtSearch.Text = PlaceholderText;
+            txtSearch.Foreground = PlaceholderBrush;
+            txtSearch.BorderBrush = DefaultBorderBrush;
 
-            var sharedPasswdPanelVM = (PasswdPanelVM)Resources["PasswdPanelVM"];
-            _vm.PasswdPanelVM = sharedPasswdPanelVM;  // store inside MainWindowVM
-            DataContext = _vm;
-
+            // First time help
             if (App.Settings.FirstTimeOpeningApp) {
-                var helpWin = new Helper("I see this is your first time using Password Vault Manager.\n\nWelcome!\n\nTo get started, click the \'New\'");
+                var helpWin = new Helper(
+                    "I see this is your first time using Password Vault Manager.\n\nWelcome!\n\nTo get started, click the 'New' button.",
+                    SoundController.InfoSound);
                 helpWin.Show();
+
                 App.Settings.FirstTimeOpeningApp = false;
                 SettingsService.Save(App.Settings);
             }
-        }        
+        }
 
         private async void frmMainWindow_Loaded(object sender, RoutedEventArgs e) {
-
-            // Now gate access with PIN
             if (PinStorage.HasPin()) {
                 var dlg = new pin();
                 bool? ok = dlg.ShowDialog();
-                if (ok != true) return; // user canceled/failed → app closes (by your window)
+                if (ok != true) return;
             }
 
+            _refreshAction = _vm.RefreshVaultsAsync;
+
             await _vm.RefreshVaultsAsync();
-            _refreshAction = _vm.RefreshVaultsAsync;  //set delegate to refresh vaults on main window.
+            await _vm.ComposeStatusMSG();
+            _vm.UpdateAllVaultStatus();
 
-            await _vm.ComposeStatusMSG();   // get num vaults for status msg
+            // Create the view over the SAME ObservableCollection the ListBox binds to.
+            _vaultsView = CollectionViewSource.GetDefaultView(_vm.Vaults);
+            _vaultsView.Filter = VaultFilter;
+
+            SharedFuncs.Apply(this, App.Settings);
         }
 
-        private void cmdClose_Click(object sender, RoutedEventArgs e) {
-            CloseWindowHandler();   // Call handler to minimise to system tray.
-        }
-                
-
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-
+        public void ApplyFontsFromSettingsWin() {
+            SharedFuncs.Apply(this, App.Settings);
         }
 
-        private void NewVaultRecord_Click(object sender, RoutedEventArgs e) {
-            OpenNewVaultWindow();
+        // --------------------------
+        // Window controls / tray
+        // --------------------------
+        private void cmdClose_Click(object sender, RoutedEventArgs e) => CloseWindowHandler();
+
+        private void ExitApp_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+        private void CloseWindowHandler() {
+            Application.Current.MainWindow?.Hide();
+
+            if (!Settings.Default.TrayTipShown &&
+                TryFindResource("TrayIcon") is TaskbarIcon trayIcon) {
+                trayIcon.ShowBalloonTip(
+                    "Minimized to Tray",
+                    "Password Vault Manager is still running in the background.",
+                    BalloonIcon.Info);
+
+                Settings.Default.TrayTipShown = true;
+                Settings.Default.Save();
+            }
+        }
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            if (GetTemplateChild("btnClose") is Button closeBtn)
+                closeBtn.Click += (_, __) => CloseWindowHandler();
+
+            if (GetTemplateChild("btnMinimize") is Button minimizeBtn)
+                minimizeBtn.Click += (_, __) => WindowState = WindowState.Minimized;
+        }
+
+        // --------------------------
+        // New / Edit / Delete
+        // --------------------------
+        private void NewVaultRecord_Click(object sender, RoutedEventArgs e) => OpenNewVaultWindow();
+
+        public void OpenNewVaultWindow() {
+            if (_refreshAction is null) _refreshAction = _vm.RefreshVaultsAsync;
+            var win = new NewWindow(_refreshAction);
+            win.Show();
         }
 
         private void EditVaultRecord_Click(object sender, RoutedEventArgs e) {
-            
-            AppVault vault = _vm.SelectedAppVault; // Get selected vault
+            var vault = _vm.SelectedAppVault;
             if (vault is null) {
-                new Helper("First, select a vault to edit.").Show();
+                new Helper("First, select a vault to edit.", SoundController.ErrorSound).Show();
                 return;
             }
 
-            var vm = new EditWindowVM(vault);
-            var win = new EditWindow { DataContext = vm };
-            win.ShowDialog();
+            _vm.EditVaultEntryCommand.Execute(vault);
         }
 
         private void DeleteVaultRecord_Click(object sender, RoutedEventArgs e) {
-            AppVault vault = _vm.SelectedAppVault; // Get selected vault
+            var vault = _vm.SelectedAppVault;
             if (vault is null) {
-                new Helper("First, select a vault to delete.").Show();
+                new Helper("First, select a vault to delete.", SoundController.ErrorSound).Show();
                 return;
             }
 
             _vm.DeleteVaultEntryCommand.Execute(vault);
         }
 
-        private void ExitApp_Click(object sender, RoutedEventArgs e) {
-            Application.Current.Shutdown(); // Hard exit.
+        private void OpenSettings_Click(object sender, RoutedEventArgs e) {
+            var win = new SettingsWindow(_vm.RefreshVaultsAsync);
+            win.Show();
         }
 
-
-
-
-        /// <summary>
-        /// Minimizes the main application window and displays a notification if the application is minimized to the
-        /// system tray for the first time.
-        /// </summary>
-        /// <remarks>This method hides the main application window and, if a system tray icon is
-        /// available, shows a balloon tip notification to inform the user that the application is still running in the
-        /// background. The notification is displayed only once per application session, based on the <see
-        /// cref="Settings.Default.TrayTipShown"/> setting.</remarks>
-        private void CloseWindowHandler() {
-            var mainWindow = Application.Current.MainWindow;
-            mainWindow?.Hide();
-
-            if (!Settings.Default.TrayTipShown &&
-                TryFindResource("TrayIcon") is Hardcodet.Wpf.TaskbarNotification.TaskbarIcon trayIcon) {
-                trayIcon.ShowBalloonTip(
-                    "Minimized to Tray",
-                    "Daily Reminder is still running in the background.",
-                    BalloonIcon.Info
-                );
-
-                Settings.Default.TrayTipShown = true;
-                Settings.Default.Save();
-                System.Diagnostics.Debug.WriteLine("TrayTipShown: " + Settings.Default.TrayTipShown);
-
-            }
-        }
-
-        //private void cmd_OpenNewVaultWindow_Click(object sender, RoutedEventArgs e) {
-
-        //    // pass in _refreshAction
-        //    //var shared = (NewWindowVM)Resources["NewWindowVM"];
-        //    //var win = new NewWindow { DataContext = shared }; // use SAME instance
-        //    //win.Show();
-        //}
-
+        // --------------------------
+        // ListBox UX
+        // --------------------------
         private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Escape && sender is ListBox lb) {
                 lb.SelectedItem = null;
@@ -163,27 +167,19 @@ namespace Passwd_VaultManager
             }
         }
 
-
-        public void OpenNewVaultWindow() {
-            //Func<Task> _refreshAction;
-            //_refreshAction = _vm.RefreshVaultsAsync;
-            var win = new NewWindow(_refreshAction);
-            win.Show();
+        private void ListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            if (sender is ListBoxItem item && !item.IsSelected) {
+                item.IsSelected = true;
+                item.Focus();
+            }
         }
 
-
-        public void OpenSettingsWindow() {
-            var win = new SettingsWindow(_refreshAction);
-            win.Show();
-        }
-
-        private void OpenSettings_Click(object sender, RoutedEventArgs e) {
-            OpenSettingsWindow();
-        }
-
+        // --------------------------
+        // Search box
+        // --------------------------
         private void txtSearch_GotFocus(object sender, RoutedEventArgs e) {
             if (txtSearch.Text == PlaceholderText) {
-                txtSearch.Text = "";
+                txtSearch.Text = string.Empty;
                 txtSearch.Foreground = InputBrush;
             }
         }
@@ -195,289 +191,192 @@ namespace Passwd_VaultManager
             }
         }
 
-        public override void OnApplyTemplate() {
-            base.OnApplyTemplate();
+        private void txtSearch_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Escape)
+                txtSearch.Text = string.Empty;
+        }
 
-            var closeBtn = GetTemplateChild("btnClose") as Button;
-            if (closeBtn != null) {
-                closeBtn.Click += (s, e) => this.Close();
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e) {
+            if (!IsLoaded) return;
+
+            var raw = txtSearch.Text;
+            _searchText = string.IsNullOrWhiteSpace(raw) || raw == PlaceholderText ? "" : raw.Trim();
+
+            txtSearch.BorderBrush = string.IsNullOrEmpty(_searchText)
+                ? DefaultBorderBrush
+                : (_vm.Vaults.Any(v => (v.AppName ?? "").IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    ? MatchBorderBrush
+                    : NoResultBorderBrush);
+
+            _vaultsView.Refresh();
+        }
+
+        // --------------------------
+        // Filter menus
+        // --------------------------
+        private void cmdFilter_Click(object sender, RoutedEventArgs e) => OpenContextMenu(sender as Button);
+
+        private void FilterMenu_IsPasswdSet_Click(object sender, RoutedEventArgs e) => SetSingleFilter("IsPasswdSet");
+        private void FilterMenu_IsUserNameSet_Click(object sender, RoutedEventArgs e) => SetSingleFilter("IsUserNameSet");
+        private void FilterMenu_IsAppNameSet_Click(object sender, RoutedEventArgs e) => SetSingleFilter("IsAppNameSet");
+        private void FilterMenu_BitRate265_Click(object sender, RoutedEventArgs e) => SetSingleFilter("BitRate256");
+        private void FilterMenu_BitRate192_Click(object sender, RoutedEventArgs e) => SetSingleFilter("BitRate192");
+        private void FilterMenu_BitRate128OrLess_Click(object sender, RoutedEventArgs e) => SetSingleFilter("BitRate128");
+        private void FilterMenu_StatusGood_Click(object sender, RoutedEventArgs e) => SetSingleFilter("StatusGood");
+        private void FilterMenu_StatusBad_Click(object sender, RoutedEventArgs e) => SetSingleFilter("StatusBad");
+        private void FilterMenu_RemoveFilter_Click(object sender, RoutedEventArgs e) => SetSingleFilter("RemoveFilter");
+        private async void FilterMenu_Reset_Click(object sender, RoutedEventArgs e) => await ResetListsAsync();
+
+        private enum FilterKind {
+            IsPasswdSet,
+            IsUserNameSet,
+            IsAppNameSet,
+            BitRate256,
+            BitRate192,
+            BitRate128,
+            StatusGood,
+            StatusBad
+        }
+
+        // --------------------------
+        // Sort menus
+        // --------------------------
+        private void cmdSort_Click(object sender, RoutedEventArgs e) => OpenContextMenu(sender as Button);
+
+        private void SortMenu_Alphabetical_Click(object sender, RoutedEventArgs e) => ApplySort("Alphabetical");
+        private void SortMenu_DateCreated_Click(object sender, RoutedEventArgs e) => ApplySort("DateCreated");
+        private void SortMenu_Bitrate_Click(object sender, RoutedEventArgs e) => ApplySort("Bitrate");
+        private void SortMenu_Status_Click(object sender, RoutedEventArgs e) => ApplySort("Status");
+        private void SortMenu_RemoveSort_Click(object sender, RoutedEventArgs e) => ApplySort("RemoveSort");
+        private async void SortMenu_Reset_Click(object sender, RoutedEventArgs e) => await ResetListsAsync();
+
+        private enum SortKind {
+            Alphabetical,
+            DateCreated,
+            Bitrate,
+            Status
+        }
+
+        private void ApplySort(string kind) {
+            if (_vaultsView is null) return;
+
+            _vaultsView.SortDescriptions.Clear();
+
+            switch (kind) {
+                case "Alphabetical":
+                    _vaultsView.SortDescriptions.Add(new SortDescription(nameof(AppVault.AppName), ListSortDirection.Ascending));
+                    break;
+                case "DateCreated":
+                    _vaultsView.SortDescriptions.Add(new SortDescription(nameof(AppVault.DateCreated), ListSortDirection.Ascending));
+                    break;
+                case "Bitrate":
+                    _vaultsView.SortDescriptions.Add(new SortDescription(nameof(AppVault.BitRate), ListSortDirection.Ascending));
+                    break;
+                case "Status":
+                    _vaultsView.SortDescriptions.Add(new SortDescription(nameof(AppVault.IsStatusGood), ListSortDirection.Ascending));
+                    break;
+                case "RemoveSort":
+                    break;
+            }
+        }
+
+
+        private void SetSingleFilter(string filterKey) {
+            _filters.Clear();
+            if (filterKey != "RemoveFilter")
+                _filters.Add(filterKey);
+
+            _vaultsView.Refresh();
+        }
+
+        // --------------------------
+        // Reset (refresh from DB + keep search text refresh behavior)
+        // --------------------------
+        private async Task ResetListsAsync() {
+            txtSearch.BorderBrush = DefaultBorderBrush;
+
+            await _vm.RefreshVaultsAsync();
+            _vm.UpdateAllVaultStatus();
+            await _vm.ComposeStatusMSG();
+
+            _preSortSnapshot = null;
+            _preFilterSnapshot = null;
+            _sortedActive = false;
+            _filteredActive = false;
+
+            // Keep search behavior: if user had text, force re-run TextChanged
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text) && txtSearch.Text != PlaceholderText) {
+                var txt = txtSearch.Text;
+                txtSearch.Text = string.Empty;
+                txtSearch.Text = txt;
+                return;
             }
 
-            var minimizeBtn = GetTemplateChild("btnMinimize") as Button;
-            if (minimizeBtn != null) {
-                minimizeBtn.Click += (s, e) => this.WindowState = WindowState.Minimized;
-            }
+            _filters.Clear();
+            _searchText = "";
+
+            txtSearch.Text = PlaceholderText;
+            txtSearch.Foreground = PlaceholderBrush;
+            txtSearch.BorderBrush = DefaultBorderBrush;
+
+            _vaultsView.SortDescriptions.Clear();
+            _vaultsView.Refresh();
         }
 
-        private void FilterMenu_IsAppNameSet_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("IsAppNameSet");
-        }
-        private void FilterMenu_IsPasswdSet_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("IsPasswdSet");
-        }
+        private static void OpenContextMenu(Button? btn) {
+            if (btn?.ContextMenu is null) return;
 
-        private void FilterMenu_IsUserNameSet_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("IsUserNameSet");
-        }
-
-        private void FilterMenu_BitRate265_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("BitRate265");
-        }
-
-        private void FilterMenu_BitRate192_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("BitRate192");
-        }
-
-        private void FilterMenu_BitRate128OrLess_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("BitRate128");
-        }
-
-        private void FilterMenu_StatusGood_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("StatusGood");
-        }
-        private void FilterMenu_StatusBad_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("StatusBad");
-        }
-        private void FilterMenu_RemoveFilter_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("RemoveFilter");
-        }
-        private void FilterMenu_Reset_Click(object sender, RoutedEventArgs e) {
-            FilterHandler("Reset");
+            btn.ContextMenu.PlacementTarget = btn;
+            btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btn.ContextMenu.IsOpen = true;
         }
 
         private void FilterMenu_Cancel_Click(object sender, RoutedEventArgs e) {
             // NOTHING HERE, IT WILL JUST CLOSE.
         }
 
-        private void cmdFilter_Click(object sender, RoutedEventArgs e) {
-            Button btn = (Button)sender;
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 
-            if (btn.ContextMenu != null) {
-                btn.ContextMenu.PlacementTarget = btn;
-                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-                btn.ContextMenu.IsOpen = true;
-            }
-        }
-
-        private async void txtSearch_TextChanged(object sender, TextChangedEventArgs e) {
-            string searchText = txtSearch.Text;
-
-            // 1. Empty or whitespace -> reset
-            if (string.IsNullOrWhiteSpace(searchText) || txtSearch.Text.Equals("Search by App Name")) {
-                txtSearch.BorderBrush = DefaultBorderBrush;
-
-                // ensure vault list is up to date
-                await _vm.RefreshVaultsAsync();
-                lstVaultList.ItemsSource = _vm.Vaults;
-
-                return;
-            }
-
-            // 2. Make sure we have the latest vaults once per change
-            await _vm.RefreshVaultsAsync();
-            SearchedVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
-
-            string search = searchText.Trim();
-
-            // 3. Case-insensitive, null-safe search in memory
-            var searchedList = SearchedVaults
-                .Where(v => !string.IsNullOrEmpty(v.AppName) &&
-                            v.AppName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                .ToList();
-
-            // 4. Update UI + border color based on results
-            if (searchedList.Count > 0) {
-                txtSearch.BorderBrush = MatchBorderBrush;
-                lstVaultList.ItemsSource = searchedList;
-            } else {
-                txtSearch.BorderBrush = NoResultBorderBrush;
-
-                //lstVaultList.ItemsSource = allVaults;
-                // Empty list.
-                lstVaultList.ItemsSource = new ObservableCollection<AppVault>();
-            }
-        }
-
-
-        private async void FilterHandler(string s) {
-            // get all vaults
-            //await _vm.RefreshVaultsAsync();
-
-            var searchedList = new ObservableCollection<AppVault>();
-
-            foreach (AppVault v in lstVaultList.Items) {
-                searchedList.Add(v);
-            }
-
-            if(_filteredFlag) {
-                _vm.PreFilteredVaults = searchedList;         // set state.
-                _filteredFlag = true;
-            }
-            //var allVaults = _vm.Vaults ?? new ObservableCollection<AppVault>();
-            //ObservableCollection<AppVault> searchedList = allVaults;
-
-            switch (s) {
-                case "IsPasswdSet":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsPasswdSet));
-                    break;
-
-                case "IsUserNameSet":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsUserNameSet));
-                    break;
-
-                case "IsAppNameSet":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsAppNameSet));
-                    break;
-
-                case "BitRate265":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 256));
-                    break;
-
-                case "BitRate192":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 192));
-                    break;
-
-                case "BitRate128":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.BitRate == 128));
-                    break;
-
-                case "StatusGood":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => v.IsStatusGood));
-                    break;
-
-                case "StatusBad":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.Where(v => !v.IsStatusGood));
-                    break;
-
-                case "RemoveFilter":
-
-                    if(_vm.PreFilteredVaults != null) {
-                        searchedList = new ObservableCollection<AppVault>(_vm.PreFilteredVaults);
-                        _filteredFlag = false;
-                    }
-
-                    break;
-
-                case "Reset":
-                    await _vm.RefreshVaultsAsync();
-                    searchedList = _vm.Vaults;
-                    //lstVaultList.ItemsSource = _vm.Vaults;
-                    //searchedList.Clear();
-                    _filteredFlag = false;
-
-                    // if search field contains something, reset it.
-                    if (txtSearch.Text.Trim() == PlaceholderText || !string.IsNullOrWhiteSpace(txtSearch.Text.Trim())) {
-                        string txt = txtSearch.Text.Trim();
-                        txtSearch.Text = string.Empty;
-                        txtSearch.Text = txt;
-                    }
-
-                    return;
-
-                default:
-                    new MessageWindow("INTERNAL ERROR: Unknown Option", SoundController.ErrorSound);
-                    return;
-            }
-
-            SearchedVaults = searchedList;
-            lstVaultList.ItemsSource = SearchedVaults;
-        }
-
-        private void SortMenu_Alphabetical_Click(object sender, RoutedEventArgs e) {
-            SortFunc("Alphabetical");
-        }
-
-        private void SortMenu_DateCreated_Click(object sender, RoutedEventArgs e) {
-            SortFunc("DateCreated");
-        }
-
-        private void SortMenu_Bitrate_Click(object sender, RoutedEventArgs e) {
-            SortFunc("Bitrate");
-        }
-
-        private void SortMenu_Status_Click(object sender, RoutedEventArgs e) {
-            SortFunc("Status");
-        }
-
-        private void SortMenu_Reset_Click(object sender, RoutedEventArgs e) {
-            SortFunc("Reset");
-        }
-
-        private void SortMenu_RemoveSort_Click(object sender, RoutedEventArgs e) {
-            SortFunc("RemoveSort");
         }
 
         private void SortMenu_Cancel_Click(object sender, RoutedEventArgs e) {
-            SortFunc("Cancel");
+            // Intentionally empty - closing the menu is enough.
         }
 
-        private async void SortFunc(String s) {
-
-            var searchedList = new ObservableCollection<AppVault>();
-
-            foreach (AppVault v in lstVaultList.Items) {
-                searchedList.Add(v);
-            }
-
-            if (!_sortedFlag) {
-                _vm.PreSortedVaults = searchedList;         // set state.
-                _sortedFlag = true;
-            }
-
-            switch (s) {
-                case "Alphabetical":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.AppName));
-                    break;
-                case "DateCreated":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.DateCreated));
-                    break;
-                case "Bitrate":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.BitRate));
-                    break;
-                case "Status":
-                    searchedList = new ObservableCollection<AppVault>(searchedList.OrderBy(v => v.IsStatusGood));
-                    break;
-                case "Reset":
-                    await _vm.RefreshVaultsAsync();
-                    searchedList = _vm.Vaults;
-                    //lstVaultList.ItemsSource = _vm.Vaults;
-                    //searchedList.Clear();
-                    _sortedFlag = false;
-
-                    // if search field contains something, reset it.
-                    if(txtSearch.Text.Trim() == PlaceholderText || !string.IsNullOrWhiteSpace(txtSearch.Text.Trim())) {
-                        string txt = txtSearch.Text.Trim();
-                        txtSearch.Text = string.Empty;
-                        txtSearch.Text = txt;
-                    }
-
-                    return;
-                case "RemoveSort":
-                    if(_vm.PreSortedVaults != null) {
-                        searchedList = new ObservableCollection<AppVault>(_vm.PreSortedVaults);
-                        _sortedFlag = false;
-                    }
-                    break;
-                case "Cancel":
-                    return;
-                default:
-                    new MessageWindow("INTERNAL ERROR: Unknown Option", SoundController.ErrorSound);
-                    return;
-            }
-
-            SearchedVaults = searchedList;
-            lstVaultList.ItemsSource = SearchedVaults;
-
+        public void OpenSettingsWindow() {
+            var win = new SettingsWindow(_vm.RefreshVaultsAsync);
+            win.Show();
         }
 
-        private void cmdSort_Click(object sender, RoutedEventArgs e) {
-            Button btn = (Button)sender;
+        private bool VaultFilter(object obj) {
+            if (obj is not AppVault v) return false;
 
-            if (btn.ContextMenu != null) {
-                btn.ContextMenu.PlacementTarget = btn;
-                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-                btn.ContextMenu.IsOpen = true;
+            // Search
+            if (!string.IsNullOrWhiteSpace(_searchText)) {
+                if (string.IsNullOrWhiteSpace(v.AppName)) return false;
+                if (v.AppName.IndexOf(_searchText, StringComparison.OrdinalIgnoreCase) < 0) return false;
             }
+
+            // Filters
+            foreach (var f in _filters) {
+                switch (f) {
+                    case "IsPasswdSet": if (!v.IsPasswdSet) return false; break;
+                    case "IsUserNameSet": if (!v.IsUserNameSet) return false; break;
+                    case "IsAppNameSet": if (!v.IsAppNameSet) return false; break;
+                    case "BitRate256": if (v.BitRate < 192 || v.BitRate > 256) return false; break;
+                    case "BitRate192": if (v.BitRate < 128 || v.BitRate > 192) return false; break;
+                    case "BitRate128": if (v.BitRate < 8 || v.BitRate > 128) return false; break;
+                    case "StatusGood": if (!v.IsStatusGood) return false; break;
+                    case "StatusBad": if (v.IsStatusGood) return false; break;
+                }
+            }
+
+            return true;
+        }
+
+        private void RestartApp_Click(object sender, RoutedEventArgs e) {
+            System.Windows.Forms.Application.Restart();
+            System.Windows.Application.Current.Shutdown();
         }
     }
 }

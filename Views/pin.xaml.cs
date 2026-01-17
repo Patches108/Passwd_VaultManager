@@ -100,5 +100,9 @@ namespace Passwd_VaultManager.Views {
                 closeBtn.Click += (s, e) => this.Close();
             }
         }
+
+        private void frmPIN_Loaded(object sender, RoutedEventArgs e) {
+            SharedFuncs.Apply(this, App.Settings);
+        }
     }
 }

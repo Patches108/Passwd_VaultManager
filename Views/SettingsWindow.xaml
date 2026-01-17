@@ -10,12 +10,14 @@
     Height="800"
     AllowsTransparency="True"
     Icon="/Images/icon.ico"
+    Loaded="frmSettingsLoaded"
     PreviewKeyDown="InputDialog_PreviewKeyDown"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
+    Closing="Settings_Closing"
     mc:Ignorable="d">
 
     <Border
@@ -74,6 +76,7 @@
                         Grid.Column="1"
                         Width="80"
                         Margin="10,25,0,0"
+                        SelectionChanged="com_FontSizeChanged"
                         ItemsSource="{Binding AvailableFontSizes}"
                         SelectedItem="{Binding SelectedFontSize, Mode=TwoWay}"
                         Style="{StaticResource DarkComboBox}" />
@@ -91,7 +94,7 @@
                     Padding="5"
                     Background="#252525"
                     FontFamily="{Binding SelectedFont}"
-                    FontSize="16.5"
+                    FontSize="15"
                     Foreground="DarkGray"
                     Text="The quick brown fox jumps over the lazy dog." />
 

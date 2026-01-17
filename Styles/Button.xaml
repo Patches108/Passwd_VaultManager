@@ -424,6 +424,7 @@
                             <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.5" />
                             <Setter TargetName="ButtonSurface" Property="Background" Value="Gray" />
                         </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

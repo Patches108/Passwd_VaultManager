@@ -77,6 +77,10 @@ namespace Passwd_VaultManager.Views {
             BeginStoryboard(exit);
         }
 
+        private void frmToast_Loaded(object sender, RoutedEventArgs e) {
+            SharedFuncs.Apply(this, App.Settings);
+        }
+
         //private void PlayNotificationSound(string track) {
         //    try {
         //        var player = new MediaPlayer();

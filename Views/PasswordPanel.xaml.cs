@@ -3,6 +3,7 @@ using Passwd_VaultManager.Models;
 using Passwd_VaultManager.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Passwd_VaultManager.Views {
@@ -23,7 +24,7 @@ namespace Passwd_VaultManager.Views {
             
             AppVault vault = mainVM.SelectedAppVault; // Get selected vault
             if (vault is null) {
-                new Helper("First, select a vault to edit.").Show();
+                new Helper("First, select a vault to edit.", SoundController.ErrorSound).Show();
                 return;
             }
 
@@ -44,7 +45,7 @@ namespace Passwd_VaultManager.Views {
 
             AppVault vault = mainVM.SelectedAppVault; // Get selected vault
             if (vault is null) {
-                new Helper("First, select a vault to edit.").Show();
+                new Helper("First, select a vault to edit.", SoundController.ErrorSound).Show();
                 return;
             }
 
@@ -54,6 +55,17 @@ namespace Passwd_VaultManager.Views {
         private void PP_Loaded(object sender, RoutedEventArgs e) {
             //if (txtAppName_PP.Text.Equals("No App/Account Name"))
             //    txtAppName_PP.Foreground = Brushes.IndianRed;
+
+            SharedFuncs.Apply(this, App.Settings);
         }
+
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (sender is FrameworkElement element && element.ContextMenu != null) {
+                element.ContextMenu.PlacementTarget = element;
+                element.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                element.ContextMenu.IsOpen = true;
+            }
+        }
+
     }
 }

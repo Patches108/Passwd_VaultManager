@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Passwd_VaultManager.Funcs;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -41,6 +42,7 @@ namespace Passwd_VaultManager.Views
         }
 
         private void frmInputDialog_Loaded(object sender, RoutedEventArgs e) {
+            SharedFuncs.Apply(this, App.Settings);
             txtInput.Focus();
         }
 

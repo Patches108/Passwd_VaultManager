@@ -28,7 +28,7 @@
                         Margin="10"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Style="{StaticResource TextStyle}"
+                        Style="{StaticResource TextStyleNonExpanding}"
                         Text=""
                         TextWrapping="Wrap" />
                 </Border>

@@ -30,6 +30,8 @@
     <None Remove="Images\Search.png" />
     <None Remove="Images\Settings.png" />
     <None Remove="Images\sort.png" />
+    <None Remove="Images\speech_off.png" />
+    <None Remove="Images\speech_on.png" />
     <None Remove="Images\Success_Icon.png" />
   </ItemGroup>
 
@@ -39,6 +41,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.9" />
     <PackageReference Include="SourceGear.sqlite3" Version="3.50.4.2" />
     <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
+    <PackageReference Include="System.Speech" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -101,6 +104,12 @@
     </Resource>
     <Resource Include="Images\sort.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\speech_off.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\speech_on.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Success_Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

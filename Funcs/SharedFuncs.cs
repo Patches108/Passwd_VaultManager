@@ -1,7 +1,13 @@
 ﻿namespace Passwd_VaultManager.Funcs {
+    using Passwd_VaultManager.Models;
     using System;
     using System.Buffers;
     using System.Diagnostics;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+    using System.Windows.Media;
 
     public static class SharedFuncs {
         /// <summary>
@@ -12,52 +18,37 @@
             ReadOnlySpan<char> fullPassword,
             ReadOnlySpan<char> excludedChars,
             int targetLength,
-            ReadOnlySpan<char> currentText,
-            bool force = false,
-            ReadOnlySpan<char> placeholder = default,
+            out int availableLen,
             bool mask = false) {
-            
-            // 1) Normalize target length
-            if (targetLength < 0) targetLength = 0;
-            if (targetLength > 41) targetLength = 41;
-
-            // 2) Early outs
-            if (fullPassword.IsEmpty)
-                return string.Empty;
-
-            // 3) Build exclusion set (ASCII fast path; extend as needed)
-            // For non-ASCII exclusion, consider Rune enumeration + HashSet<int>.
             var excludeSet = excludedChars.Length > 0
-                ? new HashSet<char>(excludedChars.ToArray()) // short-lived; OK
+                ? new HashSet<char>(excludedChars.ToArray())
                 : null;
 
-            // 4) Allocate a pooled buffer for filtered result (worst-case = source length)
             char[] rented = ArrayPool<char>.Shared.Rent(fullPassword.Length);
             int w = 0;
 
             try {
-                // Filter step
                 for (int i = 0; i < fullPassword.Length; i++) {
                     char c = fullPassword[i];
                     if (excludeSet != null && excludeSet.Contains(c)) continue;
                     rented[w++] = c;
                 }
 
-                // Length step
-                int outLen = (targetLength > 0 && w > targetLength) ? targetLength : w;
+                availableLen = w;
 
+                if (targetLength < 0) targetLength = 0;
+                if (targetLength > availableLen) targetLength = availableLen;
+
+                int outLen = targetLength == 0 ? availableLen : targetLength; // choose your “0 means no limit” rule
                 if (outLen <= 0) return string.Empty;
 
-                if (mask) return new string('•', outLen);
-
-                // Materialize final string (single unavoidable allocation here)
-                return new string(rented, 0, outLen);
+                return mask ? new string('•', outLen) : new string(rented, 0, outLen);
             } finally {
-                // Zero and return buffer to pool
                 Array.Clear(rented, 0, w);
                 ArrayPool<char>.Shared.Return(rented);
             }
         }
+
 
 
         /// <summary>
@@ -84,7 +75,92 @@
             return val >= 8 && val <= 256;
         }
 
+        /// <summary>
+        /// Applies font settings recursively to all controls in a window.
+        /// </summary>
+        public static void Apply(DependencyObject root, AppSettings settings) {
+            if (root == null || settings == null) return;
 
+            var family = new FontFamily(settings.FontFamily);
+            var size = settings.FontSize;
+
+            ApplyRecursive(root, family, size);
+        }
+
+        private static void ApplyRecursive(DependencyObject parent, FontFamily family, double size) {
+            // 1) Apply to the parent itself (important for usercontrols too)
+            ApplyToOne(parent, family, size);
+
+            // 2) Apply to visual children
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++) {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                ApplyRecursive(child, family, size);
+            }
+
+            // 3) Also handle ContentElements (FlowDocument etc.)
+            // VisualTreeHelper doesn't walk these, so we handle common cases:
+            if (parent is FlowDocumentScrollViewer fdsv && fdsv.Document != null)
+                ApplyFlowDocument(fdsv.Document, family, size);
+
+            if (parent is RichTextBox rtb && rtb.Document != null)
+                ApplyFlowDocument(rtb.Document, family, size);
+        }
+
+        private static void ApplyToOne(DependencyObject obj, FontFamily family, double size) {
+            // Controls (Button, Label, TextBox, ComboBox, etc.)
+            if (obj is Control c) {
+                c.FontFamily = family;
+                c.FontSize = size;
+                return;
+            }
+
+            // TextBlock (NOT a Control!)
+            if (obj is TextBlock tb) {
+                tb.FontFamily = family;
+                tb.FontSize = size;
+                return;
+            }
+
+            // TextElement (Run/Span/Paragraph/etc.) – for FlowDocument parts
+            if (obj is TextElement te) {
+                te.FontFamily = family;
+                te.FontSize = size;
+                return;
+            }
+        }
+
+        private static void ApplyFlowDocument(FlowDocument doc, FontFamily family, double size) {
+            doc.FontFamily = family;
+            doc.FontSize = size;
+
+            foreach (var block in doc.Blocks)
+                ApplyBlock(block, family, size);
+        }
+
+        private static void ApplyBlock(Block block, FontFamily family, double size) {
+            block.FontFamily = family;
+            block.FontSize = size;
+
+            if (block is Paragraph p) {
+                foreach (var inline in p.Inlines)
+                    ApplyInline(inline, family, size);
+            }
+        }
+
+        private static void ApplyInline(Inline inline, FontFamily family, double size) {
+            inline.FontFamily = family;
+            inline.FontSize = size;
+
+            if (inline is Span span) {
+                foreach (var child in span.Inlines)
+                    ApplyInline(child, family, size);
+            }
+        }
+
+        private static bool IsPropertyBound(DependencyObject obj, DependencyProperty prop) {
+            return BindingOperations.IsDataBound(obj, prop);
+        }
     }
 
 }

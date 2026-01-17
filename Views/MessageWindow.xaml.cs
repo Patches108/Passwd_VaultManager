@@ -23,6 +23,8 @@ namespace Passwd_VaultManager.Views {
             this.PreviewKeyDown += InputDialog_PreviewKeyDown;
             this.Focus();
 
+            SharedFuncs.Apply(this, App.Settings);
+
             SoundController.Play(_soundPath);
         }
 
