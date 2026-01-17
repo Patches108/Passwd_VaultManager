@@ -311,6 +311,8 @@ namespace Passwd_VaultManager.Views {
 
             SharedFuncs.Apply(this, App.Settings);
 
+            LoadStats();
+
             _changesMadeSettingsForm = false;
         }
 
