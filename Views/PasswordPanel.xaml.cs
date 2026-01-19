@@ -53,9 +53,6 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void PP_Loaded(object sender, RoutedEventArgs e) {
-            //if (txtAppName_PP.Text.Equals("No App/Account Name"))
-            //    txtAppName_PP.Foreground = Brushes.IndianRed;
-
             SharedFuncs.Apply(this, App.Settings);
         }
 
@@ -64,6 +61,27 @@ namespace Passwd_VaultManager.Views {
                 element.ContextMenu.PlacementTarget = element;
                 element.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 element.ContextMenu.IsOpen = true;
+            }
+        }
+
+        private void cmdCopyToClopboard(object sender, RoutedEventArgs e) {
+            // 1) Get the vault for THIS panel (no prior click required)
+            if (DataContext is not AppVault vault) {
+                new MessageWindow("ERROR: Vault not found for this panel.", SoundController.ErrorSound).ShowDialog();
+                return;
+            }
+
+            // 2) Optionally set it as the selected vault in the main VM (so Edit/Delete etc. stay consistent)
+            var mainVM = Application.Current.MainWindow?.DataContext as MainWindowVM;
+            if (mainVM != null)
+                mainVM.SelectedAppVault = vault;
+
+            // 3) Copy password
+            if (!string.IsNullOrWhiteSpace(vault.Password)) {
+                Clipboard.SetText(vault.Password);
+                new ToastNotification("Text copied to clipboard", true, SoundController.SuccessSound).Show();
+            } else {
+                new MessageWindow("ERROR: Password field is empty.", SoundController.ErrorSound).ShowDialog();
             }
         }
 
