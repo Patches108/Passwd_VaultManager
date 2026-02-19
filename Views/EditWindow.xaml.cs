@@ -290,7 +290,18 @@ namespace Passwd_VaultManager.Views
         private void cmdCopyToClopboard(object sender, RoutedEventArgs e) {
             // Copy password text field data to clipboard
             if (!String.IsNullOrWhiteSpace(txtPasswd.Text.Trim())) {
-                Clipboard.SetText(txtPasswd.Text);
+                
+                if (!_showPlain) {
+                    _showPlain = !_showPlain;       // flip reveal state
+                    RefreshPasswordUI();
+                    Clipboard.SetText(txtPasswd.Text);
+                } else {
+                    Clipboard.SetText(txtPasswd.Text);
+                }
+
+                _showPlain = !_showPlain;       // flip reveal state
+                RefreshPasswordUI();
+
                 new ToastNotification("Text copied to clipboard", true, SoundController.SuccessSound).Show();
             } else {
                 new MessageWindow("ERROR: Password field is empty. Generate or manually create a password first", SoundController.ErrorSound).ShowDialog();
@@ -525,5 +536,9 @@ namespace Passwd_VaultManager.Views
             return s.Equals("Chars to Exclude", StringComparison.Ordinal) ? string.Empty : s;
         }
 
+        private void cmdCopyEmailToClopboard(object sender, RoutedEventArgs e) {
+            Clipboard.SetText(txtUserName.Text);
+            new ToastNotification("Copied to clipboard", true, SoundController.SuccessSound).Show();
+        }
     }
 }

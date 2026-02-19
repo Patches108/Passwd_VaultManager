@@ -419,5 +419,34 @@ namespace Passwd_VaultManager.Views {
             App.Settings.FontSize = size;
             SharedFuncs.Apply(this, App.Settings);
         }
+
+        private void VisitWeb_Click(object sender, RoutedEventArgs e) {
+            OpenUrl("https://darksoft.ie");
+        }
+
+        private void ReportBug_Click(object sender, RoutedEventArgs e) {
+            OpenUrl("https://darksoft.ie/report-bug.html");
+        }
+
+        private void Contact_Click(object sender, RoutedEventArgs e) {
+            OpenUrl("https://darksoft.ie/contact.html");
+        }
+
+        private static void OpenUrl(string url) {
+            try {
+                Process.Start(new ProcessStartInfo {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            } catch (Exception ex) {
+                MessageBox.Show(
+                    $"Unable to open link:\n{url}\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+        }
+
     }
 }

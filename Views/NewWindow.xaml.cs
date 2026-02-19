@@ -233,7 +233,7 @@ namespace Passwd_VaultManager.Views {
         }
 
         private void txtAppName_GotFocus(object sender, RoutedEventArgs e) {
-            if(String.IsNullOrWhiteSpace(txtAppName.Text) || txtAppName.Text.Equals("Website/Application Name"))
+            if (String.IsNullOrWhiteSpace(txtAppName.Text) || txtAppName.Text.Equals("Website/Application Name"))
                 txtAppName.Text = String.Empty;
 
             if (App.Settings.FirstTimeNewAppName_NewWin) {
@@ -285,8 +285,18 @@ namespace Passwd_VaultManager.Views {
 
         private void cmdCopyToClopboard(object sender, RoutedEventArgs e) {
             if (!string.IsNullOrWhiteSpace(txtPasswd.Text)) {
-                Clipboard.SetText(txtPasswd.Text);
+                if (!_showPlain) {
+                    _showPlain = !_showPlain;       // flip reveal state
+                    RecomputeAndApplyUI();
+                    Clipboard.SetText(txtPasswd.Text);
+                } else {
+                    Clipboard.SetText(txtPasswd.Text);
+                }
                 new ToastNotification("Text copied to clipboard", true, SoundController.SuccessSound).Show();
+
+                _showPlain = !_showPlain;       // flip reveal state
+                RecomputeAndApplyUI();
+
             } else {
                 new MessageWindow("ERROR: Password field is empty.", SoundController.ErrorSound).ShowDialog();
             }
@@ -391,7 +401,7 @@ namespace Passwd_VaultManager.Views {
                 UserName = txtUserName.Text.Trim(),
                 Password = txtPasswd.Text.Trim(),
                 ExcludedChars = NormalizeExcluded(txtCharactersToExclude.Text),
-                
+
                 IsPasswdSet = true,
                 IsUserNameSet = true,
                 BitRate = calcBitRate
@@ -462,6 +472,11 @@ namespace Passwd_VaultManager.Views {
 
         private void txtUserName_TextChanged(object sender, TextChangedEventArgs e) {
             ChangesMade = true;
+        }
+
+        private void cmdCopyEmailToClopboard(object sender, RoutedEventArgs e) {
+            Clipboard.SetText(txtUserName.Text);
+            new ToastNotification("Copied to clipboard", true, SoundController.SuccessSound).Show();
         }
     }
 }

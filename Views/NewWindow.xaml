@@ -84,6 +84,10 @@
                     Style="{StaticResource LabelHeader}" />
 
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -111,6 +115,23 @@
                         Style="{StaticResource InfoButtons}"
                         TabIndex="3" />
 
+                    <Button
+                        x:Name="cmdCopyEmailToClipboard"
+                        Grid.Row="1"
+                        Width="30"
+                        Height="25"
+                        Margin="307,3,0,0"
+                        Click="cmdCopyEmailToClopboard"
+                        FontSize="10"
+                        Style="{StaticResource ControlButton}"
+                        TabIndex="7">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="/Images/CopyToClipboard.png" />
+                    </Button>
                 </Grid>
 
             </StackPanel>
@@ -119,7 +140,8 @@
             <StackPanel
                 Grid.Row="1"
                 Grid.RowSpan="3"
-                Orientation="Vertical" Margin="0,108,0,0">
+                Margin="0,108,0,0"
+                Orientation="Vertical">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -345,7 +367,10 @@
             </StackPanel>
 
             <!--  Footer Buttons  -->
-            <Grid Grid.Row="2" Margin="0,160,0,0" Grid.RowSpan="2">
+            <Grid
+                Grid.Row="2"
+                Grid.RowSpan="2"
+                Margin="0,160,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />

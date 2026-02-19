@@ -9,6 +9,7 @@
     Width="600"
     Height="800"
     AllowsTransparency="True"
+    Closing="Settings_Closing"
     Icon="/Images/icon.ico"
     Loaded="frmSettingsLoaded"
     PreviewKeyDown="InputDialog_PreviewKeyDown"
@@ -17,7 +18,6 @@
     Style="{StaticResource WinStyle}"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
-    Closing="Settings_Closing"
     mc:Ignorable="d">
 
     <Border
@@ -76,9 +76,9 @@
                         Grid.Column="1"
                         Width="80"
                         Margin="10,25,0,0"
-                        SelectionChanged="com_FontSizeChanged"
                         ItemsSource="{Binding AvailableFontSizes}"
                         SelectedItem="{Binding SelectedFontSize, Mode=TwoWay}"
+                        SelectionChanged="com_FontSizeChanged"
                         Style="{StaticResource DarkComboBox}" />
                 </Grid>
 
@@ -201,6 +201,36 @@
 
                     </StackPanel>
                 </GroupBox>
+
+                <!--  App Contact/web Group  -->
+                <GroupBox
+                    Margin="0,20,0,0"
+                    Header="Contact"
+                    Style="{StaticResource DarkGroupBoxStyle}">
+                    <StackPanel Margin="10">
+                        <Button
+                            x:Name="cmdVisitWebsite"
+                            Margin="0,5,0,0"
+                            Click="VisitWeb_Click"
+                            Content="Visit Website"
+                            Style="{StaticResource DarkRoundedButton}" />
+
+                        <Button
+                            x:Name="cmdReportBug"
+                            Margin="0,5,0,0"
+                            Click="ReportBug_Click"
+                            Content="Report a Bug"
+                            Style="{StaticResource DarkRoundedButton}" />
+
+                        <Button
+                            x:Name="cmdContact"
+                            Margin="0,5,0,0"
+                            Click="Contact_Click"
+                            Content="Contact Support"
+                            Style="{StaticResource DarkRoundedButton}" />
+                    </StackPanel>
+                </GroupBox>
+
 
                 <!--  Danger Zone  -->
                 <GroupBox
